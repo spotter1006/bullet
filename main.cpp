@@ -1,10 +1,10 @@
 #include <gpiod.hpp>
 #include <iostream>
 #include <signal.h>
+#include <thread>
 
-using namespace std::gpiod
+using namespace std;
 
-chip chip("gpiochip0");
 atomic_flag flagKeepRunning;
 
 void sigHandler(int signum){
@@ -14,6 +14,6 @@ void sigHandler(int signum){
 int main(){
     cout << "Bullet bubble running";
     while(flagKeepRunning.test_and_set()){   // Exit on SIGINT
-        this_thread.sleep();
+        this_thread::sleep_for(chrono::milliseconds(10));
     }
 }

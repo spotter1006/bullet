@@ -8,21 +8,20 @@ class Stepper{
     public:
         Stepper();
         ~Stepper();
-        int step();
-        void setMode(int mode);
-        inline int getMode(){return m_nMode;}
-        inline int getPosistion(){return m_nPosition;}
+        int step(int dir);
+
+        inline int getPosition(){return m_nPosition;}
     private:
         int m_nPosition;
-        int m_nMode;
-        line m_lineEnable;
-        line m_lineM0;
-        line m_lineM1;
-        line m_lineM2;
-        line m_lineReset;
-        line m_lineSleep;
-        line m_lineStep;
-        line m_lineDir;
+        gpiod::chip m_ioChip("gpiochip0");
+        gpiod::line m_lineEnable;
+        gpiod::line m_lineM0;
+        gpiod::line m_lineM1;
+        gpiod::line m_lineM2;
+        gpiod::line m_lineReset;
+        gpiod::line m_lineSleep;
+        gpiod::line m_lineStep;
+        gpiod::line m_lineDir;
 
 
 };
