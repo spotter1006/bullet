@@ -5,15 +5,16 @@
 
 Stepper::Stepper(){
     m_nPosition = 0;
-    
-    m_lineEnable =  m_ioChip.getLine(DRV8825_EN_GPIO);   
-    m_lineM0 =      m_ioChip.getLine(DRV8825_M0_GPIO);
-    m_lineM1 =      m_ioChip.getLine(DRV8825_M1_GPIO);
-    m_lineM2 =      m_ioChip.getLine(DRV8825_M2_GPIO);
-    m_lineReset =   m_ioChip.getLine(DRV8825_RESET_GPIO);
-    m_lineSleep =   m_ioChip.getLine(DRV8825_SLEEP_GPIO);
-    m_lineStep =    m_ioChip.getLine(DRV8825_STEP_GPIO);
-    m_lineDir =     m_ioChip.getLine(DRV8825_DIR_GPIO);
+    gpiod::chip ioChip = gpiod::chip("gpiochip0");
+
+    m_lineEnable =  ioChip.get_line(DRV8825_EN_GPIO);   
+    m_lineM0 =      ioChip.get_line(DRV8825_M0_GPIO);
+    m_lineM1 =      ioChip.get_line(DRV8825_M1_GPIO);
+    m_lineM2 =      ioChip.get_line(DRV8825_M2_GPIO);
+    m_lineReset =   ioChip.get_line(DRV8825_RESET_GPIO);
+    m_lineSleep =   ioChip.get_line(DRV8825_SLEEP_GPIO);
+    m_lineStep =    ioChip.get_line(DRV8825_STEP_GPIO);
+    m_lineDir =     ioChip.get_line(DRV8825_DIR_GPIO);
 
     m_lineEnable.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
     m_lineM0.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
@@ -48,7 +49,8 @@ Stepper::~Stepper(){
 int Stepper::step(int dir){
     m_lineDir.set_value(dir);
     m_lineStep.set_value(1);
-    this_thread.sleep_for(chrono::milliseconds(1));
+    this_thread::sleep_for(chrono::milliseconds(1));
     m_lineStep.set_value(1);
     m_nPosition += (dir)? 1: -1;
+    return m_nPosition;
 }

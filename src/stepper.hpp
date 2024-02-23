@@ -13,7 +13,7 @@ class Stepper{
         inline int getPosition(){return m_nPosition;}
     private:
         int m_nPosition;
-        gpiod::chip m_ioChip("gpiochip0");
+
         gpiod::line m_lineEnable;
         gpiod::line m_lineM0;
         gpiod::line m_lineM1;
