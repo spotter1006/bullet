@@ -2,6 +2,8 @@
 #include "defines.hpp"
 #include <gpiod.hpp>
 #include <thread>
+#include <iostream>
+using namespace std;
 
 Stepper::Stepper(){
     m_nPosition = 0;
@@ -16,22 +18,23 @@ Stepper::Stepper(){
     m_lineStep =    ioChip.get_line(DRV8825_STEP_GPIO);
     m_lineDir =     ioChip.get_line(DRV8825_DIR_GPIO);
 
-    m_lineEnable.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
-    m_lineM0.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
-    m_lineM1.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
-    m_lineM2.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
-    m_lineReset.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
-    m_lineSleep.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
-    m_lineStep.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
-    m_lineDir.request({"liftometer",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineEnable.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineM0.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineM1.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineM2.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineReset.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineSleep.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineStep.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
+    m_lineDir.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
 
-    m_lineSleep.set_value(0);
+    m_lineSleep.set_value(1);
     m_lineEnable.set_value(0);
-    m_lineReset.set_value(0);
-    m_lineM0.set_value(0);
-    m_lineM1.set_value(0);
-    m_lineM2.set_value(0);
+    m_lineReset.set_value(1);
     
+    // 1/4 step
+    m_lineM0.set_value(0);
+    m_lineM1.set_value(1);
+    m_lineM2.set_value(0);
 }
 
 Stepper::~Stepper(){
@@ -45,12 +48,12 @@ Stepper::~Stepper(){
     m_lineDir.release();
 }
 
-
+// 1 for positive direction, -1 for negative. 1 step.
 int Stepper::step(int dir){
-    m_lineDir.set_value(dir);
+    m_lineDir.set_value(dir > 0);
     m_lineStep.set_value(1);
-    this_thread::sleep_for(chrono::milliseconds(1));
-    m_lineStep.set_value(1);
-    m_nPosition += (dir)? 1: -1;
+    this_thread::sleep_for(chrono::microseconds(120));
+    m_lineStep.set_value(0);
+    m_nPosition += dir;
     return m_nPosition;
 }

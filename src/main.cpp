@@ -2,6 +2,7 @@
 #include <iostream>
 #include <signal.h>
 #include <thread>
+#include "stepper.hpp"
 
 using namespace std;
 
@@ -12,8 +13,11 @@ void sigHandler(int signum){
 }
 
 int main(){
-    cout << "Bullet bubble running";
+    flagKeepRunning.test_and_set();
+    cout << "Bullet bubble running" << endl;
+    Stepper *pStepper = new Stepper();
     while(flagKeepRunning.test_and_set()){   // Exit on SIGINT
-        this_thread::sleep_for(chrono::milliseconds(10));
+        pStepper->step(1);
+        this_thread::sleep_for(chrono::milliseconds(500));
     }
 }
