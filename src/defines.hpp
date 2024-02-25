@@ -12,5 +12,6 @@
 #define DRV8825_DIR_GPIO    6   // RASPI pin 31
 
 // WS2812 Addressable LED array
+# define LED_STRING_FREQUENCY 800000
 #define WSS2812_DATA_GPIO 18    // RASPI pin 12 (PCM CLK)
 #endif
