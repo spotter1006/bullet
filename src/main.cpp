@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <thread>
 #include "stepper.hpp"
+#include "ws2811.h"
 
 using namespace std;
 
