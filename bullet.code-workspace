@@ -9,7 +9,13 @@
             "*.tcc": "cpp",
             "fstream": "cpp",
             "thread": "cpp",
-            "chrono": "cpp"
+            "chrono": "cpp",
+            "deque": "cpp",
+            "string": "cpp",
+            "unordered_map": "cpp",
+            "vector": "cpp",
+            "system_error": "cpp",
+            "new": "cpp"
         }
     }
 }

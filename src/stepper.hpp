@@ -9,7 +9,6 @@ class Stepper{
         Stepper();
         ~Stepper();
         void step(int dir);
-        static void indexer(Stepper* pStepper);
         inline int getPosition(){return m_nPosition;}
     private:
         int m_nPosition;
@@ -21,7 +20,5 @@ class Stepper{
         gpiod::line m_lineSleep;
         gpiod::line m_lineStep;
         gpiod::line m_lineDir;
-
-
 };
 #endif
