@@ -1,5 +1,6 @@
 #include "ledstring.hpp"
 #include "defines.hpp"
+#include <string.h>
 
 Ledstring::Ledstring(int pixels){
     m_pData = new ws2811_led_t[pixels];
@@ -19,7 +20,7 @@ Ledstring::Ledstring(int pixels){
     m_ctx.channel[1].strip_type = 0;
     m_ctx.channel[1].brightness = 0;
     ws2811_init(&m_ctx);
-    
+
     m_ctx.channel[0].leds = m_pData;    
 }
 
@@ -28,10 +29,23 @@ Ledstring::~Ledstring(){
     delete m_pData;
 }
 
+void Ledstring::clear(){
+    memset(m_ctx.channel[0].leds, 0, m_ctx.channel[0].count * sizeof(ws2811_led_t));
+}
+
 void Ledstring::render(){
     ws2811_render(&m_ctx);
 }
 
 void Ledstring::setPixel(int pixel, ws2811_led_t value){
     m_pData[pixel] = value;
+}
+
+void Ledstring::setString(ws2811_led_t *pixels){
+    memcpy(m_pData, pixels, m_ctx.channel[0].count);
+}
+
+void Ledstring::renderString(ws2811_led_t *data){
+    m_ctx.channel[0].leds = data;
+    render();
 }

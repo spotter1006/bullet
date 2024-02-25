@@ -36,10 +36,10 @@ Stepper::Stepper(){
     m_lineEnable.set_value(0);
     m_lineReset.set_value(1);
     
-    // 1/4 step
-    m_lineM0.set_value(0);
-    m_lineM1.set_value(1);
-    m_lineM2.set_value(0);
+    // 1/32 step
+    m_lineM0.set_value(1);
+    m_lineM1.set_value(0);
+    m_lineM2.set_value(1);
 
     thread t1(indexer, this);
     t1.detach();
@@ -75,15 +75,16 @@ void Stepper::indexer(Stepper* pStepper){
     signal(SIGALRM, sig_handler);
     itimerval timer;
  
-    timer.it_interval.tv_usec = 800;      
+    timer.it_interval.tv_usec = 200;      
     timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = 800;
+    timer.it_value.tv_usec = 200;
     timer.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
 
 
     // Sweep back and forth 60 steps 
-    int ticksBetweenSteps = 40;
+    int ticksBetweenSteps = 10;
+
     int interval = 0;
 
     int dir = 1;
@@ -96,7 +97,7 @@ void Stepper::indexer(Stepper* pStepper){
         if(dir > 0 && ticksBetweenSteps < 40)
             ticksBetweenSteps++;                // Deccelerate
 
-        if(pStepper->getPosition() == 60)
+        if(pStepper->getPosition() == 250)
             dir = -1;
         if(pStepper->getPosition() == 0){
             dir = 1;
