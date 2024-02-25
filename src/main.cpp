@@ -17,7 +17,6 @@ int main(){
     cout << "Bullet bubble running" << endl;
     Stepper *pStepper = new Stepper();
     while(flagKeepRunning.test_and_set()){   // Exit on SIGINT
-        pStepper->step(1);
         this_thread::sleep_for(chrono::milliseconds(500));
     }
 }

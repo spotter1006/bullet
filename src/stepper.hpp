@@ -8,12 +8,11 @@ class Stepper{
     public:
         Stepper();
         ~Stepper();
-        int step(int dir);
-
+        void step(int dir);
+        static void indexer(Stepper* pStepper);
         inline int getPosition(){return m_nPosition;}
     private:
         int m_nPosition;
-
         gpiod::line m_lineEnable;
         gpiod::line m_lineM0;
         gpiod::line m_lineM1;

@@ -3,7 +3,12 @@
 #include <gpiod.hpp>
 #include <thread>
 #include <iostream>
+#include <signal.h>
+#include <thread>
+#include <sys/time.h>
+#include <unistd.h>
 using namespace std;
+
 
 Stepper::Stepper(){
     m_nPosition = 0;
@@ -35,6 +40,9 @@ Stepper::Stepper(){
     m_lineM0.set_value(0);
     m_lineM1.set_value(1);
     m_lineM2.set_value(0);
+
+    thread t1(indexer, this);
+    t1.detach();
 }
 
 Stepper::~Stepper(){
@@ -49,11 +57,59 @@ Stepper::~Stepper(){
 }
 
 // 1 for positive direction, -1 for negative. 1 step.
-int Stepper::step(int dir){
+void Stepper::step(int dir){
     m_lineDir.set_value(dir > 0);
     m_lineStep.set_value(1);
-    this_thread::sleep_for(chrono::microseconds(120));
+    this_thread::sleep_for(chrono::microseconds(2));
     m_lineStep.set_value(0);
     m_nPosition += dir;
-    return m_nPosition;
 }
+
+atomic_flag fWaitForTick;
+void sig_handler(int signo){
+    fWaitForTick.clear();
+}
+
+void Stepper::indexer(Stepper* pStepper){
+
+    signal(SIGALRM, sig_handler);
+    itimerval timer;
+ 
+    timer.it_interval.tv_usec = 800;      
+    timer.it_interval.tv_sec = 0;
+    timer.it_value.tv_usec = 800;
+    timer.it_value.tv_sec = 0;
+    setitimer(ITIMER_REAL, &timer, NULL);
+
+
+    // Sweep back and forth 60 steps 
+    int ticksBetweenSteps = 40;
+    int interval = 0;
+
+    int dir = 1;
+    while(1){
+        if(interval % ticksBetweenSteps == 0)
+            pStepper->step(dir);
+
+        if(dir > 0 && ticksBetweenSteps > 1)
+            ticksBetweenSteps--;                // Accelerate
+        if(dir > 0 && ticksBetweenSteps < 40)
+            ticksBetweenSteps++;                // Deccelerate
+
+        if(pStepper->getPosition() == 60)
+            dir = -1;
+        if(pStepper->getPosition() == 0){
+            dir = 1;
+            interval = 0;
+        }          
+
+        while(fWaitForTick.test_and_set()){
+            
+            usleep(1);
+        }
+        
+
+    }
+}
+
+
