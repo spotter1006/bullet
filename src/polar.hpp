@@ -17,6 +17,7 @@ class Polar{
         inline void setPatternIndex(int index){m_nPatternIndex = index;}
         void displayNextPatternFrame();
         void blankString();
+        void setBrightness(int val);
     private:
         static void sweeper(Polar* pPolar);
         Stepper *m_pStepper;

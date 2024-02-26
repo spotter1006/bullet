@@ -22,7 +22,7 @@ Polar::Polar(){
     m_pLedstring->channel[0].invert = 0;
     m_pLedstring->channel[0].count = LED_STRING_PIXELS;
     m_pLedstring->channel[0].strip_type = WS2811_STRIP_GRB;
-    m_pLedstring->channel[0].brightness = 80;
+    m_pLedstring->channel[0].brightness = 255;
     m_pLedstring->channel[1].gpionum = 0;
     m_pLedstring->channel[1].invert = 0;
     m_pLedstring->channel[1].count = 0;
@@ -77,6 +77,9 @@ void Polar::displayNextPatternFrame(){
 void Polar::blankString(){
     ws2811_led_t data[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     render(data);
+}
+void Polar::setBrightness(int val){
+    m_pLedstring->channel[0].brightness=val;
 }
 void Polar::sweeper(Polar* pPolar){
 
@@ -138,3 +141,4 @@ void Polar::sweeper(Polar* pPolar){
         }
     }
 }
+
