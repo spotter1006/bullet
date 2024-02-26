@@ -22,7 +22,7 @@ Polar::Polar(){
     m_pLedstring->channel[0].invert = 0;
     m_pLedstring->channel[0].count = LED_STRING_PIXELS;
     m_pLedstring->channel[0].strip_type = WS2811_STRIP_GRB;
-    m_pLedstring->channel[0].brightness = 128;
+    m_pLedstring->channel[0].brightness = 80;
     m_pLedstring->channel[1].gpionum = 0;
     m_pLedstring->channel[1].invert = 0;
     m_pLedstring->channel[1].count = 0;
@@ -74,29 +74,36 @@ void Polar::displayNextPatternFrame(){
     m_nPatternIndex += LED_STRING_PIXELS;
     if(m_nPatternIndex >= m_nPatternSize) m_nPatternIndex = 0;
 }
+void Polar::blankString(){
+    ws2811_led_t data[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    render(data);
+}
 void Polar::sweeper(Polar* pPolar){
+
+    ws2811_led_t BK = BLACK;
+    ws2811_led_t FG = GREEN;
 
     ws2811_led_t pattern[100] =
     {
-        GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
-        BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
-        BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
-        BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
-        BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK,
-        BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK,
-        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK,
-        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK,
-        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK,
-        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN
+        FG, BK, BK, BK, BK, BK, BK, BK, BK, BK,
+        BK, FG, BK, BK, BK, BK, BK, BK, BK, BK,
+        BK, BK, FG, BK, BK, BK, BK, BK, BK, BK,
+        BK, BK, BK, FG, BK, BK, BK, BK, BK, BK,
+        BK, BK, BK, BK, FG, BK, BK, BK, BK, BK,
+        BK, BK, BK, BK, BK, FG, BK, BK, BK, BK,
+        BK, BK, BK, BK, BK, BK, FG, BK, BK, BK,
+        BK, BK, BK, BK, BK, BK, BK, FG, BK, BK,
+        BK, BK, BK, BK, BK, BK, BK, BK, FG, BK,
+        BK, BK, BK, BK, BK, BK, BK, BK, BK, FG
     };
     pPolar->setPattern(pattern, 100);
 
     signal(SIGALRM, sig_handler);
     itimerval timer;
  
-    timer.it_interval.tv_usec = 200;      
+    timer.it_interval.tv_usec = 300;      
     timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = 200;
+    timer.it_value.tv_usec = 300;
     timer.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
 

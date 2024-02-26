@@ -16,6 +16,7 @@ class Polar{
         void setPattern(ws2811_led_t *pattern, int sizeInPixels);
         inline void setPatternIndex(int index){m_nPatternIndex = index;}
         void displayNextPatternFrame();
+        void blankString();
     private:
         static void sweeper(Polar* pPolar);
         Stepper *m_pStepper;

@@ -17,6 +17,7 @@
 #define RED 0x00ff0000
 #define GREEN 0x0000ff00
 #define BLUE 0x000000ff
+#define YELLOW 0x00ffff00
 
 # define LED_STRING_FREQUENCY 800000
 #define LED_STRING_PIXELS 10
