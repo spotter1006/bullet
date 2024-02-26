@@ -15,14 +15,14 @@ atomic_flag fKeepRunning;
 
 Polar::Polar(){
 
-    m_pLedstring = new ws2811_t;  
+    m_pLedstring = new ws2811_t;        // Structure that holds the context for the ws2811 library
     m_pLedstring->freq = LED_STRING_FREQUENCY;
     m_pLedstring->dmanum =10;
     m_pLedstring->channel[0].gpionum = WSS2812_DATA_GPIO;
     m_pLedstring->channel[0].invert = 0;
     m_pLedstring->channel[0].count = LED_STRING_PIXELS;
     m_pLedstring->channel[0].strip_type = WS2811_STRIP_GRB;
-    m_pLedstring->channel[0].brightness = 255;
+    m_pLedstring->channel[0].brightness = 128;
     m_pLedstring->channel[1].gpionum = 0;
     m_pLedstring->channel[1].invert = 0;
     m_pLedstring->channel[1].count = 0;
@@ -32,10 +32,14 @@ Polar::Polar(){
 
     m_pStepper = new Stepper();
 
+    m_nPatternIndex = 0;
+    m_pPattern = NULL;
+
 }
 Polar::~Polar(){
     delete m_pStepper;
     delete m_pLedstring;
+    if(m_pPattern) delete m_pPattern;
 }
 void Polar::start(){
     thread t1(sweeper, this);
@@ -51,7 +55,6 @@ int Polar::getPosition(){
     return m_pStepper->getPosition();
 }
 void Polar::render(ws2811_led_t *data){
-    // Data has to be copied in and memcpy doesnt work, probably because this is a kernel mode libray and its video mempry?
     for(int i = 0; i < LED_STRING_PIXELS; i++){
         m_pLedstring->channel[0].leds[i] = data[i];
     }
@@ -60,22 +63,33 @@ void Polar::render(ws2811_led_t *data){
 void sig_handler(int signo){
     fWaitForTick.clear();
 }
+void Polar::setPattern(ws2811_led_t *pattern, int sizeInPixels){
+    m_nPatternSize = sizeInPixels;
+    if(m_pPattern) delete m_pPattern;
+    m_pPattern = (ws2811_led_t*)malloc(sizeInPixels * sizeof(ws2811_led_t));
+    memcpy(m_pPattern, pattern, sizeInPixels * sizeof(ws2811_led_t));
+}
+void Polar::displayNextPatternFrame(){
+    render(&m_pPattern[m_nPatternIndex]);
+    m_nPatternIndex += LED_STRING_PIXELS;
+    if(m_nPatternIndex >= m_nPatternSize) m_nPatternIndex = 0;
+}
 void Polar::sweeper(Polar* pPolar){
 
-    ws2811_led_t data[10]={
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0x00008000
+    ws2811_led_t pattern[100] =
+    {
+        GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
+        BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
+        BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
+        BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
+        BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK, BLACK,
+        BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK, BLACK,
+        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK, BLACK,
+        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK, BLACK,
+        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN, BLACK,
+        BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, GREEN
     };
-
-    pPolar->render(data);
+    pPolar->setPattern(pattern, 100);
 
     signal(SIGALRM, sig_handler);
     itimerval timer;
@@ -93,6 +107,7 @@ void Polar::sweeper(Polar* pPolar){
     int interval = 0;
     int dir = 1;
     while(fKeepRunning.test_and_set()){
+        int position = pPolar->getPosition();
         if(interval % ticksBetweenSteps == 0)
             pPolar->step(dir);
 
@@ -101,9 +116,9 @@ void Polar::sweeper(Polar* pPolar){
         if(dir > 0 && ticksBetweenSteps < 100)
             ticksBetweenSteps++;                // Deccelerate
 
-        if(pPolar->getPosition() == 250)
+        if(position == 250)
             dir = -1;
-        if(pPolar->getPosition() == 0){
+        if(position == 0){
             dir = 1;
             interval = 0;
         }          
@@ -111,5 +126,8 @@ void Polar::sweeper(Polar* pPolar){
             usleep(1);
         }
 
+        if(position % 60 == 0){
+            pPolar->displayNextPatternFrame();
+        }
     }
 }
