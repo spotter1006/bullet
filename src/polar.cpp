@@ -105,9 +105,9 @@ void Polar::sweeper(Polar* pPolar){
     signal(SIGALRM, sig_handler);
     itimerval timer;
  
-    timer.it_interval.tv_usec = 300;      
+    timer.it_interval.tv_usec = 180;      
     timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = 300;
+    timer.it_value.tv_usec = 180;
     timer.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
 
@@ -117,21 +117,18 @@ void Polar::sweeper(Polar* pPolar){
 
     int dir = 1;
     while(fKeepRunning.test_and_set()){
-        int position = pPolar->getPosition();
 
         pPolar->step(dir);
-        
-        if(position == 250)  dir = -1;
+        int position = pPolar->getPosition();
+        if(position == 400)  dir = -1;
         else if(position == 0)  dir = 1;
-               
-
-        while(fWaitForTick.test_and_set()){
-            usleep(1);
-        }
-
-        if(position % 60 == 0){
+ 
+        if(position % 40 == 0)
             pPolar->displayNextPatternFrame();
-        }
+        
+        
+        while(fWaitForTick.test_and_set())
+            usleep(2);
     }
 }
 
