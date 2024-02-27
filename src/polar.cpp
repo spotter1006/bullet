@@ -49,18 +49,17 @@ int Polar::getPosition(){
     return m_pStepper->getPosition();
 }
 void Polar::render(){
-    for(int i = 0; i < LED_STRING_PIXELS; i++){
-        m_pLedstring->channel[0].leds[i] = m_vLeds[i];
-    }
     ws2811_render(m_pLedstring);
 }
 
 void Polar::blankString(){
-    m_vLeds={0,0,0,0,0,0,0,0,0,0};
+    for(int i = 0; i < LED_STRING_PIXELS; i++){
+        m_pLedstring->channel[0].leds[i] = 0;
+    }
     render();
 }
 void Polar::setPixel(int pixel, int value){
-    m_vLeds[pixel]=value;
+    m_pLedstring->channel[0].leds[pixel] = value;
 }
 
 void Polar::setBrightness(int val){
@@ -69,7 +68,7 @@ void Polar::setBrightness(int val){
 
 void Polar::sweeper(Polar* pPolar){
 
-   signal(SIGALRM, [](int signo){fWaitForTick.clear();});       
+    signal(SIGALRM, [](int signo){fWaitForTick.clear();});       
     itimerval timer;
  
     timer.it_interval.tv_usec = 180;      

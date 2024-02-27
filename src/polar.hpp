@@ -20,6 +20,5 @@ class Polar{
         static void sweeper(Polar* pPolar);
         Stepper *m_pStepper;
         ws2811_t *m_pLedstring;
-        vector<ws2811_led_t> m_vLeds;
 };
 #endif
