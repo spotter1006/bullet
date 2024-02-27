@@ -19,7 +19,8 @@
 #define BLUE 0x000000ff
 #define YELLOW 0x00ffff00
 
-# define LED_STRING_FREQUENCY 800000
+#define LED_STRING_FREQUENCY 800000
 #define LED_STRING_PIXELS 10
 #define WSS2812_DATA_GPIO 18    // RASPI pin 12 (PCM CLK)
+
 #endif

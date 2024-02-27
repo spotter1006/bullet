@@ -99,6 +99,7 @@ void Polar::sweeper(Polar* pPolar){
         BK, BK, BK, BK, BK, BK, BK, BK, FG, BK,
         BK, BK, BK, BK, BK, BK, BK, BK, BK, FG
     };
+       
     pPolar->setPattern(pattern, 100);
 
     signal(SIGALRM, sig_handler);
@@ -111,27 +112,19 @@ void Polar::sweeper(Polar* pPolar){
     setitimer(ITIMER_REAL, &timer, NULL);
 
 
-    // Sweep back and forth 60 steps 
+    // Sweep back and forth
     fKeepRunning.test_and_set();
-    int ticksBetweenSteps = 100;
-    int interval = 0;
+
     int dir = 1;
     while(fKeepRunning.test_and_set()){
         int position = pPolar->getPosition();
-        if(interval % ticksBetweenSteps == 0)
-            pPolar->step(dir);
 
-        if(dir > 0 && ticksBetweenSteps > 1)
-            ticksBetweenSteps--;                // Accelerate
-        if(dir > 0 && ticksBetweenSteps < 100)
-            ticksBetweenSteps++;                // Deccelerate
+        pPolar->step(dir);
+        
+        if(position == 250)  dir = -1;
+        else if(position == 0)  dir = 1;
+               
 
-        if(position == 250)
-            dir = -1;
-        if(position == 0){
-            dir = 1;
-            interval = 0;
-        }          
         while(fWaitForTick.test_and_set()){
             usleep(1);
         }

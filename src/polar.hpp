@@ -25,5 +25,7 @@ class Polar{
         ws2811_led_t *m_pPattern;      
         int m_nPatternIndex;
         int m_nPatternSize;
+        int m_nSweepLowerLimit;
+        int m_nSweepUpperLimit;
 };
 #endif
