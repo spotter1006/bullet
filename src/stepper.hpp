@@ -14,10 +14,14 @@ class Stepper{
         inline int getPosition(){return m_nPosition;}
         inline int getLeftSweepLimit(){return m_nLeftSweepLimit;}
         inline int getRightSweepLimit(){return m_nRightSweepLimit;}
+        inline bool isKeepSweeping(){return m_fKeepSweeping;}
+        inline void setKeepSweeping(bool val){m_fKeepSweeping = val;}
+        inline int getTargetAngle(){return m_nTargetAngle;}
     private:
         int m_nPosition;
         int m_nLeftSweepLimit;
         int m_nRightSweepLimit;
+        int m_nTargetAngle;
         gpiod::line m_lineEnable;
         gpiod::line m_lineM0;
         gpiod::line m_lineM1;
@@ -26,6 +30,6 @@ class Stepper{
         gpiod::line m_lineSleep;
         gpiod::line m_lineStep;
         gpiod::line m_lineDir;
-        static void sweeper(Stepper* pStepper);
+        bool m_fKeepSweeping;
 };
 #endif
