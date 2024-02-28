@@ -2,9 +2,6 @@
     "folders": [
         {
             "path": "."
-        },
-        {
-            "path": "../rpi_ws281x"
         }
     ],
     "settings": {

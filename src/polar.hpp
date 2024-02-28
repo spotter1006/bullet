@@ -3,6 +3,8 @@
 
 #include "stepper.hpp"
 #include <ws2811/ws2811.h>
+#include "frame.hpp"
+#include <list>
 
 class Polar{
     public:
@@ -12,13 +14,14 @@ class Polar{
         void stop();
         void step(int dir);
         int  getPosition();
-        void render();
-        void blankString();
         void setBrightness(int val);
-        void setPixel(int pixel, int value);
+        void setMotorStepInterval(int microseconds);
     private:
+    
         static void sweeper(Polar* pPolar);
-        Stepper *m_pStepper;
-        ws2811_t *m_pLedstring;
+        Stepper m_stepper;
+        ws2811_t m_ledstring;
+        list<Frame> m_videoBuffer;
 };
 #endif
+
