@@ -10,6 +10,7 @@
 #define DRV8825_SLEEP_GPIO  25  // RASPI pin 22
 #define DRV8825_STEP_GPIO   5   // RASPI pin 29
 #define DRV8825_DIR_GPIO    6   // RASPI pin 31
+#define MOTOR_STEP_INTERVAL_US 180
 
 // WS2812 Addressable LED array
 #define BLACK 0x00000000

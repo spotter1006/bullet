@@ -22,7 +22,7 @@ Stepper::Stepper(){
     m_lineSleep =   ioChip.get_line(DRV8825_SLEEP_GPIO);
     m_lineStep =    ioChip.get_line(DRV8825_STEP_GPIO);
     m_lineDir =     ioChip.get_line(DRV8825_DIR_GPIO);
-
+ 
     m_lineEnable.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
     m_lineM0.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
     m_lineM1.request({"bullet",gpiod::line_request::DIRECTION_OUTPUT , 0},0);
@@ -40,6 +40,10 @@ Stepper::Stepper(){
     m_lineM0.set_value(1);
     m_lineM1.set_value(0);
     m_lineM2.set_value(1);
+
+    m_nLeftSweepLimit = 0;
+    m_nRightSweepLimit = 0;
+
 }
 
 Stepper::~Stepper(){
@@ -60,4 +64,39 @@ void Stepper::step(int dir){
     this_thread::sleep_for(chrono::microseconds(2));
     m_lineStep.set_value(0);
     m_nPosition += dir;
+}
+atomic_flag fWaitForTick;
+atomic_flag fKeepRunning;
+
+void Stepper::startSweeping(int left, int right, int stepIntervalUs){
+    m_nLeftSweepLimit = left;
+    m_nRightSweepLimit = right;
+    signal(SIGALRM, [](int signo){fWaitForTick.clear();});       
+    itimerval timer;
+    timer.it_interval.tv_usec = stepIntervalUs;      
+    timer.it_interval.tv_sec = 0;
+    timer.it_value.tv_usec = stepIntervalUs;
+    timer.it_value.tv_sec = 0;
+    setitimer(ITIMER_REAL, &timer, NULL);
+
+    thread t1(sweeper, this);
+    t1.detach();
+}
+void Stepper::stopSweeping(int atAngle){
+    fKeepRunning.clear();       // TODO: honor atAngle
+}
+void Stepper::sweeper(Stepper* pStepper){
+    int dir = 1;
+    fKeepRunning.test_and_set();
+    while(fKeepRunning.test_and_set()){
+
+        pStepper->step(dir);
+        int position = pStepper->getPosition();
+        if(position == pStepper->getRightSweepLimit())  dir = -1;
+        else if(position == pStepper->getLeftSweepLimit())  dir = 1;
+ 
+        
+        while(fWaitForTick.test_and_set())
+            usleep(2);
+    }
 }
