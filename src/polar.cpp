@@ -29,7 +29,11 @@ Polar::~Polar(){
     ws2811_fini(&m_ledstring);
 }
 void Polar::start(){
-    m_stepper.startSweeping(0, 400, MOTOR_STEP_INTERVAL_US);
+    m_stepper.startSweeping(0, MOTOR_SWEEP_ANGLE, MOTOR_STEP_INTERVAL_US);
+    thread T1([](Polar *pPolar){
+        
+    },this);
+    T1.detach();
 }
 void Polar::stop(){
     m_stepper.stopSweeping(0);
@@ -44,5 +48,3 @@ int Polar::getPosition(){
 void Polar::setBrightness(int val){
     m_ledstring.channel[0].brightness=val;
 }
-
-
