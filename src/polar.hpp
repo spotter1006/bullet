@@ -4,7 +4,7 @@
 #include "stepper.hpp"
 #include <ws2811/ws2811.h>
 #include "frame.hpp"
-#include <list>
+#include <vector>
 
 class Polar{
     public:
@@ -13,12 +13,22 @@ class Polar{
         void start();
         void stop();
         void step(int dir);
-        int  getPosition();
+        int getPosition();
+        int getDirection();
+        int getRightSweepLimit();
+        int getLeftSweepLimit();
         void setBrightness(int val);
+        inline ws2811_t* getLedString(){return &m_ledstring;}
+        inline bool isKeepRunning(){return m_fKeepRunning;}
+        inline void setKeepRunning(bool val){m_fKeepRunning=val;}
+        inline int getFrameCount(){return m_frames.size();}
+        int waitForNextStep();
+        Frame getFrame(int step){return m_frames[step];}
     private:
         Stepper m_stepper;
         ws2811_t m_ledstring;
-        list<Frame> m_videoBuffer;
+        vector<Frame> m_frames;
+        bool m_fKeepRunning;
 };
 #endif
 

@@ -11,6 +11,7 @@ class Stepper{
         void step(int dir);
         void startSweeping(int left, int right, int stepIntevalUs);
         void stopSweeping(int atAngle);
+        int getDirection();
         inline int getPosition(){return m_nPosition;}
         inline int getLeftSweepLimit(){return m_nLeftSweepLimit;}
         inline int getRightSweepLimit(){return m_nRightSweepLimit;}

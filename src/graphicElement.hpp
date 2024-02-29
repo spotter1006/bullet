@@ -16,10 +16,9 @@ typedef enum graphic_el{
 class GraphicElement{
     public:
         GraphicElement();
-        GraphicElement(GRAPHIC_ELEMENT type, int radius,  int sweepAngle);
+        GraphicElement(int radius,  int sweepAngle);
         ~GraphicElement();
     protected:
-        GRAPHIC_ELEMENT m_nType;
         int m_nRadius;
         int m_nSweepAngle;
         vector<ws2811_led_t> m_pixelBuffer;

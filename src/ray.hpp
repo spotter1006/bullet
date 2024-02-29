@@ -3,7 +3,7 @@
 
 #include "graphicElement.hpp"
 class Ray: public GraphicElement{
-    Ray(int radius,  int sweepAngle) : GraphicElement(GRAPHIC_ELEMENT_RAY,radius,sweepAngle){
+    Ray(int radius,  int sweepAngle) : GraphicElement(radius, sweepAngle){
 
     };
 

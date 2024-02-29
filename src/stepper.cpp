@@ -68,6 +68,10 @@ void Stepper::step(int dir){
     m_nPosition += dir;
 }
 
+int Stepper::getDirection(){
+    return (m_lineDir.get_value() == 1)? 1 : -1;
+}
+
 atomic_flag fWaitForTick;
 
 void Stepper::startSweeping(int left, int right, int stepIntervalUs){
@@ -95,8 +99,7 @@ void Stepper::startSweeping(int left, int right, int stepIntervalUs){
     
             while(fWaitForTick.test_and_set()) usleep(2);
             
-            if(!pStepper->isKeepSweeping() && 
-                pStepper->getPosition() == pStepper->getTargetAngle()){
+            if(!pStepper->isKeepSweeping() &&  pStepper->getPosition() == pStepper->getTargetAngle()){
                 pStepper->setKeepSweeping(true);
                 break;
             }

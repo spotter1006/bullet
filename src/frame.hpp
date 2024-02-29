@@ -2,14 +2,17 @@
 #define _FRAME_H_
 #include "bar.hpp"
 #include <vector>
+
 using namespace std;
+
 class Frame{
     public:
-        Frame();
+        Frame(int nBars);
         ~Frame();
-        void addBar(int step, Bar bar);
+        void setBar(int step, Bar bar);
+        Bar getBar(int step);
     private:
-        vector<Bar> m_bars;           // Key is step angle
+        vector<Bar> m_bars;           // index is step angle
 
 };
 #endif

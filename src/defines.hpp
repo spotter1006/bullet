@@ -26,4 +26,6 @@
 #define LED_STRING_PIXELS 10
 #define WSS2812_DATA_GPIO 18    // RASPI pin 12 (PCM CLK)
 
+#define ANIMATION_FRAMES 30
+
 #endif
