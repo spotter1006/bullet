@@ -24,80 +24,64 @@ Polar::Polar(){
     m_ledstring.channel[1].strip_type = 0;
     m_ledstring.channel[1].brightness = 0;
     ws2811_init(&m_ledstring);
+    Frame frame = Frame(MOTOR_SWEEP_STEPS);
+    m_frames = vector<Frame>(ANIMATION_FRAMES, frame);
+
+// *** Test: single green stationary bar in the middle of a sweep from 0 to max motor sweep angle
+    Bar solidGreenBar(10, GREEN);
+    for( int i = 0; i < ANIMATION_FRAMES; i++){
+        m_frames[i].setBar(MOTOR_SWEEP_STEPS/2, solidGreenBar);
+    } 
+
 }
 Polar::~Polar(){
     ws2811_fini(&m_ledstring);
 }
-void Polar::start(){
-    // Initialize  frames for animation
-    for(int i = 0; i < ANIMATION_FRAMES; i++)
-    {
-        m_frames.emplace_back(Frame(MOTOR_SWEEP_ANGLE));
-    }
+atomic_flag fWaitForTick;   
+void Polar::start(int left, int right, int stepIntervalUs){
+
+    m_nLeftSweepLimit = left;
+    m_nRightSweepLimit = right;
+
+    signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
+    itimerval timer;
+    timer.it_interval.tv_usec = stepIntervalUs;      
+    timer.it_interval.tv_sec = 0;
+    timer.it_value.tv_usec = stepIntervalUs;
+    timer.it_value.tv_sec = 0;
+    setitimer(ITIMER_REAL, &timer, NULL);
     
-    // *** Test: single green stationary bar in the middle of a sweep from 0 to max motor sweep angle
-    Bar solidGreenBar(10, GREEN); 
-    for( int i = 0; i < ANIMATION_FRAMES; i++){
-        m_frames[i].setBar(MOTOR_SWEEP_ANGLE/2, solidGreenBar);
-    }
-
-    m_stepper.startSweeping(0, MOTOR_SWEEP_ANGLE, MOTOR_STEP_INTERVAL_US);
-    // ***
-
-    // Thread to control the LEDs
-    thread T1([](Polar *pPolar){
+    m_fKeepSweeping = true;   
+    m_threads.emplace_back(thread([](Polar *pPolar){        //Motion thread
+        Frame frame = pPolar->getFrame(0);
+        pPolar->setKeepSweeping(true);
+        int dir = 1;
+        while(pPolar->isKeepRunning()){
+            while(fWaitForTick.test_and_set()){
+                usleep(2);
+            };
+            int step = pPolar->step(dir);
+            if(step == pPolar->getRightSweepLimit())  dir = -1;
+            else if(step == pPolar->getLeftSweepLimit())  dir = 1;
+        }
+    },this));    
+    m_threads.emplace_back(thread([](Polar *pPolar){        // LED thread
+        int step = 0;
         int frameIndex = 0;
-        Frame frame = pPolar->getFrame(frameIndex);
-        pPolar->setKeepRunning(true);
-        while(1){
-            int step =pPolar->waitForNextStep();
+        while(pPolar->isKeepRunning()){
+            usleep(2);
+            step = pPolar->getStep();
+            Frame frame = pPolar->getFrame(frameIndex);
             Bar bar = frame.getBar(step);
             bar.render(pPolar->getLedString());
-
             if(step == pPolar->getLeftSweepLimit()) frameIndex++;
-            if(frameIndex > pPolar->getFrameCount()) frameIndex = 0;
-         
-            usleep(2);
-            if(!pPolar->isKeepRunning()){
-                pPolar->setKeepRunning(true);
-                break;
-            }
+            if(frameIndex == pPolar->getFrameCount()) frameIndex = 0;
         }
-    },this);
-    T1.detach();
+    },this));
 }
 void Polar::stop(){
-    m_fKeepRunning = false;
-    m_stepper.stopSweeping(0);      // Stop at angle 0
-    while(!m_fKeepRunning){
-        usleep(2);
-    }
-    
-}
-void Polar::step(int dir){
-    m_stepper.step(dir);
-}
-int Polar::getPosition(){
-    return m_stepper.getPosition();
-}
-int Polar::getDirection(){
-    return m_stepper.getDirection();
-}
-int Polar::getRightSweepLimit(){
-    return m_stepper.getRightSweepLimit();
-}
-int Polar::getLeftSweepLimit(){
-    return m_stepper.getLeftSweepLimit();
-}
-
-void Polar::setBrightness(int val){
-    m_ledstring.channel[0].brightness=val;
-}
-int Polar:: waitForNextStep(){
-    int initialStep = m_stepper.getPosition();
-    int nextStep = initialStep;
-    while(nextStep = m_stepper.getPosition() == initialStep){
-        usleep(2);
-    }
-    return nextStep;
+    m_fKeepSweeping = false;
+    for(auto& th : m_threads)
+        th.join();
+    m_threads.clear();
 }

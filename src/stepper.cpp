@@ -36,15 +36,10 @@ Stepper::Stepper(){
     m_lineEnable.set_value(0);
     m_lineReset.set_value(1);
     
-    // 1/32 step
-    m_lineM0.set_value(1);
+    // 1/16 step
+    m_lineM0.set_value(0);
     m_lineM1.set_value(0);
     m_lineM2.set_value(1);
-
-    m_nLeftSweepLimit = 0;
-    m_nRightSweepLimit = 0;
-    m_nTargetAngle = 0;
-    m_fKeepSweeping = true;
 
 }
 
@@ -60,59 +55,11 @@ Stepper::~Stepper(){
 }
 
 // 1 for positive direction, -1 for negative. 1 step.
-void Stepper::step(int dir){
+int Stepper::step(int dir){
     m_lineDir.set_value(dir > 0);
     m_lineStep.set_value(1);
-    this_thread::sleep_for(chrono::microseconds(2));
+    usleep(2);
     m_lineStep.set_value(0);
     m_nPosition += dir;
-}
-
-int Stepper::getDirection(){
-    return (m_lineDir.get_value() == 1)? 1 : -1;
-}
-
-atomic_flag fWaitForTick;
-
-void Stepper::startSweeping(int left, int right, int stepIntervalUs){
-    m_nLeftSweepLimit = left;
-    m_nRightSweepLimit = right;
-    signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
-        
-        
-    itimerval timer;
-    timer.it_interval.tv_usec = stepIntervalUs;      
-    timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = stepIntervalUs;
-    timer.it_value.tv_sec = 0;
-    setitimer(ITIMER_REAL, &timer, NULL);
-    
-    m_fKeepSweeping=true;
-
-    thread t2([](Stepper* pStepper){
-        int dir = 1;
-        while(1){
-            pStepper->step(dir);
-
-            if(pStepper->getPosition() == pStepper->getRightSweepLimit())  dir = -1;
-            else if(pStepper->getPosition() == pStepper->getLeftSweepLimit())  dir = 1;
-    
-            while(fWaitForTick.test_and_set()) usleep(2);
-            
-            if(!pStepper->isKeepSweeping() &&  pStepper->getPosition() == pStepper->getTargetAngle()){
-                pStepper->setKeepSweeping(true);
-                break;
-            }
-            
-        }
-    }, this);
-    t2.detach();
-}
-void Stepper::stopSweeping(int atAngle){
-    m_nTargetAngle = atAngle;
-    m_fKeepSweeping = false; 
-    while(!m_fKeepSweeping){
-        usleep(2);
-    }
-
+    return m_nPosition;
 }

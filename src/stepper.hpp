@@ -8,21 +8,10 @@ class Stepper{
     public:
         Stepper();
         ~Stepper();
-        void step(int dir);
-        void startSweeping(int left, int right, int stepIntevalUs);
-        void stopSweeping(int atAngle);
-        int getDirection();
+        int step(int dir);
+        inline int getDirection(){return (m_lineDir.get_value() == 1)? 1 : -1;}
         inline int getPosition(){return m_nPosition;}
-        inline int getLeftSweepLimit(){return m_nLeftSweepLimit;}
-        inline int getRightSweepLimit(){return m_nRightSweepLimit;}
-        inline bool isKeepSweeping(){return m_fKeepSweeping;}
-        inline void setKeepSweeping(bool val){m_fKeepSweeping = val;}
-        inline int getTargetAngle(){return m_nTargetAngle;}
-    private:
         int m_nPosition;
-        int m_nLeftSweepLimit;
-        int m_nRightSweepLimit;
-        int m_nTargetAngle;
         gpiod::line m_lineEnable;
         gpiod::line m_lineM0;
         gpiod::line m_lineM1;
@@ -31,6 +20,6 @@ class Stepper{
         gpiod::line m_lineSleep;
         gpiod::line m_lineStep;
         gpiod::line m_lineDir;
-        bool m_fKeepSweeping;
+
 };
 #endif
