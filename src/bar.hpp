@@ -13,7 +13,6 @@ class Bar{
         void setPixel(int i, ws2811_led_t val);
         void render(ws2811_t *ledString);
     private:
-        // vector<ws2811_led_t> m_pixels;
         ws2811_led_t m_pixels[LED_STRING_PIXELS];
 };
 #endif

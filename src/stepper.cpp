@@ -36,10 +36,10 @@ Stepper::Stepper(){
     m_lineEnable.set_value(0);
     m_lineReset.set_value(1);
     
-    // 1/16 step
-    m_lineM0.set_value(0);
-    m_lineM1.set_value(0);
-    m_lineM2.set_value(1);
+    // 1/8 step
+    m_lineM0.set_value(1);
+    m_lineM1.set_value(1);
+    m_lineM2.set_value(0);
 
 }
 
