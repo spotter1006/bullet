@@ -24,8 +24,6 @@ Polar::Polar(){
     m_ledstring.channel[1].strip_type = 0;
     m_ledstring.channel[1].brightness = 0;
     ws2811_init(&m_ledstring);
-
-
 }
 Polar::~Polar(){
     ws2811_fini(&m_ledstring);
@@ -50,6 +48,7 @@ void Polar::start(){
     thread T1([](Polar *pPolar){
         int frameIndex = 0;
         Frame frame = pPolar->getFrame(frameIndex);
+        pPolar->setKeepRunning(true);
         while(1){
             int step =pPolar->waitForNextStep();
             Bar bar = frame.getBar(step);
