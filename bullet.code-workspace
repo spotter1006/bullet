@@ -15,7 +15,16 @@
             "unordered_map": "cpp",
             "vector": "cpp",
             "system_error": "cpp",
-            "new": "cpp"
+            "new": "cpp",
+            "optional": "cpp",
+            "istream": "cpp",
+            "ostream": "cpp",
+            "ratio": "cpp",
+            "array": "cpp",
+            "functional": "cpp",
+            "tuple": "cpp",
+            "type_traits": "cpp",
+            "utility": "cpp"
         }
     }
 }

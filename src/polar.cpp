@@ -32,14 +32,12 @@ Polar::Polar(){
     for( int i = 0; i < ANIMATION_FRAMES; i++){
         m_frames[i].setBar(MOTOR_SWEEP_STEPS/2, solidGreenBar);
     } 
-
 }
 Polar::~Polar(){
     ws2811_fini(&m_ledstring);
 }
 atomic_flag fWaitForTick;   
 void Polar::start(int left, int right, int stepIntervalUs){
-
     m_nLeftSweepLimit = left;
     m_nRightSweepLimit = right;
 
