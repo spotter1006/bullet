@@ -3,7 +3,9 @@
 
 #include "graphicElement.hpp"
 class Ray: public GraphicElement{
-    Ray(int radius, int startStep,  int sweepSteps) : GraphicElement(radius, startStep, sweepSteps){ };
+    public:
+        Ray(int radius, int startStep,  int sweepSteps);
+    private:
 
 };
 
