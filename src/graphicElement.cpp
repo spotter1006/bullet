@@ -9,6 +9,7 @@ GraphicElement::GraphicElement(int radius, int startStep,  int sweepSteps){
     m_nRadius = radius;
     m_nSweepSteps = sweepSteps;
     m_nStartStep = startStep;
+    m_pattern = vector<ws2811_led_t>();
 }
 
 GraphicElement::~GraphicElement(){

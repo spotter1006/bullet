@@ -5,6 +5,7 @@
 #include <ws2811/ws2811.h>
 #include "defines.hpp"
 #include "frame.hpp"
+#include <vector>
 
 using namespace std;
 
@@ -18,11 +19,12 @@ class GraphicElement{
         GraphicElement();
         GraphicElement(int radius, int startStep,  int sweepSteps);
         ~GraphicElement();
+        inline void setPattern(vector<ws2811_led_t> &pattern){m_pattern = pattern;}
         virtual void render(int step, Frame &frame);
     protected:
         int m_nRadius;
         int m_nStartStep;
         int m_nSweepSteps;
-        ws2811_led_t m_barPattern[LED_STRING_PIXELS];
+        vector<ws2811_led_t> m_pattern;
 };
 #endif
