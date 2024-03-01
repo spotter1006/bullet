@@ -11,13 +11,13 @@ class Polar{
     public:
         Polar();
         ~Polar();
+
         void start(int left, int right, int stepIntervalUs);
         void stop();
 
         inline ws2811_t* getLedString(){return &m_ledstring;}
-        inline bool isKeepRunning(){return m_fKeepSweeping;}
+        inline bool isKeepSweeping(){return m_fKeepSweeping;}
         inline void setKeepSweeping(bool val){m_fKeepSweeping=val;}
-
         inline int getLeftSweepLimit(){return m_nLeftSweepLimit;}
         inline int getRightSweepLimit(){return m_nRightSweepLimit;}
         inline int step(int dir){return m_stepper.step(dir);}
@@ -31,6 +31,7 @@ class Polar{
         bool m_fKeepSweeping;
         int m_nLeftSweepLimit;
         int m_nRightSweepLimit;
+
         vector<thread> m_threads;
 };
 #endif

@@ -10,10 +10,9 @@ class GraphicEngine{
     public:
         GraphicEngine(int nFrames, int bars, int pixels);
         ~GraphicEngine();
-        vector<Frame>& render();
-        inline void addElement(GraphicElement element){m_elements.push_back(element);}
-        
-        
+
+        void addElement(GraphicElement element);
+        void render(int step, Frame& frame);       
     private:
         vector<GraphicElement> m_elements;      // Inputs to engine
         vector<Frame> m_frames;                 // Output of engine

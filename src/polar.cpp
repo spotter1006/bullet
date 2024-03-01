@@ -46,21 +46,19 @@ void Polar::start(int left, int right, int stepIntervalUs){
     m_threads.emplace_back(thread([](Polar *pPolar){        //Motion thread
         pPolar->setKeepSweeping(true);
         int dir = 1;
-        while(pPolar->isKeepRunning()){
-            while(fWaitForTick.test_and_set()){
-                usleep(2);
-            };
+        while(pPolar->isKeepSweeping()){
+            while(fWaitForTick.test_and_set()) usleep(2);
             int step = pPolar->step(dir);
             if(step == pPolar->getRightSweepLimit())  dir = -1;
             else if(step == pPolar->getLeftSweepLimit())  dir = 1;
         }
     },this));    
     m_threads.emplace_back(thread([](Polar *pPolar){        // LED thread     
-        while(pPolar->isKeepRunning()){
-            usleep(2);
+        while(pPolar->isKeepSweeping()){
             Bar bar;
             pPolar->getBar(pPolar->getStep(), bar);
             bar.render(pPolar->getLedString());
+            usleep(2);
         }
     },this));
 }

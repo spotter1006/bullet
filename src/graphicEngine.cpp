@@ -9,14 +9,11 @@ GraphicEngine::GraphicEngine(int frames, int bars, int pixels){
 GraphicEngine::~GraphicEngine(){
     m_frames.clear();
 }
-
-vector<Frame>& GraphicEngine::render(){
-    int i = 0;
-    for(Frame &frame : m_frames){
-        for(GraphicElement el : m_elements){
-            el.render(i, frame);
-        }
-        i++;
+void GraphicEngine::addElement(GraphicElement element){
+    m_elements.push_back(element);
+}
+void GraphicEngine::render(int step, Frame &frame){
+    for(GraphicElement el : m_elements){
+        el.render(step, frame);
     }
-    return m_frames;
 }
