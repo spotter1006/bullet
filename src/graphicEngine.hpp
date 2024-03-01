@@ -14,12 +14,14 @@ class GraphicEngine{
         void start(int intervalUs);
         void stop();
         void addElement(GraphicElement element);
-        void render(int step, Frame& frame); 
-        inline bool isKeepRunning(){return m_fKeepRunning;}      
+        void render(int timeUs, Frame& frame); 
+        inline bool isKeepRunning(){return m_fKeepRunning;}   
+
     private:
         vector<GraphicElement> m_elements;      
         bool m_fKeepRunning;
         thread m_thread;
+
 };
 
 #endif

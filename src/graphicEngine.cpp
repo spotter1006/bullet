@@ -4,11 +4,11 @@
 #include <unistd.h>
 #include <signal.h>
 
-
 using namespace std;
 
 GraphicEngine::GraphicEngine(int frames, int bars, int pixels){
     m_fKeepRunning = true;
+
 }
 GraphicEngine::~GraphicEngine(){
 
@@ -16,9 +16,9 @@ GraphicEngine::~GraphicEngine(){
 void GraphicEngine::addElement(GraphicElement element){
     m_elements.push_back(element);
 }
-void GraphicEngine::render(int step, Frame &frame){
+void GraphicEngine::render(int timeUs, Frame &frame){
     for(GraphicElement el : m_elements){
-        el.render(step, frame);
+        el.render(timeUs, frame);
     }
 }
 atomic_flag fWait;
@@ -32,10 +32,10 @@ void GraphicEngine::start(int intervalUs){
     setitimer(ITIMER_REAL, &timer, NULL);
 
     m_thread = thread([](GraphicEngine *pGraphicEngine){
+        int timeUs = 0;
         while(pGraphicEngine->isKeepRunning()){
-            while(fWait.test_and_set()){usleep(2);}
-            // render for tick
-            // set frame in target
+            while(fWait.test_and_set()){usleep(2);}     // Wait for interval
+            //  pGraphicEngine->render(timeUs, frame);
         }
         
     },this);
