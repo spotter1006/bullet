@@ -66,6 +66,7 @@ void Polar::start(int left, int right, int stepIntervalUs){
     m_threads.emplace_back(thread([](Polar *pPolar){        // LED thread
         int step = 0;
         int frameIndex = 0;
+        
         while(pPolar->isKeepRunning()){
             usleep(2);
             step = pPolar->getStep();
