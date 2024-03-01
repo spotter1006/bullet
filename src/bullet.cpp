@@ -25,6 +25,8 @@ int Bullet::start(int argc, char *argv[]){
     m_graphicEngine.addElement(greenRay);
 
     m_polar.start(0, MOTOR_SWEEP_STEPS - 1, MOTOR_STEP_INTERVAL_US);
+    // TODO: get frame reference from polar to graphics engine
+    m_graphicEngine.start(AMIMATION_INTERVAL_US);
 
     // ****
 
@@ -42,7 +44,7 @@ int Bullet::start(int argc, char *argv[]){
             cout << "q - quit bullet" << endl;
         }
     }
-
+    m_graphicEngine.stop();
     m_polar.stop();
     return 0;
 }

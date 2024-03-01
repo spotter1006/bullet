@@ -17,30 +17,28 @@ void GraphicEngine::addElement(GraphicElement element){
     m_elements.push_back(element);
 }
 void GraphicEngine::render(int timeUs, Frame &frame){
-    for(GraphicElement el : m_elements){
-        el.render(timeUs, frame);
+    for(GraphicElement element : m_elements){
+        element.render(timeUs, frame);
     }
 }
-atomic_flag fWait;
-void GraphicEngine::start(int intervalUs){
-    signal(SIGALRM, [](int signo){fWait.clear();});   
-    itimerval timer;
-    timer.it_interval.tv_usec = intervalUs;      
-    timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = intervalUs;
-    timer.it_value.tv_sec = 0;
-    setitimer(ITIMER_REAL, &timer, NULL);
 
-    m_thread = thread([](GraphicEngine *pGraphicEngine){
+void GraphicEngine::start(int intervalUs){
+
+    m_fKeepRunning = true;
+
+    m_threads.emplace_back(thread([](GraphicEngine *pGraphicEngine){
         int timeUs = 0;
         while(pGraphicEngine->isKeepRunning()){
-            while(fWait.test_and_set()){usleep(2);}     // Wait for interval
-            //  pGraphicEngine->render(timeUs, frame);
+            // while(fWait.test_and_set()) usleep(2);     // Wait for interval
+            // pGraphicEngine->render(timeUs, frame);
+            usleep(200);
         }
-        
-    },this);
+    
+    },this));
 }
 void GraphicEngine::stop(){
     m_fKeepRunning = false;
-    m_thread.join();
+    for(auto& th : m_threads){
+        th.join();
+    }
 }
