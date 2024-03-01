@@ -30,11 +30,11 @@ sudo ~/swprojects/bullet/build/release/bullet
 
 
 ## Graphics 
-
+A graphics engine renders frames for animations to be displayed on the polar display. A collection of graphics elements are superimposed on the frames and animation effects can be applied to them. 
 - GraphicElement class - reperesents graphics promatives that can be added to frames for rendering in animations. Sub classes:
-    - Ray - Represents a line extending from the motor axis to the outer edge of the display
-    - Arc - Represents a  segment of a circle around the periphery of the display
-    - Wedge - Represents the area enclosed by two rays at different step angle and the arc that connects their outer ends
+    - Ray class - Represents a line extending from the motor axis to the outer edge of the display
+    - Arc class - Represents a  segment of a circle around the periphery of the display
+    - Wedge class - Represents the area enclosed by two rays at different step angle and the arc that connects their outer ends
 
 - Polar class - Represents the polar chart display 
     - Stepper class - interfaces to a DRV8825 stepper motor driver to spin the polar axis

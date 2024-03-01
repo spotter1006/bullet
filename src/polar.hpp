@@ -5,7 +5,7 @@
 #include <ws2811/ws2811.h>
 #include "frame.hpp"
 #include <vector>
-#include<thread>
+#include <thread>
 
 class Polar{
     public:
@@ -17,16 +17,17 @@ class Polar{
         inline ws2811_t* getLedString(){return &m_ledstring;}
         inline bool isKeepRunning(){return m_fKeepSweeping;}
         inline void setKeepSweeping(bool val){m_fKeepSweeping=val;}
-        inline int getFrameCount(){return m_frames.size();}
+
         inline int getLeftSweepLimit(){return m_nLeftSweepLimit;}
         inline int getRightSweepLimit(){return m_nRightSweepLimit;}
         inline int step(int dir){return m_stepper.step(dir);}
         inline int getStep(){return m_stepper.getPosition();}
-        Frame getFrame(int step){return m_frames[step];}
+        inline void getBar(int step, Bar& bar){return m_frame.getBar(step, bar);}
+
     private:
         Stepper m_stepper;
         ws2811_t m_ledstring;
-        vector<Frame> m_frames;
+        Frame m_frame;
         bool m_fKeepSweeping;
         int m_nLeftSweepLimit;
         int m_nRightSweepLimit;

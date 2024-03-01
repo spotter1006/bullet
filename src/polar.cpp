@@ -24,14 +24,7 @@ Polar::Polar(){
     m_ledstring.channel[1].strip_type = 0;
     m_ledstring.channel[1].brightness = 0;
     ws2811_init(&m_ledstring);
-    Frame frame = Frame(MOTOR_SWEEP_STEPS);
-    m_frames = vector<Frame>(ANIMATION_FRAMES, frame);
-
-// *** Test: single green stationary bar in the middle of a sweep from 0 to max motor sweep angle
-    Bar solidGreenBar(10, GREEN);
-    for( int i = 0; i < ANIMATION_FRAMES; i++){
-        m_frames[i].setBar(MOTOR_SWEEP_STEPS/2, solidGreenBar);
-    } 
+    m_frame = Frame(MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
 }
 Polar::~Polar(){
     ws2811_fini(&m_ledstring);
@@ -51,7 +44,6 @@ void Polar::start(int left, int right, int stepIntervalUs){
     
     m_fKeepSweeping = true;   
     m_threads.emplace_back(thread([](Polar *pPolar){        //Motion thread
-        Frame frame = pPolar->getFrame(0);
         pPolar->setKeepSweeping(true);
         int dir = 1;
         while(pPolar->isKeepRunning()){
@@ -63,18 +55,12 @@ void Polar::start(int left, int right, int stepIntervalUs){
             else if(step == pPolar->getLeftSweepLimit())  dir = 1;
         }
     },this));    
-    m_threads.emplace_back(thread([](Polar *pPolar){        // LED thread
-        int step = 0;
-        int frameIndex = 0;
-        
+    m_threads.emplace_back(thread([](Polar *pPolar){        // LED thread     
         while(pPolar->isKeepRunning()){
             usleep(2);
-            step = pPolar->getStep();
-            Frame frame = pPolar->getFrame(frameIndex);
-            Bar bar = frame.getBar(step);
+            Bar bar;
+            pPolar->getBar(pPolar->getStep(), bar);
             bar.render(pPolar->getLedString());
-            if(step == pPolar->getLeftSweepLimit()) frameIndex++;
-            if(frameIndex == pPolar->getFrameCount()) frameIndex = 0;
         }
     },this));
 }

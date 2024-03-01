@@ -2,17 +2,19 @@
 #define _FRAME_H_
 #include "bar.hpp"
 #include <vector>
+#include <mutex>
 
 using namespace std;
 
 class Frame{
     public:
-        Frame(int nBars);
+        Frame();
+        Frame(int nBars, int pixels);
         ~Frame();
         void setBar(int step, Bar bar);
-        Bar getBar(int step);
+        void getBar(int step, Bar& bar);
     private:
         vector<Bar> m_bars;           // index is step angle
-
+  
 };
 #endif

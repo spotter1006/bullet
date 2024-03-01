@@ -1,16 +1,19 @@
 #include "graphicElement.hpp"
+#include "frame.hpp"
 
 GraphicElement::GraphicElement(){
-    m_nRadius = 0;
-    m_nSweepAngle = 0;
+    GraphicElement(0, 0,  0);
 }
 
-GraphicElement::GraphicElement(int radius, int sweepAngle){
-
+GraphicElement::GraphicElement(int radius, int startStep,  int sweepSteps){
     m_nRadius = radius;
-    m_nSweepAngle = sweepAngle;
+    m_nSweepSteps = sweepSteps;
+    m_nStartStep = startStep;
 }
 
 GraphicElement::~GraphicElement(){
     
+}
+void GraphicElement::render(int step, Frame &frame){
+    // Override me
 }
