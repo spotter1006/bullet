@@ -2,9 +2,13 @@
 #define _RAY_H_
 
 #include "graphicElement.hpp"
+
 class Ray: public GraphicElement{
     public:
-        Ray(int radius, int startStep,  int sweepSteps);
+        Ray(int radius, int startStep,  int sweepSteps): GraphicElement( radius, startStep, sweepSteps)
+        {
+
+        };
     private:
 
 };

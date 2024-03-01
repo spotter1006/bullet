@@ -14,12 +14,14 @@ Bullet::~Bullet(){
 
 }
 
-int Bullet::main(int argc, char *argv[]){
+int Bullet::start(int argc, char *argv[]){
     cout << "Bullet bubble running" << endl;
 
     // *** TEST code
     m_polar.start(0, MOTOR_SWEEP_STEPS - 1, MOTOR_STEP_INTERVAL_US);
+    
     Ray greenRay(LED_STRING_PIXELS, 0,  1);
+    
     m_graphicEngine.addElement(greenRay);
     // ****
 
@@ -42,5 +44,5 @@ int Bullet::main(int argc, char *argv[]){
     return 0;
 }
 void Bullet::stop(int sigNum){
-    m_fStop = true;
+    if(sigNum == SIGINT) m_fStop = true;
 }

@@ -4,7 +4,9 @@
 #include "graphicElement.hpp"
 class Arc: public GraphicElement{
     public:
-        Arc(int radius, int startStep,  int sweepSteps) : GraphicElement(radius, startStep, sweepSteps){};
+        Arc(int radius, int startStep,  int sweepSteps) : GraphicElement(radius, startStep, sweepSteps){
+            
+        };
     private:
 };
 #endif
