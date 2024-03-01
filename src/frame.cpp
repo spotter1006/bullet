@@ -10,6 +10,9 @@ Frame::Frame(int nBars, int pixels){
     Bar initBar = Bar(pixels, 0);
     m_bars = vector<Bar>(nBars, initBar);
 }
+Frame::Frame(const Frame &other){
+    m_bars = other.m_bars;
+}
 Frame::~Frame(){
     m_bars.erase(m_bars.begin(), m_bars.end());
 }

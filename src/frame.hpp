@@ -10,6 +10,7 @@ class Frame{
     public:
         Frame();
         Frame(int nBars, int pixels);
+        Frame(const Frame &other);
         ~Frame();
         void setBar(int step, Bar bar);
         void getBar(int step, Bar& bar);
