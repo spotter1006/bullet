@@ -10,33 +10,23 @@
 #include "ray.hpp"
 using namespace std;
 
-atomic_flag flagKeepRunning;
-void sigHandler(int signum){
-    flagKeepRunning.clear();
-}
-
 Bullet::~Bullet(){
 
 }
 
-
 int Bullet::main(int argc, char *argv[]){
-    flagKeepRunning.test_and_set();
     cout << "Bullet bubble running" << endl;
 
-    Polar *pPolar = new Polar();
+    // *** TEST code
     m_polar.start(0, MOTOR_SWEEP_STEPS - 1, MOTOR_STEP_INTERVAL_US);
-   
-    GraphicEngine *pGraphicEngine = new GraphicEngine(1, MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
     Ray greenRay(LED_STRING_PIXELS, 0,  1);
-    
-
-    pGraphicEngine->addElement(greenRay);
+    m_graphicEngine.addElement(greenRay);
+    // ****
 
      // Main loop
     string line;
     cout << "Bullet - 'h' for a list of commands" << endl; 
-    while(flagKeepRunning.test_and_set()){   // Exit on SIGINT
+    while(!m_fStop){   
         getline(cin, line);
         if(line.compare("q") == 0){
             cout << "Quit command recieved, exiting..." << endl;
@@ -48,9 +38,9 @@ int Bullet::main(int argc, char *argv[]){
         }
     }
 
-    pPolar->stop();
-
-    delete pPolar;
-    delete pGraphicEngine;
+    m_polar.stop();
     return 0;
+}
+void Bullet::stop(int sigNum){
+    m_fStop = true;
 }
