@@ -13,14 +13,6 @@ GraphicEngine::GraphicEngine(int frames, int bars, int pixels){
 GraphicEngine::~GraphicEngine(){
 
 }
-void GraphicEngine::addElement(GraphicElement element){
-    m_elements.push_back(element);
-}
-void GraphicEngine::render(int timeInterval){
-    for(GraphicElement element : m_elements){
-        element.render(timeInterval);
-    }
-}
 
 void GraphicEngine::start(){
     m_fKeepRunning = true;
@@ -28,7 +20,7 @@ void GraphicEngine::start(){
         int timeInterval = 0;
         while(pGraphicEngine->isKeepRunning()){
             auto wake = chrono::steady_clock::now() + chrono::milliseconds(AMIMATION_INTERVAL_MS); 
-            pGraphicEngine->render(timeInterval);
+            // TODO: put the frame in the polar display
             this_thread::sleep_until(wake);
         }  
     },this));

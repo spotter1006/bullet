@@ -15,7 +15,8 @@
 				"-L/usr/local/lib",
 				"-l:libu8g2arm.a",	// Display library	(SPI)
 				"-lgpiodcxx",		// for GPIO access. This has to be after the object file creation step or symbols are not found
-				"-l:libws2811.a"
+				"-l:libws2811.a",
+				"-I/home/pi/swprojects/histogram/include/boost/**"
 			],
 			"options": {
 				"cwd": "${fileDirname}"

@@ -49,3 +49,4 @@ A graphics engine renders frames for animations to be displayed on the polar dis
 
 ## Matrix Display
 
+/usr/bin/g++ -pthread -fdiagnostics-color=always -g /home/pi/swprojects/bullet/src/*.c* -o /home/pi/swprojects/bullet/build/debug/bullet -L/usr/local/lib -l:libu8g2arm.a -lgpiodcxx -l:libws2811.a -I/home/pi/swprojects/histogram/include/boost -I/home/pi/swprojects/histogram/include -I/home/pi/swprojects/histogram/build/_deps/boostorg_core-src/include -I/home/pi/swprojects/histogram/build/_deps/boostorg_variant2-src/include -I/home/pi/swprojects/histogram/build/_deps/boostorg_assert-src/include

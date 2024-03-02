@@ -6,14 +6,13 @@
 class Bullet{
     public:
         Bullet(int frames, int bars, int pixels) : m_graphicEngine(frames, bars, pixels){m_fStop = false;}
-        ~Bullet();
         int start(int argc, char *argv[]);
         void stop(int sigNum);
     private:
         Polar m_polar;
         GraphicEngine m_graphicEngine;
         bool m_fStop;
-
+        void terminal();
 };
 
 #endif
