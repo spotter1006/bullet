@@ -11,7 +11,7 @@ class GraphicEngine{
     public:
         GraphicEngine(int nFrames, int bars, int pixels);
         ~GraphicEngine();
-        void start(int intervalUs);
+        void start();
         void stop();
         void addElement(GraphicElement element);
         void render(int timeUs); 

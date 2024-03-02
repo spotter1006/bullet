@@ -16,24 +16,21 @@ GraphicEngine::~GraphicEngine(){
 void GraphicEngine::addElement(GraphicElement element){
     m_elements.push_back(element);
 }
-void GraphicEngine::render(int timeUs){
+void GraphicEngine::render(int timeInterval){
     for(GraphicElement element : m_elements){
-        element.render(timeUs);
+        element.render(timeInterval);
     }
 }
 
-void GraphicEngine::start(int intervalUs){
-
+void GraphicEngine::start(){
     m_fKeepRunning = true;
-
     m_threads.emplace_back(thread([](GraphicEngine *pGraphicEngine){
-        int timeUs = 0;
+        int timeInterval = 0;
         while(pGraphicEngine->isKeepRunning()){
-            // while(fWait.test_and_set()) usleep(2);     // Wait for interval
-            // pGraphicEngine->render(timeUs, frame);
-            usleep(200);
-        }
-    
+            auto wake = chrono::steady_clock::now() + chrono::microseconds(AMIMATION_INTERVAL_US); 
+            pGraphicEngine->render(timeInterval);
+            this_thread::sleep_until(wake);
+        }  
     },this));
 }
 void GraphicEngine::stop(){

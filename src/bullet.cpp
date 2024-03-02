@@ -28,7 +28,7 @@ int Bullet::start(int argc, char *argv[]){
     m_graphicEngine.addElement(greenRay);
 
     m_polar.start(0, MOTOR_SWEEP_STEPS - 1, MOTOR_STEP_INTERVAL_US);
-    m_graphicEngine.start(AMIMATION_INTERVAL_US);
+    m_graphicEngine.start();
     // ****
 
      // Main loop
