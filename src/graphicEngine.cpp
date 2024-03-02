@@ -27,7 +27,7 @@ void GraphicEngine::start(){
     m_threads.emplace_back(thread([](GraphicEngine *pGraphicEngine){
         int timeInterval = 0;
         while(pGraphicEngine->isKeepRunning()){
-            auto wake = chrono::steady_clock::now() + chrono::microseconds(AMIMATION_INTERVAL_US); 
+            auto wake = chrono::steady_clock::now() + chrono::milliseconds(AMIMATION_INTERVAL_MS); 
             pGraphicEngine->render(timeInterval);
             this_thread::sleep_until(wake);
         }  
