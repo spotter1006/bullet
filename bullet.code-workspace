@@ -2,9 +2,6 @@
     "folders": [
         {
             "path": "."
-        },
-        {
-            "path": "/home/pi/swprojects/histogram"
         }
     ],
     "settings": {
@@ -60,7 +57,10 @@
             "streambuf": "cpp",
             "typeinfo": "cpp",
             "condition_variable": "cpp",
-            "mutex": "cpp"
+            "mutex": "cpp",
+            "*.ipp": "cpp",
+            "regex": "cpp",
+            "variant": "cpp"
         }
     }
 }

@@ -57,7 +57,7 @@ void Polar::start(int left, int right, int stepIntervalUs){
         while(pPolar->isKeepSweeping()){
             Bar bar;
             pPolar->getBar(pPolar->getStep(), bar);
-            bar.render(pPolar->getLedString());
+            bar.display(pPolar->getLedString());
             usleep(2);
         }
     },this));

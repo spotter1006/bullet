@@ -6,9 +6,14 @@
 Bar::Bar(){
     Bar(LED_STRING_PIXELS, 0);
 }
+Bar::Bar(vector<ws2811_led_t> &pixels){
+    for(int i = 0; i < m_nPixels; i++){
+        m_pixels[i] = pixels[i];
+    }
+}
 Bar::Bar(int pixels, ws2811_led_t value){
     m_nPixels = pixels;
-    for(int i = 0; i < pixels; i++){
+    for(int i = 0; i < m_nPixels; i++){
         m_pixels[i] = value;
     }
 }
@@ -18,7 +23,7 @@ void Bar::clear(){
     }
 }
 void Bar::fill(ws2811_led_t value){
-     for(int i = 0; i < LED_STRING_PIXELS; i++){
+     for(int i = 0; i < m_nPixels; i++){
         m_pixels[i] = value;
     }
 }
@@ -26,7 +31,7 @@ void Bar::setPixel(int i, ws2811_led_t val){
     m_pixels[i] = val;
 }
 
-void Bar::render(ws2811_t *ledString){
+void Bar::display(ws2811_t *ledString){
     memcpy(ledString->channel[0].leds, m_pixels, 10 * sizeof(ws2811_led_t));  
     ws2811_render(ledString);
 }
