@@ -14,6 +14,7 @@ class Frame{
         ~Frame();
         void setBar(int step, Bar bar);
         void getBar(int step, Bar& bar);
+        void setPixel(int step, int rdius, ws2811_led_t value);
     private:
         vector<Bar> m_bars;           // index is step angle
   

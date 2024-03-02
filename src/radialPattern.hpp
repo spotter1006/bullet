@@ -4,7 +4,7 @@
 class RadialPattern : public Pattern{
     public:
         RadialPattern(int min, int max) : Pattern(min,max){};
-        void render(int step, Frame *frame);
+        void paint(int step, Frame *frame);
     private:
 };
 #endif

@@ -1,9 +1,10 @@
 #include "axialPattern.hpp"
 
-void AxialPattern::render(int step, Frame *frame){
+void AxialPattern::paint(int step, Frame *frame){
+    ws2811_led_t pixel  = m_pixels[step];
+    Bar bar = Bar();
+    bar.setPixel(m_nRadius, pixel);
     if(m_nMin < step && step <= m_nMax){
-
-    }else{
-
+        frame->setPixel(step, m_nRadius, pixel);
     }
 }
