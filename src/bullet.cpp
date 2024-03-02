@@ -15,19 +15,20 @@ Bullet::~Bullet(){
 }
 
 int Bullet::start(int argc, char *argv[]){
-    cout << "Bullet bubble running" << endl;
+
+    // Frame buffer shared between graphics engine and polar display
+    Frame *pFrame = new Frame(MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
+    m_graphicEngine.setFrame(pFrame);
+    m_polar.setFrame(pFrame);
 
     // *** TEST code
-   
     Ray greenRay(LED_STRING_PIXELS, 0,  1);
     auto init = vector<ws2811_led_t>(10, GREEN);
     greenRay.setPattern(init);
     m_graphicEngine.addElement(greenRay);
 
     m_polar.start(0, MOTOR_SWEEP_STEPS - 1, MOTOR_STEP_INTERVAL_US);
-    // TODO: get frame reference from polar to graphics engine
     m_graphicEngine.start(AMIMATION_INTERVAL_US);
-
     // ****
 
      // Main loop

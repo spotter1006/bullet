@@ -8,7 +8,7 @@ using namespace std;
 
 GraphicEngine::GraphicEngine(int frames, int bars, int pixels){
     m_fKeepRunning = true;
-
+    m_pFrame = NULL;
 }
 GraphicEngine::~GraphicEngine(){
 
@@ -16,9 +16,9 @@ GraphicEngine::~GraphicEngine(){
 void GraphicEngine::addElement(GraphicElement element){
     m_elements.push_back(element);
 }
-void GraphicEngine::render(int timeUs, Frame &frame){
+void GraphicEngine::render(int timeUs){
     for(GraphicElement element : m_elements){
-        element.render(timeUs, frame);
+        element.render(timeUs);
     }
 }
 

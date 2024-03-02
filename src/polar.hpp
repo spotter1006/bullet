@@ -22,12 +22,13 @@ class Polar{
         inline int getRightSweepLimit(){return m_nRightSweepLimit;}
         inline int step(int dir){return m_stepper.step(dir);}
         inline int getStep(){return m_stepper.getPosition();}
-        inline void getBar(int step, Bar& bar){return m_frame.getBar(step, bar);}
+        inline void getBar(int step, Bar& bar){return m_pFrame->getBar(step, bar);}
+        inline void setFrame(Frame* pFrame){m_pFrame = pFrame;}
 
     private:
         Stepper m_stepper;
         ws2811_t m_ledstring;
-        Frame m_frame;
+        Frame *m_pFrame;
         bool m_fKeepSweeping;
         int m_nLeftSweepLimit;
         int m_nRightSweepLimit;

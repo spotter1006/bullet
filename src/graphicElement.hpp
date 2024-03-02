@@ -20,7 +20,7 @@ class GraphicElement{
         GraphicElement(int radius, int startStep,  int sweepSteps);
         ~GraphicElement();
         inline void setPattern(vector<ws2811_led_t> &pattern){m_pattern = pattern;}
-        virtual void render(int step, Frame &frame);
+        virtual void render(int timeUs);
     protected:
         int m_nRadius;
         int m_nStartStep;

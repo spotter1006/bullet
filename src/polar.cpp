@@ -24,7 +24,7 @@ Polar::Polar(){
     m_ledstring.channel[1].strip_type = 0;
     m_ledstring.channel[1].brightness = 0;
     ws2811_init(&m_ledstring);
-    m_frame = Frame(MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
+    m_pFrame = NULL;    
 }
 Polar::~Polar(){
     ws2811_fini(&m_ledstring);

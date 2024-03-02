@@ -15,6 +15,6 @@ GraphicElement::GraphicElement(int radius, int startStep,  int sweepSteps){
 GraphicElement::~GraphicElement(){
     
 }
-void GraphicElement::render(int step, Frame &frame){
+void GraphicElement::render(int step){
     // Override me
 }
