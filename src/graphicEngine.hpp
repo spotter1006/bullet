@@ -12,7 +12,11 @@ using namespace std;
 
 class GraphicEngine{
     public:
-        GraphicEngine(Frame* pFrame, Polar &polarDisplay);
+        GraphicEngine(Frame* pFrame, Polar &polarDisplay):
+            m_speedPattern(polarDisplay.getLeftSweepLimit(), polarDisplay.getRightSweepLimit(), polarDisplay.getRadius()),
+            m_directionPattern(polarDisplay.getLeftSweepLimit(), polarDisplay.getRightSweepLimit(), polarDisplay.getRadius()),
+            m_fKeepRunning(true),
+            m_pFrame(pFrame){};
         void start();
         void stop();
         void paint();

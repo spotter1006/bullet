@@ -17,6 +17,7 @@ Bar::Bar(int pixels, ws2811_led_t value){
         m_pixels[i] = value;
     }
 }
+
 void Bar::clear(){
     for(int i = 0; i < m_nPixels; i++){
         m_pixels[i] = BLACK;
