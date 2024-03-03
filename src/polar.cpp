@@ -33,10 +33,10 @@ Polar::Polar(int left, int right, int radius, Frame* pFrame){
 
     signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
     itimerval timer;
-    timer.it_interval.tv_usec = MOTOR_STEP_INTERVAL_US;      
-    timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;
-    timer.it_value.tv_sec = 0;
+    timer.it_interval.tv_usec = timer.it_value.tv_usec =MOTOR_STEP_INTERVAL_US;      
+    timer.it_interval.tv_sec = timer.it_value.tv_sec = 0;
+    // timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;
+    // timer.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
     m_fKeepSweeping = true;
 }
