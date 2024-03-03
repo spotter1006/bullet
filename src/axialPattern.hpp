@@ -3,9 +3,9 @@
 #include "pattern.hpp"
 class AxialPattern : public Pattern {
     public:
-        AxialPattern(int min, int max, int radius) : Pattern(min, max){m_nRadius = radius;};
-        void paint(Frame *frame);
+        AxialPattern(int min, int max, int radius) : Pattern(min, max, radius){}
+        void paint(Frame *frame) override;
     protected:
-        int m_nRadius;
+        
 };
 #endif

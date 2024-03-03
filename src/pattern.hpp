@@ -6,16 +6,19 @@
 using namespace std;
 class Pattern{
     public:
-        Pattern(int min, int max) : m_pixels(max-min, 0){
-            m_nMin = min;
-            m_nMax = max;
-        }
+        Pattern(int min, int max, int radius) : 
+        m_pixels(max-min, 0),
+        m_nMin(min),
+        m_nMax(max),
+        m_nRadius(radius){};
+        
         inline void setPattern(vector<ws2811_led_t> pattern){m_pixels = pattern;}
-        virtual void paint(Frame *frame);
+        virtual void paint(Frame *frame){};
 
     protected:
         vector<ws2811_led_t> m_pixels;
         int m_nMin;
         int m_nMax;
+        int m_nRadius;
 };
 #endif

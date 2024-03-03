@@ -3,7 +3,9 @@
 #include <vector>
 #include "frame.hpp"
 #include <thread>
-#include "pattern.hpp"
+#include "axialPattern.hpp"
+#include "radialPattern.hpp"
+
 #include "polar.hpp"
 
 using namespace std;
@@ -18,7 +20,8 @@ class GraphicEngine{
         inline void setFrame(Frame *pFrame){m_pFrame = pFrame;}
 
     private:
-        vector<Pattern> m_patterns;
+        AxialPattern m_directionPattern;
+        RadialPattern m_speedPattern;
         Frame *m_pFrame; 
         bool m_fKeepRunning;
         vector<thread> m_threads;

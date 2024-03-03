@@ -8,14 +8,16 @@
 
 using namespace std;
 
-GraphicEngine::GraphicEngine(Frame* pFrame, Polar &polarDisplay){
+GraphicEngine::GraphicEngine(Frame* pFrame, Polar &polarDisplay):
+    m_speedPattern(polarDisplay.getLeftSweepLimit(), polarDisplay.getRightSweepLimit(), polarDisplay.getRadius()),
+    m_directionPattern(polarDisplay.getLeftSweepLimit(), polarDisplay.getRightSweepLimit(), polarDisplay.getRadius())
+{
     m_fKeepRunning = true;
     m_pFrame = pFrame;
     int min = polarDisplay.getLeftSweepLimit();
     int max = polarDisplay.getRightSweepLimit();
     int nPixels = polarDisplay.getRadius();
-    m_patterns.push_back(AxialPattern(min, max, nPixels));
-    m_patterns.push_back(RadialPattern(0, nPixels));
+
 };
 
 void GraphicEngine::start(){
@@ -36,7 +38,6 @@ void GraphicEngine::stop(){
     }
 }
 void GraphicEngine::paint(){
-    for(Pattern &pattern : m_patterns){
-        pattern.paint(m_pFrame);
-    }
+    m_directionPattern.paint(m_pFrame);
+    m_speedPattern.paint(m_pFrame);
 }

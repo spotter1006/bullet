@@ -3,8 +3,8 @@
 #include "pattern.hpp"
 class RadialPattern : public Pattern{
     public:
-        RadialPattern(int min, int max) : Pattern(min,max){};
-        void paint(Frame *frame);
+        RadialPattern(int min, int max, int radius) : Pattern(min,max,radius){};
+        void paint(Frame *frame) override;
     private:
 };
 #endif
