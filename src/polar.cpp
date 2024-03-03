@@ -10,6 +10,7 @@
 #include <string.h>
 using namespace std;
 
+atomic_flag fWaitForTick;   
 Polar::Polar(int left, int right, int radius, int stepIntervalUs, Frame* pFrame){
     m_nLeftSweepLimit = left;
     m_nRightSweepLimit = right;
@@ -29,12 +30,7 @@ Polar::Polar(int left, int right, int radius, int stepIntervalUs, Frame* pFrame)
     m_ledstring.channel[1].brightness = 0;
     ws2811_init(&m_ledstring);
     m_pFrame = pFrame;    
-}
-Polar::~Polar(){
-    ws2811_fini(&m_ledstring);
-}
-atomic_flag fWaitForTick;   
-void Polar::start(){
+
     signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
     itimerval timer;
     timer.it_interval.tv_usec = MOTOR_STEP_INTERVAL_US;      
@@ -42,8 +38,13 @@ void Polar::start(){
     timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;
     timer.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
-    
-    m_fKeepSweeping = true;   
+    m_fKeepSweeping = true;
+}
+Polar::~Polar(){
+    ws2811_fini(&m_ledstring);
+}
+
+void Polar::start(){
     // The following 2 threads have to run in paralell due to the lengthy render operation in bar.display()
     m_threads.emplace_back(thread([](Polar *pPolar){        //Motor thread
         pPolar->setKeepSweeping(true);
