@@ -9,7 +9,7 @@ using namespace std;
 
 Bullet:: Bullet(int left, int right, int pixels, Frame *pFrame):
     m_polar(left, right, pixels, pFrame),
-     m_graphicEngine(pFrame, m_polar){m_fStop=false;}
+    m_graphicEngine(pFrame, m_polar){m_fStop=false;}
 
 int Bullet::start(int argc, char *argv[]){
     m_polar.start();

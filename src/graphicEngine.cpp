@@ -15,7 +15,7 @@ GraphicEngine::GraphicEngine(Frame* pFrame, Polar &polarDisplay){
     int max = polarDisplay.getRightSweepLimit();
     int nPixels = polarDisplay.getRadius();
     m_patterns.push_back(AxialPattern(min, max, nPixels));
-    m_patterns.push_back(RadialPattern(min, max));
+    m_patterns.push_back(RadialPattern(0, nPixels));
 };
 
 void GraphicEngine::start(){
