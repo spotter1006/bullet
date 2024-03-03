@@ -11,7 +11,7 @@
 using namespace std;
 
 atomic_flag fWaitForTick;   
-Polar::Polar(int left, int right, int radius, int stepIntervalUs, Frame* pFrame){
+Polar::Polar(int left, int right, int radius, Frame* pFrame){
     m_nLeftSweepLimit = left;
     m_nRightSweepLimit = right;
     m_nRadius = radius;

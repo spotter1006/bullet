@@ -6,7 +6,7 @@
 #include "graphicEngine.hpp"
 class Bullet{
     public:
-        Bullet(int left, int right, int pixels, int stepIntervalUs, Frame *pFrame); 
+        Bullet(int left, int right, int pixels,  Frame *pFrame); 
         int start(int argc, char *argv[]);
         inline void stop(int sigNum){m_fStop = (sigNum == SIGINT);}
     private:

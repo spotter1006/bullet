@@ -9,7 +9,7 @@
 
 class Polar{
     public:
-        Polar(int left, int right, int radius, int stepIntervalUs, Frame* pFrame);
+        Polar(int left, int right, int radius, Frame* pFrame);
         ~Polar();
 
         void start();
