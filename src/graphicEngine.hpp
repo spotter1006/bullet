@@ -16,7 +16,8 @@ class GraphicEngine{
 
         void start();
         void stop();
-
+        void paint();
+        void display();
         inline bool isKeepRunning(){return m_fKeepRunning;}   
         inline void setFrame(Frame *pFrame){m_pFrame = pFrame;}
     private:

@@ -12,8 +12,7 @@ void GraphicEngine::start(){
         int timeInterval = 0;
         while(pGraphicEngine->isKeepRunning()){
             auto wake = chrono::steady_clock::now() + chrono::milliseconds(AMIMATION_INTERVAL_MS); 
-            // All patterns paint to display
-            // TODO: put the frame in the polar display
+            pGraphicEngine->paint();
             this_thread::sleep_until(wake);
         }  
     },this));
@@ -22,5 +21,10 @@ void GraphicEngine::stop(){
     m_fKeepRunning = false;
     for(auto& th : m_threads){
         th.join();
+    }
+}
+void GraphicEngine::paint(){
+    for(Pattern &pattern : m_patterns){
+        pattern.paint(m_pFrame);
     }
 }
