@@ -10,7 +10,11 @@
 #include <string.h>
 using namespace std;
 
-Polar::Polar(){
+Polar::Polar(int left, int right, int radius, int stepIntervalUs, Frame* pFrame){
+    m_nLeftSweepLimit = left;
+    m_nRightSweepLimit = right;
+    m_nRadius = radius;
+    
     m_ledstring.freq = LED_STRING_FREQUENCY;
     m_ledstring.dmanum =10;
     m_ledstring.channel[0].gpionum = WSS2812_DATA_GPIO;
@@ -24,26 +28,24 @@ Polar::Polar(){
     m_ledstring.channel[1].strip_type = 0;
     m_ledstring.channel[1].brightness = 0;
     ws2811_init(&m_ledstring);
-    m_pFrame = NULL;    
+    m_pFrame = pFrame;    
 }
 Polar::~Polar(){
     ws2811_fini(&m_ledstring);
 }
 atomic_flag fWaitForTick;   
-void Polar::start(int left, int right, int stepIntervalUs){
-    m_nLeftSweepLimit = left;
-    m_nRightSweepLimit = right;
-
+void Polar::start(){
     signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
     itimerval timer;
-    timer.it_interval.tv_usec = stepIntervalUs;      
+    timer.it_interval.tv_usec = MOTOR_STEP_INTERVAL_US;      
     timer.it_interval.tv_sec = 0;
-    timer.it_value.tv_usec = stepIntervalUs;
+    timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;
     timer.it_value.tv_sec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
     
     m_fKeepSweeping = true;   
-    m_threads.emplace_back(thread([](Polar *pPolar){        //Motion thread
+    // The following 2 threads have to run in paralell due to the lengthy render operation in bar.display()
+    m_threads.emplace_back(thread([](Polar *pPolar){        //Motor thread
         pPolar->setKeepSweeping(true);
         int dir = 1;
         while(pPolar->isKeepSweeping()){
@@ -53,7 +55,7 @@ void Polar::start(int left, int right, int stepIntervalUs){
             else if(step == pPolar->getLeftSweepLimit())  dir = 1;
         }
     },this));    
-    m_threads.emplace_back(thread([](Polar *pPolar){        // LED thread     
+    m_threads.emplace_back(thread([](Polar *pPolar){        // LEDs thread     
         while(pPolar->isKeepSweeping()){
             Bar bar;
             pPolar->getBar(pPolar->getStep(), bar);

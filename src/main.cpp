@@ -2,9 +2,13 @@
 #include "defines.hpp"
 #include <signal.h>
 
-Bullet bullet(ANIMATION_FRAMES, MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
+
 
 int main(int argc, char *argv[]){
-    signal(SIGINT, [](int signum){bullet.stop(signum);});
-    bullet.start(argc, argv);
+    // Frame buffer shared between graphics engine and polar display
+    Frame *pFrame = new Frame(MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
+    Bullet* bullet = new Bullet(0, MOTOR_SWEEP_STEPS, LED_STRING_PIXELS, MOTOR_STEP_INTERVAL_US, pFrame);
+
+    // signal(SIGINT, [bullet&](int signum){bullet.stop(signum);});
+    bullet->start(argc, argv);
 }

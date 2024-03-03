@@ -7,12 +7,12 @@
 
 using namespace std;
 
+Bullet:: Bullet(int left, int right, int pixels, int stepIntervalUs, Frame *pFrame):
+    m_polar(left, right, pixels, stepIntervalUs, pFrame),
+     m_graphicEngine(pFrame, m_polar){m_fStop=false;}
+
 int Bullet::start(int argc, char *argv[]){
-    // Frame buffer shared between graphics engine and polar display
-    Frame *pFrame = new Frame(MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
-    m_graphicEngine.setFrame(pFrame);
-    m_polar.setFrame(pFrame);
-    m_polar.start(0, MOTOR_SWEEP_STEPS - 1, MOTOR_STEP_INTERVAL_US);
+    m_polar.start();
     m_graphicEngine.start();
  
     terminal();
@@ -36,7 +36,4 @@ void Bullet:: terminal(){
         }
     }
 
-}
-void Bullet::stop(int sigNum){
-    if(sigNum == SIGINT) m_fStop = true;
 }

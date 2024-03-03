@@ -3,8 +3,20 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
+#include "axialPattern.hpp"
+#include "radialPattern.hpp"
 
 using namespace std;
+
+GraphicEngine::GraphicEngine(Frame* pFrame, Polar &polarDisplay){
+    m_fKeepRunning = true;
+    m_pFrame = pFrame;
+    int min = polarDisplay.getLeftSweepLimit();
+    int max = polarDisplay.getRightSweepLimit();
+    int nPixels = polarDisplay.getRadius();
+    m_patterns.push_back(AxialPattern(min, max, nPixels));
+    m_patterns.push_back(RadialPattern(min, max));
+};
 
 void GraphicEngine::start(){
     m_fKeepRunning = true;

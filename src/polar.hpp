@@ -9,10 +9,10 @@
 
 class Polar{
     public:
-        Polar();
+        Polar(int left, int right, int radius, int stepIntervalUs, Frame* pFrame);
         ~Polar();
 
-        void start(int left, int right, int stepIntervalUs);
+        void start();
         void stop();
 
         inline ws2811_t* getLedString(){return &m_ledstring;}
@@ -24,6 +24,7 @@ class Polar{
         inline int getStep(){return m_stepper.getPosition();}
         inline void getBar(int step, Bar& bar){return m_pFrame->getBar(step, bar);}
         inline void setFrame(Frame* pFrame){m_pFrame = pFrame;}
+        inline int getRadius(){return m_nRadius;}
 
     private:
         Stepper m_stepper;
@@ -32,6 +33,7 @@ class Polar{
         bool m_fKeepSweeping;
         int m_nLeftSweepLimit;
         int m_nRightSweepLimit;
+        int m_nRadius;
 
         vector<thread> m_threads;
 };

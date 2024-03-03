@@ -4,19 +4,14 @@
 #include <vector>
 #include <mutex>
 
-using namespace std;
-
 class Frame{
     public:
-        Frame();
-        Frame(int nBars, int pixels);
-        Frame(const Frame &other);
-        ~Frame();
+    Frame(int nBars, int pixels):m_bars(nBars){};
         void setBar(int step, Bar bar);
         void getBar(int step, Bar& bar);
         void setPixel(int step, int radius, ws2811_led_t value);
     private:
-        vector<Bar> m_bars;           // index is step angle
-  
+        vector<Bar> m_bars;   
+   
 };
 #endif
