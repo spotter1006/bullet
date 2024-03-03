@@ -4,7 +4,7 @@
 class AxialPattern : public Pattern {
     public:
         AxialPattern(int min, int max, int radius) : Pattern(min, max){m_nRadius = radius;};
-        void paint(int step, Frame *frame);
+        void paint(Frame *frame);
     protected:
         int m_nRadius;
 };

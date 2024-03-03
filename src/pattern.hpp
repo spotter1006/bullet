@@ -11,7 +11,7 @@ class Pattern{
             m_nMax = max;
         }
         inline void setPattern(vector<ws2811_led_t> pattern){m_pixels = pattern;}
-        virtual void paint(int step, Frame *frame) = 0;
+        virtual void paint(Frame *frame) = 0;
 
     protected:
         vector<ws2811_led_t> m_pixels;

@@ -10,15 +10,11 @@ using namespace std;
 int Bullet::start(int argc, char *argv[]){
     // Frame buffer shared between graphics engine and polar display
     Frame *pFrame = new Frame(MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
-    Bar greenBar(LED_STRING_PIXELS, GREEN);
-    pFrame->setBar(MOTOR_SWEEP_STEPS/ 2, greenBar);
     m_graphicEngine.setFrame(pFrame);
     m_polar.setFrame(pFrame);
-
     m_polar.start(0, MOTOR_SWEEP_STEPS - 1, MOTOR_STEP_INTERVAL_US);
     m_graphicEngine.start();
  
-   
     terminal();
     m_graphicEngine.stop();
     m_polar.stop();

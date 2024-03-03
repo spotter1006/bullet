@@ -20,6 +20,7 @@ void GraphicEngine::start(){
         int timeInterval = 0;
         while(pGraphicEngine->isKeepRunning()){
             auto wake = chrono::steady_clock::now() + chrono::milliseconds(AMIMATION_INTERVAL_MS); 
+            // Paint all patterns to the frame
             // TODO: put the frame in the polar display
             this_thread::sleep_until(wake);
         }  
