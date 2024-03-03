@@ -20,7 +20,7 @@ Polar::Polar(int left, int right, int radius, Frame* pFrame){
     m_ledstring.dmanum =10;
     m_ledstring.channel[0].gpionum = WSS2812_DATA_GPIO;
     m_ledstring.channel[0].invert = 0;
-    m_ledstring.channel[0].count = LED_STRING_PIXELS;
+    m_ledstring.channel[0].count = radius;
     m_ledstring.channel[0].strip_type = WS2811_STRIP_GRB;
     m_ledstring.channel[0].brightness = 255;
     m_ledstring.channel[1].gpionum = 0;
