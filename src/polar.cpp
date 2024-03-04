@@ -45,23 +45,24 @@ Polar::~Polar(){
 }
 
 void Polar::start(){
-    // The following 2 threads have to run in paralell due to the lengthy render operation in bar.display()
-    m_threads.emplace_back(thread([](Polar *pPolar){        //Motor thread
+
+    m_threads.emplace_back(thread([](Polar *pPolar){
         pPolar->setKeepSweeping(true);
         int dir = 1;
         while(pPolar->isKeepSweeping()){
-            while(fWaitForTick.test_and_set()) usleep(2);
+            while(fWaitForTick.test_and_set()) 
+                usleep(MOTOR_STEP_INTERVAL_US / 10);
             int step = pPolar->step(dir);
-            if(step == pPolar->getRightSweepLimit())  dir = -1;
+            if(step == pPolar->getRightSweepLimit() -1)  dir = -1;
             else if(step == pPolar->getLeftSweepLimit())  dir = 1;
         }
     },this));    
-    m_threads.emplace_back(thread([](Polar *pPolar){        // LEDs thread     
+    m_threads.emplace_back(thread([](Polar *pPolar){         
         while(pPolar->isKeepSweeping()){
-            Bar bar;
-            pPolar->getBar(pPolar->getStep(), bar);
-            bar.display(pPolar->getLedString());
-            usleep(2);
+            ws2811_t *ledString = pPolar->getLedString();
+            pPolar->copyBarData(ledString->channel[0].leds, pPolar->getStep());
+            ws2811_render(ledString);
+            usleep(MOTOR_STEP_INTERVAL_US / 2);
         }
     },this));
 }

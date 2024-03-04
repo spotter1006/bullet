@@ -1,20 +1,20 @@
 #include  "frame.hpp"
 #include "defines.hpp"
+#include <string.h>
 using namespace std;
-        mutex m_mutex;    
-void Frame::setBar(int step, Bar bar){   
+mutex m_mutex;    
+void Frame::setBar(int step, vector<ws2811_led_t> bar){   
     m_mutex.lock();
     m_bars[step] = bar;
     m_mutex.unlock();
 }
-void Frame::getBar(int step, Bar& bar){ 
+void Frame::copyBarData(ws2811_led_t* destBar, int i){ 
     m_mutex.lock();
-    bar = m_bars[step];
+    memcpy(destBar, m_bars[i].data(), LED_STRING_PIXELS * sizeof(ws2811_led_t));
     m_mutex.unlock();
 }
 void Frame::setPixel(int step, int radius, ws2811_led_t value){ 
-    Bar bar;
-    getBar(step, bar);
-    bar.setPixel(radius, value);
-    setBar(step, bar);
+    m_mutex.lock();
+    m_bars[step][radius] = value;
+    m_mutex.unlock();
 }

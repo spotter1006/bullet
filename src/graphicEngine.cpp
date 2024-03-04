@@ -5,9 +5,9 @@
 #include <signal.h>
 #include "axialPattern.hpp"
 #include "radialPattern.hpp"
+#include "defines.hpp"
 
 using namespace std;
-
 
 void GraphicEngine::start(){
     m_fKeepRunning = true;

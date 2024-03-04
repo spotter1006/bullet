@@ -22,8 +22,7 @@ class Polar{
         inline int getRightSweepLimit(){return m_nRightSweepLimit;}
         inline int step(int dir){return m_stepper.step(dir);}
         inline int getStep(){return m_stepper.getPosition();}
-        inline void getBar(int step, Bar& bar){return m_pFrame->getBar(step, bar);}
-        inline void setFrame(Frame* pFrame){m_pFrame = pFrame;}
+        inline void copyBarData(ws2811_led_t* destBar, int i){m_pFrame->copyBarData(destBar, i);}
         inline int getRadius(){return m_nRadius;}
 
     private:
