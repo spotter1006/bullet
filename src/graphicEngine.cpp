@@ -27,6 +27,6 @@ void GraphicEngine::stop(){
     }
 }
 void GraphicEngine::paint(){
-    m_directionPattern.paint(m_pFrame);
-    m_speedPattern.paint(m_pFrame);
+    m_radialPattern.paint(m_pFrame);
+    m_axialPattern.paint(m_pFrame);
 }

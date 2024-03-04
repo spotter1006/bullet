@@ -9,3 +9,8 @@ void AxialPattern::paint(Frame *frame){
         }
     }
 }
+void AxialPattern::setPattern(int center, vector<ws2811_led_t> &pattern){
+    for(int i = center - pattern.size() /2; i < center + pattern.size() /2; i++){
+        m_pixels[i] = pattern[i];
+    }
+}

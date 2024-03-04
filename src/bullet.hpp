@@ -1,7 +1,6 @@
 #ifndef _BULLET_H_
 #define _BULLET_H_
 #include <signal.h>
-
 #include "polar.hpp"
 #include "graphicEngine.hpp"
 class Bullet{

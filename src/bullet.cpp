@@ -1,6 +1,6 @@
 #include "bullet.hpp"
 #include <iostream>
-#include <signal.h>
+// #include <signal.h>
 #include "polar.hpp"
 #include "defines.hpp"
 #include "graphicEngine.hpp"
@@ -13,6 +13,11 @@ Bullet:: Bullet(int left, int right, int pixels, Frame *pFrame):
 
 int Bullet::start(int argc, char *argv[]){
     m_polar.start();
+
+    // Test
+    vector<ws2811_led_t> greenBar{BLACK,BLACK,GREEN10,GREEN80,GREEN,GREEN80,GREEN10,BLACK,BLACK};
+    m_graphicEngine.setRadialPattern(5, greenBar);
+
     m_graphicEngine.start();
  
     terminal();
