@@ -44,6 +44,8 @@ Stepper::Stepper(){
 }
 
 Stepper::~Stepper(){
+    m_lineEnable.set_value(1);
+    
     m_lineEnable.release();
     m_lineM0.release();
     m_lineM1.release();
