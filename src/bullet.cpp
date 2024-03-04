@@ -17,6 +17,9 @@ int Bullet::start(int argc, char *argv[]){
     // Test
     vector<ws2811_led_t> greenBar{BLACK,BLACK,GREEN10,GREEN80,GREEN,GREEN80,GREEN10,BLACK,BLACK};
     m_graphicEngine.setRadialPattern(5, greenBar);
+    vector<ws2811_led_t> blueArc(MOTOR_SWEEP_STEPS, BLUE80);
+    m_graphicEngine.setAxialPattern(MOTOR_SWEEP_STEPS/2, blueArc);
+    // end test
 
     m_graphicEngine.start();
  

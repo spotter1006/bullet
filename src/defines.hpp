@@ -18,14 +18,16 @@
 // #define MOTOR_STEP_INTERVAL_US  720     // 95.76 ms per sweep
 
 // WS2812 Addressable LED array
-#define BLACK 0x00000000
-#define WHITE 0xffffffff
-#define RED 0x00ff0000
-#define GREEN 0x0000ff00
-#define BLUE 0x000000ff
-#define YELLOW 0x00ffff00
+#define BLACK   0x00000000
+#define WHITE   0xffffffff
+#define RED     0x00ff0000
+#define GREEN   0x0000ff00
+#define BLUE    0x000000ff
+#define YELLOW  0x00ffff00
 #define GREEN10 0x00001000
 #define GREEN80 0x00008000
+#define RED80   0x00800000
+#define BLUE80  0x00000080
 
 #define LED_STRING_FREQUENCY 800000
 #define LED_STRING_PIXELS 10
