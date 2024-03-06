@@ -3,6 +3,7 @@
 #include <signal.h>
 #include "polar.hpp"
 #include "graphicEngine.hpp"
+
 class Bullet{
     public:
         Bullet(int left, int right, int pixels,  Frame *pFrame); 

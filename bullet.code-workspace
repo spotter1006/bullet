@@ -60,7 +60,26 @@
             "mutex": "cpp",
             "*.ipp": "cpp",
             "regex": "cpp",
-            "variant": "cpp"
+            "variant": "cpp",
+            "csetjmp": "cpp",
+            "csignal": "cpp",
+            "cstring": "cpp",
+            "strstream": "cpp",
+            "cfenv": "cpp",
+            "charconv": "cpp",
+            "cinttypes": "cpp",
+            "codecvt": "cpp",
+            "complex": "cpp",
+            "cuchar": "cpp",
+            "forward_list": "cpp",
+            "unordered_set": "cpp",
+            "set": "cpp",
+            "future": "cpp",
+            "iomanip": "cpp",
+            "scoped_allocator": "cpp",
+            "shared_mutex": "cpp",
+            "typeindex": "cpp",
+            "valarray": "cpp"
         }
     }
 }
