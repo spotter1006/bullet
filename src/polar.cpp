@@ -3,71 +3,48 @@
 #include <thread>
 #include <signal.h>
 #include <thread>
-#include <sys/time.h>
+
 #include <unistd.h>
 #include <atomic>
 #include <string.h>
 using namespace std;
 
 atomic_flag fWaitForTick;   
-Polar::Polar(int left, int right, int radius, Frame* pFrame):
-    m_strobe(1, 1, 1){     // (int period, int aperature, int direction):
-    m_nLeftSweepLimit = left;
-    m_nRightSweepLimit = right;
-    m_nRadius = radius;
-    
-    m_ledstring.freq = LED_STRING_FREQUENCY;
-    m_ledstring.dmanum =10;
-    m_ledstring.channel[0].gpionum = WSS2812_DATA_GPIO;
-    m_ledstring.channel[0].invert = 0;
-    m_ledstring.channel[0].count = radius;
-    m_ledstring.channel[0].strip_type = WS2811_STRIP_GRB;
-    m_ledstring.channel[0].brightness = 255;
-    m_ledstring.channel[1].gpionum = 0;
-    m_ledstring.channel[1].invert = 0;
-    m_ledstring.channel[1].count = 0;
-    m_ledstring.channel[1].strip_type = 0;
-    m_ledstring.channel[1].brightness = 0;
-    ws2811_init(&m_ledstring);
-    m_pFrame = pFrame;    
-    m_nFrame = 0;
 
-    signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
-    itimerval timer;
-    timer.it_interval.tv_usec = timer.it_value.tv_usec =MOTOR_STEP_INTERVAL_US;      
-    timer.it_interval.tv_sec = timer.it_value.tv_sec = 0;
-    setitimer(ITIMER_REAL, &timer, NULL);
-    m_fKeepSweeping = true;
+ws2811_led_t pixel(uint8_t red, uint8_t green, uint8_t blue, double intensity){
+    uint32_t sred = red * intensity;
+    uint32_t sgreen = red * intensity;
+    uint32_t sblue = red * intensity;
+    return sred << 16 | sgreen << 8 | sblue;
+
 }
-Polar::~Polar(){
-    m_ledstring.channel[0].brightness = 0;
-    ws2811_fini(&m_ledstring);
+Polar::Polar(int left, int right, int radius):
+    m_nLeftSweepLimit(left),
+    m_nRightSweepLimit(right),
+    m_chaser(radius){
+        signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
+        itimerval timer;
+        timer.it_interval.tv_usec = timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;      
+        timer.it_interval.tv_sec = timer.it_value.tv_sec = 0;
+        setitimer(ITIMER_REAL, &timer, NULL);
+        m_fKeepSweeping = true;
 }
 
 void Polar::start(){
-
-    m_threads.emplace_back(thread([](Polar *pPolar){
-        pPolar->setKeepSweeping(true);
-        int dir = 1;
+    // *** test ***
+    vector<ws2811_led_t> testPattern = {0, 2, 8, 32, 128, 0, 2, 8, 32, 128};
+    m_chaser.setPattern(testPattern);
+    // *** test ***
+    
+    m_threads.emplace_back(thread([](Polar *pPolar){   
+        unsigned int timeTick = 0;
         while(pPolar->isKeepSweeping()){
-            while(fWaitForTick.test_and_set()) usleep(2);           
-            int step = pPolar->step(dir);
-            if(step == pPolar->getRightSweepLimit() - 1)  
-                dir = -1;
-            else if(step == pPolar->getLeftSweepLimit()){
-                dir = 1;
-                pPolar->incrementFrame();
-            }  
-           
-        }
-    },this));    
-    m_threads.emplace_back(thread([](Polar *pPolar){         
-        while(pPolar->isKeepSweeping()){
-            ws2811_t *ledString = pPolar->getLedString();
-            pPolar->copyBarData(ledString->channel[0].leds, pPolar->getStep());
-            pPolar->shutter(pPolar->getLedString(), pPolar->getStep(), pPolar->getDirection());
-            ws2811_render(ledString);
-            usleep(2);
+            while(fWaitForTick.test_and_set()) usleep(2);
+            
+            timeTick++;           
+            if(timeTick % 150 == 0){         // test
+                pPolar->chaserRotate(1);    
+            }    
         }
     },this));
 }
@@ -77,3 +54,4 @@ void Polar::stop(){
         th.join();
     m_threads.clear();
 }
+
