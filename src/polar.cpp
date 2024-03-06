@@ -35,15 +35,15 @@ void Polar::start(){
     vector<ws2811_led_t> testPattern = {0, 2, 8, 32, 128, 0, 2, 8, 32, 128};
     m_chaser.setPattern(testPattern);
     // *** test ***
-    
+
     m_threads.emplace_back(thread([](Polar *pPolar){   
         unsigned int timeTick = 0;
         while(pPolar->isKeepSweeping()){
             while(fWaitForTick.test_and_set()) usleep(2);
             
             timeTick++;           
-            if(timeTick % 150 == 0){         // test
-                pPolar->chaserRotate(1);    
+            if(timeTick % 200 == 0){         // test
+                pPolar->chaserRotate(-1);    
             }    
         }
     },this));
