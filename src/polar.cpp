@@ -11,7 +11,7 @@ using namespace std;
 
 atomic_flag fWaitForTick;   
 Polar::Polar(int left, int right, int radius, Frame* pFrame):
-    m_strobe( 1, 1, 1){
+    m_strobe(1, 1, 1){     // (int period, int aperature, int direction):
     m_nLeftSweepLimit = left;
     m_nRightSweepLimit = right;
     m_nRadius = radius;
@@ -40,6 +40,7 @@ Polar::Polar(int left, int right, int radius, Frame* pFrame):
     m_fKeepSweeping = true;
 }
 Polar::~Polar(){
+    m_ledstring.channel[0].brightness = 0;
     ws2811_fini(&m_ledstring);
 }
 
@@ -48,16 +49,15 @@ void Polar::start(){
     m_threads.emplace_back(thread([](Polar *pPolar){
         pPolar->setKeepSweeping(true);
         int dir = 1;
-        int step = pPolar->getStep();
-        int leftLimit = pPolar->getLeftSweepLimit();
-        int rightLimit = pPolar->getRightSweepLimit() - 1;
         while(pPolar->isKeepSweeping()){
-            while(fWaitForTick.test_and_set()) usleep(MOTOR_STEP_INTERVAL_US / 10);
-
-            if(step == leftLimit && dir == -1) pPolar->incrementFrame();
-            step = pPolar->step(dir);
-            if(step == rightLimit)  dir = -1;
-            else if(step == pPolar->getLeftSweepLimit())  dir = 1;
+            while(fWaitForTick.test_and_set()) usleep(2);           
+            int step = pPolar->step(dir);
+            if(step == pPolar->getRightSweepLimit() - 1)  
+                dir = -1;
+            else if(step == pPolar->getLeftSweepLimit()){
+                dir = 1;
+                pPolar->incrementFrame();
+            }  
            
         }
     },this));    
@@ -65,9 +65,9 @@ void Polar::start(){
         while(pPolar->isKeepSweeping()){
             ws2811_t *ledString = pPolar->getLedString();
             pPolar->copyBarData(ledString->channel[0].leds, pPolar->getStep());
-            pPolar->shutter(ledString, pPolar->getFrameNumber(), pPolar->getDirection());
+            pPolar->shutter(pPolar->getLedString(), pPolar->getStep(), pPolar->getDirection());
             ws2811_render(ledString);
-            usleep(MOTOR_STEP_INTERVAL_US / 2);
+            usleep(2);
         }
     },this));
 }
