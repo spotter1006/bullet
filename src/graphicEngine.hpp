@@ -7,8 +7,8 @@
 #include "radialPattern.hpp"
 #include "curvePattern.hpp"
 #include "polar.hpp"
-#include "motionSimulator.hpp"
 #include "defines.hpp"
+
 
 using namespace std;
 
@@ -19,8 +19,7 @@ class GraphicEngine{
             m_radialPattern(polarDisplay.getLeftSweepLimit(), polarDisplay.getRightSweepLimit(), polarDisplay.getRadius()),
             m_curvePattern(polarDisplay.getLeftSweepLimit(), polarDisplay.getRightSweepLimit(), polarDisplay.getRadius()),
             m_fKeepRunning(true),
-            m_pFrame(pFrame),
-            m_simulator(0, 5.0, 0.1, 0.001, MOTOR_SWEEP_STEPS, LED_STRING_PIXELS-1, 10, 1)         // Test 
+            m_pFrame(pFrame)
             {};
         void start();
         void stop();
@@ -31,18 +30,14 @@ class GraphicEngine{
         inline void setRadialPattern(int center, vector<ws2811_led_t> &leds){m_radialPattern.setPattern(center, leds);}
         inline void setCurvePattern(int center, vector<ws2811_led_t> &leds){m_radialPattern.setPattern(center, leds);}
 
-        inline void simulatorStep(){m_simulator.step();}
-        inline vector<int>& getAngleHistogram(){return m_simulator.getAngleHistogram();}
-        inline vector<int>& getMagnitudeHistogram(){return m_simulator.getMagnitudeHistogram();}
     private:
         AxialPattern m_axialPattern;
         RadialPattern m_radialPattern;
         CurvePattern m_curvePattern;
-
         Frame *m_pFrame; 
         bool m_fKeepRunning;
         vector<thread> m_threads;
-        MotionSimulator m_simulator;        // Test
+
 };
 
 #endif

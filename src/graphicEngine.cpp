@@ -15,10 +15,6 @@ void GraphicEngine::start(){
         int timeInterval = 0;
         while(pGraphicEngine->isKeepRunning()){
             auto wake = chrono::steady_clock::now() + chrono::milliseconds(AMIMATION_INTERVAL_MS); 
-            pGraphicEngine->simulatorStep();    // Test
-            vector<int> angleHistogram = pGraphicEngine->getAngleHistogram();
-            vector<int> magnitudeHistogram = pGraphicEngine->getMagnitudeHistogram();
-            // TODO: set in graphics engine
             pGraphicEngine->paint();
             this_thread::sleep_until(wake);
         }  
@@ -34,4 +30,5 @@ void GraphicEngine::paint(){
     //m_radialPattern.paint(m_pFrame);
     //m_axialPattern.paint(m_pFrame);
     m_curvePattern.paint(m_pFrame);
+
 }
