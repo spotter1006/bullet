@@ -28,7 +28,8 @@ Polar::Polar(int left, int right, int radius):
 void Polar::start(){
     // *** test ***
     vector<ws2811_led_t> testPattern = {0, 2, 8, 32, 128, 0, 2, 8, 32, 128};
-    m_chaser.setPattern(testPattern);
+    vector<ws2811_led_t> testColors = vector<ws2811_led_t>(10, BLUE);
+    m_chaser.setPattern(testPattern, testColors);
     // *** test ***
 
     m_threads.emplace_back(thread([](Polar *pPolar){   
@@ -47,7 +48,6 @@ void Polar::start(){
             }else if(move < 0){
                 if(pPolar->getMotorPosition() > pPolar->getLeftSweepLimit()) pPolar->stepMotor(-1);
             }
-
 
         }
     },this));

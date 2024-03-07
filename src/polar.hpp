@@ -35,7 +35,6 @@ class Polar{
         inline int getMotorPosition(){return m_stepper.getPosition();}
         
         // Chaser pass-throughs
-        inline void setChaserPattern(vector<ws2811_led_t> &pattern){m_chaser.setPattern(pattern);}
         inline void chaserRotate(int direction){m_chaser.rotate(direction);}
   
     private:
