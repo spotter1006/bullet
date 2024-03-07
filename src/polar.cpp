@@ -18,20 +18,17 @@ Polar::Polar(int left, int right, int radius):
     m_chaser(radius),
     m_intensities({0, 2, 8, 32, 128, 0, 2, 8, 32, 128}),
     m_colors(radius, BLUE)
-    {
+{
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
         itimerval timer;
         timer.it_interval.tv_usec = timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;      
         timer.it_interval.tv_sec = timer.it_value.tv_sec = 0;
         setitimer(ITIMER_REAL, &timer, NULL);
         m_fKeepSweeping = true;
+        m_chaser.setPattern(m_intensities, m_colors);
 }
 
 void Polar::start(){
-    // *** test ***
-    m_chaser.setPattern(m_intensities, m_colors);
-    // *** test ***
-
     m_threads.emplace_back(thread([](Polar *pPolar){   
         unsigned int timeTick = 0;
         while(pPolar->isKeepSweeping()){                       
@@ -66,6 +63,5 @@ ws2811_led_t Polar::redToGreen(int val){
 }
 
 void Polar::setHue(int hue){
-    m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));
-
+    m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
 }
