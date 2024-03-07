@@ -15,7 +15,9 @@ Polar::Polar(int left, int right, int radius):
     m_nRightSweepLimit(right),
     m_nInterval(100),
     m_nAngle(0),
-    m_chaser(radius)
+    m_chaser(radius),
+    m_intensities({0, 2, 8, 32, 128, 0, 2, 8, 32, 128}),
+    m_colors(radius, BLUE)
     {
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
         itimerval timer;
@@ -27,9 +29,7 @@ Polar::Polar(int left, int right, int radius):
 
 void Polar::start(){
     // *** test ***
-    vector<ws2811_led_t> testPattern = {0, 2, 8, 32, 128, 0, 2, 8, 32, 128};
-    vector<ws2811_led_t> testColors = vector<ws2811_led_t>(10, BLUE);
-    m_chaser.setPattern(testPattern, testColors);
+    m_chaser.setPattern(m_intensities, m_colors);
     // *** test ***
 
     m_threads.emplace_back(thread([](Polar *pPolar){   
@@ -57,4 +57,15 @@ void Polar::stop(){
     for(auto& th : m_threads)
         th.join();
     m_threads.clear();
+}
+
+ws2811_led_t Polar::redToGreen(int val){
+    int green = val + 128;
+    int red = 128 - val;
+    return red << 16 | green << 8;
+}
+
+void Polar::setHue(int hue){
+    m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));
+
 }

@@ -15,7 +15,8 @@ using namespace std;
 class Polar{
     public:
         Polar(int left, int right, int radius);
-
+        void setIntensities(vector<ws2811_led_t> intensities){m_intensities = intensities;}
+        void setHue(int hue);
         void start();
         void stop();
 
@@ -50,7 +51,10 @@ class Polar{
         int m_nAngle;              // Angle of chaser bar in motor steps
 
         vector<thread> m_threads;
+        ws2811_led_t redToGreen(int val);
 
+        vector<ws2811_led_t> m_intensities;
+        vector<ws2811_led_t> m_colors;
 };
 #endif
 
