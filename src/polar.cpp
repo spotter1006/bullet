@@ -41,7 +41,7 @@ void Polar::start(){
                 pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
             }    
 
-            int move = pPolar->getMotorPosition() - pPolar->getAngle();
+            int move = pPolar->getAngle() - pPolar->getMotorPosition();
             if(move > 0){
                 if(pPolar->getMotorPosition() < pPolar->getRightSweepLimit()) pPolar->stepMotor(1);
             }else if(move < 0){

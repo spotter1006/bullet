@@ -3,9 +3,7 @@
 #include "polar.hpp"
 #include "defines.hpp"
 
-
 using namespace std;
-
 
 int Bullet::start(int argc, char *argv[]){
     m_polar.start();
@@ -22,10 +20,16 @@ void Bullet:: terminal(){
         if(line.compare("q") == 0){
             cout << "Quit command recieved, exiting..." << endl;
             break;
+        }else if(line[0] == 'a'){
+            int angle = stoi(line.substr(1));
+            cout << "Setting angle to " << angle << endl;
+            m_polar.setAngle(angle);
+        
         }else if(line.compare("h") == 0){
             cout << "Bullet commands:" << endl;
             cout << "h - diplay this help message" << endl;
             cout << "q - quit bullet" << endl;
+            cout << "a<angle> - set the display pointer angle" << endl;
         }
     }
 }
