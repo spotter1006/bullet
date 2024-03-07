@@ -10,9 +10,7 @@ class Chaser{
         Chaser(int leds):
         m_pattern(leds, BLACK),
         m_reversePattern(leds, BLACK),
-        m_ledstring(),
-        m_color(GREEN),
-        m_intensities(leds, 0xffffffff)
+        m_ledstring()
         {
             m_ledstring.freq = LED_STRING_FREQUENCY;
             m_ledstring.dmanum =10;
@@ -34,13 +32,10 @@ class Chaser{
             ws2811_fini(&m_ledstring);
         }
         void rotate(int direction);
-        // void setPattern(vector<ws2811_led_t> &pattern);    
         void setPattern(vector<uint32_t> intensities, vector<ws2811_led_t> colors);
     private:
         vector<ws2811_led_t> m_pattern;
         vector<ws2811_led_t> m_reversePattern;
         ws2811_t m_ledstring;
-        ws2811_led_t m_color;
-        vector<uint32_t> m_intensities;
 };
 #endif
