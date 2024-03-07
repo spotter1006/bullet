@@ -28,6 +28,7 @@ class Chaser{
         }
         ~Chaser(){
             m_ledstring.channel[0].brightness = 0;
+            ws2811_render(&m_ledstring);
             ws2811_fini(&m_ledstring);
         }
         void rotate(int direction);

@@ -11,13 +11,7 @@ using namespace std;
 
 atomic_flag fWaitForTick;   
 
-ws2811_led_t pixel(uint8_t red, uint8_t green, uint8_t blue, double intensity){
-    uint32_t sred = red * intensity;
-    uint32_t sgreen = red * intensity;
-    uint32_t sblue = red * intensity;
-    return sred << 16 | sgreen << 8 | sblue;
 
-}
 Polar::Polar(int left, int right, int radius):
     m_nLeftSweepLimit(left),
     m_nRightSweepLimit(right),
@@ -41,10 +35,12 @@ void Polar::start(){
         while(pPolar->isKeepSweeping()){
             while(fWaitForTick.test_and_set()) usleep(2);
             
-            timeTick++;           
-            if(timeTick % 200 == 0){         // test
-                pPolar->chaserRotate(-1);    
+            timeTick++;       
+            // *** test ***    
+            if(timeTick % 100 == 0){         
+                pPolar->chaserRotate(1);    
             }    
+            // *** end test
         }
     },this));
 }
