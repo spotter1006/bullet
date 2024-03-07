@@ -17,8 +17,7 @@ Polar::Polar(int left, int right, int radius):
     m_nAngle(0),
     m_chaser(radius),
     m_intensities({0, 2, 8, 32, 128, 0, 2, 8, 32, 128}),
-    m_colors(radius, BLUE)
-{
+    m_colors(radius, BLUE){
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
         itimerval timer;
         timer.it_interval.tv_usec = timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;      
@@ -64,4 +63,5 @@ ws2811_led_t Polar::redToGreen(int val){
 
 void Polar::setHue(int hue){
     m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
+    m_chaser.setPattern(m_intensities, m_colors);
 }
