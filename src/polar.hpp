@@ -27,7 +27,7 @@ class Polar{
         inline int getAngle(){return m_nAngle;}
         inline void setAngle(int angle){m_nAngle = angle;}
         inline int getInterval(){return m_nInterval;}
-        inline void setIternval(int interval){m_nInterval = interval;}
+        inline void setIterval(int interval){m_nInterval = interval;}
 
         // Stepper pass-throughs
         inline int stepMotor(int dir){return m_stepper.step(dir);}

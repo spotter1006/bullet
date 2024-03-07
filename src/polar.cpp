@@ -3,14 +3,12 @@
 #include <thread>
 #include <signal.h>
 #include <thread>
-
 #include <unistd.h>
 #include <atomic>
 #include <string.h>
 using namespace std;
 
 atomic_flag fWaitForTick;   
-
 
 Polar::Polar(int left, int right, int radius):
     m_nLeftSweepLimit(left),
@@ -39,7 +37,7 @@ void Polar::start(){
             while(fWaitForTick.test_and_set()) usleep(2);   // Wait for precise time interval
             timeTick++;       
            
-            if(timeTick % abs(pPolar->getInterval()) == 0){         
+            if(pPolar->getInterval() != 0 && timeTick % abs(pPolar->getInterval()) == 0){         
                 pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
             }    
 
@@ -60,4 +58,3 @@ void Polar::stop(){
         th.join();
     m_threads.clear();
 }
-
