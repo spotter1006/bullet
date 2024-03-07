@@ -15,7 +15,10 @@ atomic_flag fWaitForTick;
 Polar::Polar(int left, int right, int radius):
     m_nLeftSweepLimit(left),
     m_nRightSweepLimit(right),
-    m_chaser(radius){
+    m_nInterval(100),
+    m_nAngle(0),
+    m_chaser(radius)
+    {
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
         itimerval timer;
         timer.it_interval.tv_usec = timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;      
@@ -32,15 +35,22 @@ void Polar::start(){
 
     m_threads.emplace_back(thread([](Polar *pPolar){   
         unsigned int timeTick = 0;
-        while(pPolar->isKeepSweeping()){
-            while(fWaitForTick.test_and_set()) usleep(2);
-            
+        while(pPolar->isKeepSweeping()){                       
+            while(fWaitForTick.test_and_set()) usleep(2);   // Wait for precise time interval
             timeTick++;       
-            // *** test ***    
-            if(timeTick % 100 == 0){         
-                pPolar->chaserRotate(1);    
+           
+            if(timeTick % abs(pPolar->getInterval()) == 0){         
+                pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
             }    
-            // *** end test
+
+            int move = pPolar->getMotorPosition() - pPolar->getAngle();
+            if(move > 0){
+                if(pPolar->getMotorPosition() < pPolar->getRightSweepLimit()) pPolar->stepMotor(1);
+            }else if(move < 0){
+                if(pPolar->getMotorPosition() > pPolar->getLeftSweepLimit()) pPolar->stepMotor(-1);
+            }
+
+
         }
     },this));
 }
