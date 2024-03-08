@@ -31,6 +31,10 @@ class Imu{
     public:
         Imu() : m_fKeepRunning(true){}
         void setup(int baudIndex, int updateRate);
+        void startMagCalibration(){WitStartMagCali();}
+        void stopMagCalibration(){WitStopMagCali();}
+        void startAccCalibration(){WitStartAccCali();}
+        void stopAccCalibration(){WitStopAccCali();}
         void start();
         void stop();
         inline bool isKeepRunning(){return m_fKeepRunning;}
