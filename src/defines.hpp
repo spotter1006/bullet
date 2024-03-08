@@ -36,4 +36,6 @@
 #define ANIMATION_FRAMES 30
 #define AMIMATION_INTERVAL_MS 100
 
+#define IMU_SERIAL_PORT (char*)"/dev/ttyS0"
+
 #endif

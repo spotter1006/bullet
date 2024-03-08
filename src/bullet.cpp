@@ -7,7 +7,10 @@ using namespace std;
 
 int Bullet::start(int argc, char *argv[]){
     m_polar.start();
+    m_imu.setup(WIT_BAUD_115200, 2);
+    m_imu.start();
     terminal();
+    m_imu.stop();
     m_polar.stop();
     return 0;
 }
