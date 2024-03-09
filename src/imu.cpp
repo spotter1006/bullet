@@ -4,33 +4,33 @@
 #include "wit_c_sdk.h"
 using namespace std;
 
-static char s_cDataUpdate = 0;
-
 int fd;
+char s_cDataUpdate = 0;
 
 void Imu::AutoScanSensor(char* dev)
 {
+	int bauds[10] = {2400 , 4800 , 9600 , 19200 , 38400 , 57600 , 115200 , 230400 , 460800 , 921600};
 	int i, iRetry;
 	unsigned char cBuff[1];
 	
 	for(i = 1; i < 10; i++)
 	{
-		serial_close();
-		serial_open(dev , m_uiBaud[i]);
+		close(fd);
+		serial_open(dev , bauds[i]);
 		
 		iRetry = 2;
 		do
 		{
 			s_cDataUpdate = 0;
 			WitReadReg(AX, 3);
-			sleep(200);
-			while(serial_read_data(cBuff, 1))
+			usleep(200000);
+			while(read(fd, cBuff, 1))
 			{
 				WitSerialDataIn(cBuff[0]);
 			}
 			if(s_cDataUpdate != 0)
 			{
-				printf("%d baud find sensor\r\n\r\n", m_uiBaud[i]);
+				printf("%d baud find sensor\r\n\r\n", bauds[i]);
 				return ;
 			}
 			iRetry--;
@@ -39,48 +39,13 @@ void Imu::AutoScanSensor(char* dev)
 	printf("can not find sensor\r\n");
 	printf("please check your connection\r\n");
 }
-void Imu::SensorDataUpdata(uint32_t uiReg, uint32_t uiRegNum)
-{
-    int i;
-    for(i = 0; i < uiRegNum; i++)
-    {
-        switch(uiReg)
-        {
-//            case AX:
-//            case AY:
-            case AZ:
-				s_cDataUpdate |= ACC_UPDATE;
-            break;
-//            case GX:
-//            case GY:
-            case GZ:
-				s_cDataUpdate |= GYRO_UPDATE;
-            break;
-//            case HX:
-//            case HY:
-            case HZ:
-				s_cDataUpdate |= MAG_UPDATE;
-            break;
-//            case Roll:
-//            case Pitch:
-            case Yaw:
-				s_cDataUpdate |= ANGLE_UPDATE;
-            break;
-            default:
-				s_cDataUpdate |= READ_UPDATE;
-			break;
-        }
-		uiReg++;
-    }
-}
+
 void Imu::setup(int baudIndex, int updateRate){
 	 if((serial_open(IMU_SERIAL_PORT , 9600)<0))
 	 {
 	     printf("open %s fail\n", IMU_SERIAL_PORT);
 	 }
 	else printf("open %s success\n", IMU_SERIAL_PORT);
-	
-	WitRegisterCallBack(SensorDataUpdata);		// TODO: move this to a lambda in the  constructor 
 
 	AutoScanSensor(IMU_SERIAL_PORT);
 
@@ -94,12 +59,12 @@ void Imu::start(){
 			
 		while(pImu->isKeepRunning())
 		{
-			while(pImu->serial_read_data(cBuff, 1))
+			while(read(fd, cBuff, 1))
 			{
 				WitSerialDataIn(cBuff[0]);
 			}
 
-			sleep(500);
+			usleep(500000);
 			
 			if(s_cDataUpdate)
 			{
@@ -133,7 +98,7 @@ void Imu::start(){
 				}
 		}
 		
-		pImu->serial_close();
+		close(fd);
 		return 0;
 
     }, this);
@@ -212,10 +177,5 @@ int Imu::serial_open(const char *dev, int baud){
        }
 	return 0;
 }
-void Imu::serial_close(){
-	close(fd);
-}
-int Imu::serial_read_data(unsigned char *val, int len){
-	int red = read(fd,val,len);
-	return red;
-}
+
+

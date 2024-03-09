@@ -20,23 +20,49 @@ using namespace std;
 #define READ_UPDATE		0x80
 
 // Static variables needed by Wit API
+extern char s_cDataUpdate;
 extern int fd;    
 extern SerialWrite p_WitSerialWriteFunc;
 extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true),
-        m_uiBaud{2400 , 4800 , 9600 , 19200 , 38400 , 57600 , 115200 , 230400 , 460800 , 921600}
+        Imu() : m_fKeepRunning(true)
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
-            
+
             WitSerialWriteRegister([](uint8_t *data, uint32_t len){
 	            write(fd, data, len*sizeof(unsigned char));
             });
 
             WitDelayMsRegister([](uint16_t ms){
-	            sleep(ms);
+	            usleep(ms * 1000);
+            });
+
+            WitRegisterCallBack([](uint32_t uiReg, uint32_t uiRegNum){
+                int i;
+                for(i = 0; i < uiRegNum; i++)
+                {
+                    switch(uiReg)
+                    {
+                        case AZ:
+                            s_cDataUpdate |= ACC_UPDATE;
+                            break;
+                        case GZ:
+                            s_cDataUpdate |= GYRO_UPDATE;
+                            break;
+                        case HZ:
+                            s_cDataUpdate |= MAG_UPDATE;
+                            break;
+                        case Yaw:
+                            s_cDataUpdate |= ANGLE_UPDATE;
+                            break;
+                        default:
+                            s_cDataUpdate |= READ_UPDATE;
+                         break;
+                    }
+                    uiReg++;
+                }
             });
 
 
@@ -60,11 +86,8 @@ class Imu{
         inline int witCaliRefAngle(){return WitCaliRefAngle();}
     private:
         static int serial_open(const char *dev, int baud);
-        static void serial_close();
-        static int serial_read_data(unsigned char *val, int len);
+
         void AutoScanSensor(char* dev);
-        static void SensorDataUpdata(uint32_t uiReg, uint32_t uiRegNum);
-        int m_uiBaud[10];
         bool m_fKeepRunning;
         thread m_thread;
 };
