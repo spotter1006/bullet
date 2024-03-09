@@ -48,7 +48,6 @@ void Imu::setup(int baudIndex, int updateRate){
 	else printf("open %s success\n", IMU_SERIAL_PORT);
 
 	
-
 }
 void Imu::start(){
 	m_thread = thread([](Imu* pImu){

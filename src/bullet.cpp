@@ -30,6 +30,7 @@ void Bullet::ShowHelp(void)
 	printf("r   The return rate reduction to 1Hz.\r\n");
 	printf("C   Basic return content: acceleration, angular velocity, angle, magnetic field.\r\n");
 	printf("c   Return content: acceleration.\r\n");
+	printf("s   Save parameters\r\n");
 	printf("h   help.\r\n");
     printf("q   quit Wit sub-menu\r\n");
 	printf("********************************************************************************\r\n");
@@ -62,13 +63,16 @@ void Bullet::CmdProcess(char s_cCmd)
 			if(m_imu.witSetUartBaud(WIT_BAUD_115200) != WIT_HAL_OK)
 				printf("\r\nSet Baud Error\r\n");
 			else
-				// uart_set_baudrate(UART_NUM_1, 115200);
+				// close(fd);
+				// m_imu.serial_open(IMU_SERIAL_PORT, 115200);
+
 			break;
 		case 'b':
 			if(m_imu.witSetUartBaud(WIT_BAUD_9600) != WIT_HAL_OK)
 				printf("\r\nSet Baud Error\r\n");
 			else
-				// uart_set_baudrate(UART_NUM_1, 9600);
+				// close(fd);
+				// m_imu.serial_open(IMU_SERIAL_PORT, 9600);
 			break;
 		case 'R':
 			if(m_imu.witSetOutputRate(RRATE_10HZ) != WIT_HAL_OK)
@@ -85,6 +89,10 @@ void Bullet::CmdProcess(char s_cCmd)
 		case 'c':
 			if(m_imu.witSetContent(RSW_ACC) != WIT_HAL_OK)
 				printf("\r\nSet RSW Error\r\n");
+			break;
+		case 's':
+			if(m_imu.witSaveParameter() != WIT_HAL_OK)
+				printf("\r\nSave parameter Error\r\n");
 			break;
 		case 'h':
 			ShowHelp();

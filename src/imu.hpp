@@ -33,12 +33,13 @@ class Imu{
 
             WitSerialWriteRegister([](uint8_t *data, uint32_t len){
 	            int nWritten = write(fd, data, len*sizeof(unsigned char));
-                len = nWritten;
+                // len = nWritten;
             });
 
             WitDelayMsRegister([](uint16_t ms){
 	            usleep(ms * 1000);
             });
+   
 
             WitRegisterCallBack([](uint32_t uiReg, uint32_t uiRegNum){
                 int i;
@@ -68,6 +69,7 @@ class Imu{
 
 
         }
+        static int serial_open(const char *dev, int baud);
         void setup(int baudIndex, int updateRate);
         void start();
         void stop();
@@ -86,7 +88,7 @@ class Imu{
         inline int witSetForReset(){return WitSetForReset();}
         inline int witCaliRefAngle(){return WitCaliRefAngle();}
     private:
-        static int serial_open(const char *dev, int baud);
+        
 
         void AutoScanSensor(char* dev);
         bool m_fKeepRunning;
