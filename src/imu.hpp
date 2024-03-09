@@ -32,7 +32,8 @@ class Imu{
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
             WitSerialWriteRegister([](uint8_t *data, uint32_t len){
-	            write(fd, data, len*sizeof(unsigned char));
+	            int nWritten = write(fd, data, len*sizeof(unsigned char));
+                len = nWritten;
             });
 
             WitDelayMsRegister([](uint16_t ms){

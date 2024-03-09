@@ -47,7 +47,7 @@ void Imu::setup(int baudIndex, int updateRate){
 	 }
 	else printf("open %s success\n", IMU_SERIAL_PORT);
 
-	AutoScanSensor(IMU_SERIAL_PORT);
+	
 
 }
 void Imu::start(){
@@ -57,6 +57,7 @@ void Imu::start(){
 		int i , ret;
 		unsigned char cBuff[1];	
 			
+		pImu->AutoScanSensor(IMU_SERIAL_PORT);
 		while(pImu->isKeepRunning())
 		{
 			while(read(fd, cBuff, 1))
