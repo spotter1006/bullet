@@ -1,15 +1,13 @@
 #include "imu.hpp"
 #include "defines.hpp"
 #include <thread>
+#include "wit_c_sdk.h"
 using namespace std;
 
 static char s_cDataUpdate = 0;
 
-static void Delayms(uint16_t ucMs)
-{ 
-     usleep(ucMs*1000);
-}
- 
+int fd;
+
 void Imu::AutoScanSensor(char* dev)
 {
 	int i, iRetry;
@@ -25,7 +23,7 @@ void Imu::AutoScanSensor(char* dev)
 		{
 			s_cDataUpdate = 0;
 			WitReadReg(AX, 3);
-			Delayms(200);
+			sleep(200);
 			while(serial_read_data(cBuff, 1))
 			{
 				WitSerialDataIn(cBuff[0]);
@@ -81,8 +79,9 @@ void Imu::setup(int baudIndex, int updateRate){
 	     printf("open %s fail\n", IMU_SERIAL_PORT);
 	 }
 	else printf("open %s success\n", IMU_SERIAL_PORT);
-	WitInit(WIT_PROTOCOL_NORMAL, 0x50);
-	WitRegisterCallBack(SensorDataUpdata);
+	
+	WitRegisterCallBack(SensorDataUpdata);		// TODO: move this to a lambda in the  constructor 
+
 	AutoScanSensor(IMU_SERIAL_PORT);
 
 }
@@ -100,7 +99,7 @@ void Imu::start(){
 				WitSerialDataIn(cBuff[0]);
 			}
 
-			Delayms(500);
+			sleep(500);
 			
 			if(s_cDataUpdate)
 			{
@@ -113,22 +112,22 @@ void Imu::start(){
 
 				if(s_cDataUpdate & ACC_UPDATE)
 					{
-					printf("acc:%.3f %.3f %.3f\r\n", fAcc[0], fAcc[1], fAcc[2]);
+					// printf("acc:%.3f %.3f %.3f\r\n", fAcc[0], fAcc[1], fAcc[2]);
 					s_cDataUpdate &= ~ACC_UPDATE;
 					}
 				if(s_cDataUpdate & GYRO_UPDATE)
 					{
-					printf("gyro:%.3f %.3f %.3f\r\n", fGyro[0], fGyro[1], fGyro[2]);
+					// printf("gyro:%.3f %.3f %.3f\r\n", fGyro[0], fGyro[1], fGyro[2]);
 					s_cDataUpdate &= ~GYRO_UPDATE;
 					}
 				if(s_cDataUpdate & ANGLE_UPDATE)
 					{
-					printf("angle:%.3f %.3f %.3f\r\n", fAngle[0], fAngle[1], fAngle[2]);
+					// printf("angle:%.3f %.3f %.3f\r\n", fAngle[0], fAngle[1], fAngle[2]);
 					s_cDataUpdate &= ~ANGLE_UPDATE;
 					}
 				if(s_cDataUpdate & MAG_UPDATE)
 					{
-					printf("mag:%d %d %d\r\n", sReg[HX], sReg[HY], sReg[HZ]);
+					// printf("mag:%d %d %d\r\n", sReg[HX], sReg[HY], sReg[HZ]);
 					s_cDataUpdate &= ~MAG_UPDATE;
 					}
 				}
@@ -147,8 +146,8 @@ void Imu::stop(){
 
 int Imu::serial_open(const char *dev, int baud){
 
-    m_fd = open(dev, O_RDWR|O_NOCTTY); 
-    if (m_fd < 0) return m_fd;
+    fd = open(dev, O_RDWR|O_NOCTTY); 
+    if (fd < 0) return fd;
     if(isatty(STDIN_FILENO)==0) 
       {
    	  printf("standard input is not a terminal device\n"); 
@@ -159,10 +158,10 @@ int Imu::serial_open(const char *dev, int baud){
       }
 
     struct termios newtio,oldtio; 
-    if (tcgetattr( m_fd,&oldtio) != 0) 
+    if (tcgetattr( fd,&oldtio) != 0) 
       {  
           perror("SetupSerial 1");
-	  printf("tcgetattr( fd,&oldtio) -> %d\n",tcgetattr(m_fd,&oldtio)); 
+	  printf("tcgetattr( fd,&oldtio) -> %d\n",tcgetattr(fd,&oldtio)); 
           return -1; 
       } 
     bzero( &newtio, sizeof( newtio ) ); 
@@ -204,9 +203,9 @@ int Imu::serial_open(const char *dev, int baud){
      newtio.c_cflag &=  ~CSTOPB; 
      newtio.c_cc[VTIME]  = 0; 
      newtio.c_cc[VMIN] = 0; 
-     tcflush(m_fd,TCIFLUSH); 
+     tcflush(fd,TCIFLUSH); 
 
-     if((tcsetattr(m_fd,TCSANOW,&newtio))!=0) 
+     if((tcsetattr(fd,TCSANOW,&newtio))!=0) 
        { 
           perror("com set error"); 
           return -1; 
@@ -214,13 +213,9 @@ int Imu::serial_open(const char *dev, int baud){
 	return 0;
 }
 void Imu::serial_close(){
-	close(m_fd);
+	close(fd);
 }
 int Imu::serial_read_data(unsigned char *val, int len){
-	int red = read(m_fd,val,len);
+	int red = read(fd,val,len);
 	return red;
-}
-int Imu::serial_write_data(unsigned char *val, int len){
-	int written = write(m_fd,val,len*sizeof(unsigned char));
-	return written;
 }

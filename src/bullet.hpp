@@ -19,6 +19,8 @@ class Bullet{
         Imu m_imu;
         bool m_fStop;
         void terminal();
+        void CmdProcess(char s_cCmd);
+        void ShowHelp();
 };
 
 #endif

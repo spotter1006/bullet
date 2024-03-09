@@ -19,32 +19,51 @@ using namespace std;
 #define MAG_UPDATE		0x08
 #define READ_UPDATE		0x80
 
-static void AutoScanSensor(char* dev);
-static void SensorDataUpdata(uint32_t uiReg, uint32_t uiRegNum);
-static void Delayms(uint16_t ucMs);
+// Static variables needed by Wit API
+extern int fd;    
+extern SerialWrite p_WitSerialWriteFunc;
+extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
         Imu() : m_fKeepRunning(true),
-        m_fd(-1),
         m_uiBaud{2400 , 4800 , 9600 , 19200 , 38400 , 57600 , 115200 , 230400 , 460800 , 921600}
-        {}
+        {
+            WitInit(WIT_PROTOCOL_NORMAL, 0x50);
+            
+            WitSerialWriteRegister([](uint8_t *data, uint32_t len){
+	            write(fd, data, len*sizeof(unsigned char));
+            });
+
+            WitDelayMsRegister([](uint16_t ms){
+	            sleep(ms);
+            });
+
+
+        }
         void setup(int baudIndex, int updateRate);
-        void startMagCalibration(){WitStartMagCali();}
-        void stopMagCalibration(){WitStopMagCali();}
-        void startAccCalibration(){WitStartAccCali();}
-        void stopAccCalibration(){WitStopAccCali();}
         void start();
         void stop();
         inline bool isKeepRunning(){return m_fKeepRunning;}
+        // Wrap all wit APIs
+        inline int witStartAccCali(){return WitStartAccCali();}
+        inline int witStopAccCali(){return WitStopAccCali();}
+        inline int witStartMagCali(){return WitStartMagCali();}
+        inline int witStopMagCali(){return WitStopMagCali();}
+        inline int witSetUartBaud(int uiBaudIndex){return WitSetUartBaud(uiBaudIndex);}
+        inline int witSetBandwidth(int uiBaudWidth){return WitSetBandwidth(uiBaudWidth);}
+        inline int witSetOutputRate(int uiRate){return WitSetOutputRate(uiRate);}
+        inline int witSetContent(int uiRsw){return WitSetContent(uiRsw);}
+        inline int witSetCanBaud(int uiBaudIndex){return WitSetCanBaud(uiBaudIndex);}
+        inline int witSaveParameter(){return WitSaveParameter();}
+        inline int witSetForReset(){return WitSetForReset();}
+        inline int witCaliRefAngle(){return WitCaliRefAngle();}
     private:
-        int serial_open(const char *dev, int baud);
-        void serial_close();
-        int serial_read_data(unsigned char *val, int len);
-        int serial_write_data(unsigned char *val, int len);
+        static int serial_open(const char *dev, int baud);
+        static void serial_close();
+        static int serial_read_data(unsigned char *val, int len);
         void AutoScanSensor(char* dev);
         static void SensorDataUpdata(uint32_t uiReg, uint32_t uiRegNum);
-        int m_fd;
         int m_uiBaud[10];
         bool m_fKeepRunning;
         thread m_thread;
