@@ -55,6 +55,7 @@ class Polar{
 
         vector<ws2811_led_t> m_intensities;
         vector<ws2811_led_t> m_colors;
+
 };
 #endif
 

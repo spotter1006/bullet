@@ -11,6 +11,7 @@ class Chaser{
         m_pattern(leds, BLACK),
         m_reversePattern(leds, BLACK),
         m_ledstring()
+
         {
             m_ledstring.freq = LED_STRING_FREQUENCY;
             m_ledstring.dmanum =10;
@@ -37,5 +38,6 @@ class Chaser{
         vector<ws2811_led_t> m_pattern;
         vector<ws2811_led_t> m_reversePattern;
         ws2811_t m_ledstring;
+
 };
 #endif
