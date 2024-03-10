@@ -3,71 +3,59 @@
 #include <thread>
 #include <signal.h>
 #include <thread>
-#include <sys/time.h>
 #include <unistd.h>
 #include <atomic>
 #include <string.h>
 using namespace std;
 
 atomic_flag fWaitForTick;   
-Polar::Polar(int left, int right, int radius, Frame* pFrame):
-    m_strobe(1, 1, 1){     // (int period, int aperature, int direction):
-    m_nLeftSweepLimit = left;
-    m_nRightSweepLimit = right;
-    m_nRadius = radius;
-    
-    m_ledstring.freq = LED_STRING_FREQUENCY;
-    m_ledstring.dmanum =10;
-    m_ledstring.channel[0].gpionum = WSS2812_DATA_GPIO;
-    m_ledstring.channel[0].invert = 0;
-    m_ledstring.channel[0].count = radius;
-    m_ledstring.channel[0].strip_type = WS2811_STRIP_GRB;
-    m_ledstring.channel[0].brightness = 255;
-    m_ledstring.channel[1].gpionum = 0;
-    m_ledstring.channel[1].invert = 0;
-    m_ledstring.channel[1].count = 0;
-    m_ledstring.channel[1].strip_type = 0;
-    m_ledstring.channel[1].brightness = 0;
-    ws2811_init(&m_ledstring);
-    m_pFrame = pFrame;    
-    m_nFrame = 0;
 
-    signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
-    itimerval timer;
-    timer.it_interval.tv_usec = timer.it_value.tv_usec =MOTOR_STEP_INTERVAL_US;      
-    timer.it_interval.tv_sec = timer.it_value.tv_sec = 0;
-    setitimer(ITIMER_REAL, &timer, NULL);
-    m_fKeepSweeping = true;
-}
-Polar::~Polar(){
-    m_ledstring.channel[0].brightness = 0;
-    ws2811_fini(&m_ledstring);
+
+const ws2811_led_t colorGradient[] = {                       // https://colordesigner.io/gradient-generator
+    0x00fe0101, 0x00fe2302, 0x00fe4503, 0x00fe6704,     // green to red
+    0x00fe8805, 0x00feaa06, 0x00fecb07, 0x00feec08,
+    0x00f1ff08, 0x00d1ff09, 0x00b1ff0a, 0x0091ff0b,
+    0x0071ff0c, 0x0052ff0d, 0x0033ff0e, 0x0014ff0f
+};
+
+
+
+Polar::Polar(int left, int right, int radius):
+    m_nLeftSweepLimit(left),
+    m_nRightSweepLimit(right),
+    m_nInterval(100),
+    m_nAngle(0),
+    m_chaser(radius),
+    m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}),      // Gamma corrected ramp
+    m_colors(radius, BLUE)
+    {
+        signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
+        itimerval timer;
+        timer.it_interval.tv_usec = timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;      
+        timer.it_interval.tv_sec = timer.it_value.tv_sec = 0;
+        setitimer(ITIMER_REAL, &timer, NULL);
+        m_fKeepSweeping = true;
+        m_chaser.setPattern(m_intensities, m_colors);
 }
 
 void Polar::start(){
-
-    m_threads.emplace_back(thread([](Polar *pPolar){
-        pPolar->setKeepSweeping(true);
-        int dir = 1;
-        while(pPolar->isKeepSweeping()){
-            while(fWaitForTick.test_and_set()) usleep(2);           
-            int step = pPolar->step(dir);
-            if(step == pPolar->getRightSweepLimit() - 1)  
-                dir = -1;
-            else if(step == pPolar->getLeftSweepLimit()){
-                dir = 1;
-                pPolar->incrementFrame();
-            }  
+    m_threads.emplace_back(thread([](Polar *pPolar){   
+        unsigned int timeTick = 0;
+        while(pPolar->isKeepSweeping()){                       
+            while(fWaitForTick.test_and_set()) usleep(2);   // Wait for precise time interval
+            timeTick++;       
            
-        }
-    },this));    
-    m_threads.emplace_back(thread([](Polar *pPolar){         
-        while(pPolar->isKeepSweeping()){
-            ws2811_t *ledString = pPolar->getLedString();
-            pPolar->copyBarData(ledString->channel[0].leds, pPolar->getStep());
-            pPolar->shutter(pPolar->getLedString(), pPolar->getStep(), pPolar->getDirection());
-            ws2811_render(ledString);
-            usleep(2);
+            if(pPolar->getInterval() != 0 && timeTick % abs(pPolar->getInterval()) == 0){         
+                pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
+            }    
+
+            int move = pPolar->getAngle() - pPolar->getMotorPosition();
+            if(move > 0){
+                if(pPolar->getMotorPosition() < pPolar->getRightSweepLimit()) pPolar->stepMotor(1);
+            }else if(move < 0){
+                if(pPolar->getMotorPosition() > pPolar->getLeftSweepLimit()) pPolar->stepMotor(-1);
+            }
+
         }
     },this));
 }
@@ -76,4 +64,14 @@ void Polar::stop(){
     for(auto& th : m_threads)
         th.join();
     m_threads.clear();
+}
+
+ws2811_led_t Polar::redToGreen(int val){
+    return colorGradient[(val + 128) / 16];
+   
+}
+
+void Polar::setHue(int hue){
+    m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
+    m_chaser.setPattern(m_intensities, m_colors);
 }

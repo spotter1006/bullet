@@ -3,16 +3,7 @@
 #include <signal.h>
 
 int main(int argc, char *argv[]){
-    // Frame buffer shared between graphics engine and polar display
-    Frame *pFrame = new Frame(MOTOR_SWEEP_STEPS, LED_STRING_PIXELS);
-    // vector<ws2811_led_t> greenBar{BLACK,BLACK,GREEN10,GREEN80,GREEN,GREEN80,GREEN10,BLACK,BLACK};
-    // pFrame->setBar(MOTOR_SWEEP_STEPS/2, greenBar);
-    Bullet* bullet = new Bullet(0, MOTOR_SWEEP_STEPS, LED_STRING_PIXELS, pFrame);
-
-    // signal(SIGINT, [](int signum){bullet.stop(signum);});
+    Bullet* bullet = new Bullet(-MOTOR_SWEEP_STEPS/2, MOTOR_SWEEP_STEPS/2, LED_STRING_PIXELS);
     bullet->start(argc, argv);
-
     delete bullet;
-    delete pFrame;
-    
 }

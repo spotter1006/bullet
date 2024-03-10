@@ -58,7 +58,8 @@ Stepper::~Stepper(){
 
 // 1 for positive direction, -1 for negative. 1 step.
 int Stepper::step(int dir){
-    m_lineDir.set_value(dir > 0);
+    m_lineDir.set_value(dir > 0); 
+    
     m_lineStep.set_value(1);
     usleep(2);
     m_lineStep.set_value(0);
