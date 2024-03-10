@@ -11,7 +11,7 @@ using namespace std;
 atomic_flag fWaitForTick;   
 
 
-const ws2811_led_t gradient[] = {                       // https://colordesigner.io/gradient-generator
+const ws2811_led_t colorGradient[] = {                       // https://colordesigner.io/gradient-generator
     0x00fe0101, 0x00fe2302, 0x00fe4503, 0x00fe6704,     // green to red
     0x00fe8805, 0x00feaa06, 0x00fecb07, 0x00feec08,
     0x00f1ff08, 0x00d1ff09, 0x00b1ff0a, 0x0091ff0b,
@@ -67,7 +67,7 @@ void Polar::stop(){
 }
 
 ws2811_led_t Polar::redToGreen(int val){
-    return gradient[(val + 128) / 16];
+    return colorGradient[(val + 128) / 16];
    
 }
 
