@@ -123,8 +123,8 @@ void Bullet:: terminal(){
 				m_fStop = true;
             	break;
 			case 'z':
-				m_polar.setAngle(0);
-				cout  << "position has been set to 0" << endl;
+				m_polar.zeroAngle();
+				cout  << "the current position has been set to 0" << endl;
 				break;
 			case 'a':
 				angle = stoi(line.substr(1));

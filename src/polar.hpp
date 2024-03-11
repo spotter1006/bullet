@@ -34,6 +34,7 @@ class Polar{
         inline int stepMotor(int dir){return m_stepper.step(dir);}
         inline int getMotorDirection(){return m_stepper.getMotorDirection();}
         inline int getMotorPosition(){return m_stepper.getPosition();}
+        inline void zeroAngle(){m_stepper.zeroPosition();}
         
         // Chaser pass-throughs
         inline void chaserRotate(int direction){m_chaser.rotate(direction);}
