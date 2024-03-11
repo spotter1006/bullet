@@ -30,11 +30,8 @@ sudo ~/swprojects/bullet/build/release/bullet
 
 
 ## Graphics 
-A graphics engine renders frames for animations to be displayed on the polar display. A collection of graphics elements are superimposed on the frames and animation effects can be applied to them. 
-- GraphicElement class - reperesents graphics promatives that can be added to frames for rendering in animations. Sub classes:
-    - Ray class - Represents a line extending from the motor axis to the outer edge of the display
-    - Arc class - Represents a  segment of a circle around the periphery of the display
-    - Wedge class - Represents the area enclosed by two rays at different step angle and the arc that connects their outer ends
+A graphics engine renders frames for animations to be displayed on the polar display. 
+
 
 - Polar class - Represents the polar chart display 
     - Stepper class - interfaces to a DRV8825 stepper motor driver to spin the polar axis
@@ -44,9 +41,9 @@ A graphics engine renders frames for animations to be displayed on the polar dis
 
 
 ## Inertial Measurement Unit
-
+Wit Motion WT901B 9-DOF sensor. Uses UART communications.
 ## Encoder
 
 ## Matrix Display
 
-/usr/bin/g++ -pthread -fdiagnostics-color=always -g /home/pi/swprojects/bullet/src/*.c* -o /home/pi/swprojects/bullet/build/debug/bullet -L/usr/local/lib -l:libu8g2arm.a -lgpiodcxx -l:libws2811.a -I/home/pi/swprojects/histogram/include/boost -I/home/pi/swprojects/histogram/include -I/home/pi/swprojects/histogram/build/_deps/boostorg_core-src/include -I/home/pi/swprojects/histogram/build/_deps/boostorg_variant2-src/include -I/home/pi/swprojects/histogram/build/_deps/boostorg_assert-src/include
+
