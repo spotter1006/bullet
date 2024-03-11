@@ -123,7 +123,10 @@ void Bullet:: terminal(){
 				m_fStop = true;
             	break;
 			case 'z':
-				m_polar.zeroAngle();
+				m_polar.enableMotor(false);
+				m_polar.zeroMotorAngle();
+				m_polar.setAngle(0);
+				m_polar.enableMotor(true);
 				cout  << "the current position has been set to 0" << endl;
 				break;
 			case 'a':
