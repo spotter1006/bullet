@@ -6,10 +6,14 @@
 using namespace std;
 
 int Bullet::start(int argc, char *argv[]){
-    m_polar.start();
-    m_imu.setup(WIT_BAUD_115200, 2);
+
+    // m_imu.setup(WIT_BAUD_115200, 2);
     m_imu.start();
+	m_polar.home();
+	m_polar.start();
+
     terminal();
+
     m_imu.stop();
     m_polar.stop();
     return 0;
@@ -111,7 +115,6 @@ void Bullet:: terminal(){
 				cout << "***************  Bullet Menu ***************8****" << endl;
 				cout << "h             diplay this help message" << endl;
 				cout << "q             quit bullet" << endl;
-				cout << "z             set 0 angle here" << endl;
 				cout << "a<angle>      set the display pointer angle" << endl;
 				cout << "i<interval>   set the interval for the chaser" << endl;
 				cout << "c<hue>        hue from  (-128 = red to 128 = green)" << endl;
@@ -122,13 +125,6 @@ void Bullet:: terminal(){
 				cout << "Quit command recieved, exiting..." << endl;
 				m_fStop = true;
             	break;
-			case 'z':
-				m_polar.enableMotor(false);
-				m_polar.zeroMotorAngle();
-				m_polar.setAngle(0);
-				m_polar.enableMotor(true);
-				cout  << "the current position has been set to 0" << endl;
-				break;
 			case 'a':
 				angle = stoi(line.substr(1));
 				cout << "Setting angle to " << angle << endl;
@@ -156,47 +152,6 @@ void Bullet:: terminal(){
 				break;
 		}
 
+	}
 
-
-
-
-        // if(line.compare("q") == 0){
-        //     cout << "Quit command recieved, exiting..." << endl;
-        //     break;
-        // }else if(line[0] == 'a'){
-        //     int angle = stoi(line.substr(1));
-        //     cout << "Setting angle to " << angle << endl;
-        //     m_polar.setAngle(angle);      
-        // }else if(line[0] == 'i'){
-        //     int interval = stoi(line.substr(1));
-        //     cout << "Setting interval to " << interval << endl;
-        //     m_polar.setIterval(interval);
-        // }else if(line[0] == 'c'){
-        //     int hue = stoi(line.substr(1));
-        //     cout << "Setting color to " << hue << endl;
-        //     m_polar.setHue(hue);
-        // }else if(line.compare("z") == 0){
-		// 	m_polar.setAngle(0);
-		// 	cout  << "position has been set to 0" << endl;
-		// }else if(line.compare("h") == 0){
-        //     cout << "***************  Bullet Menu ***************8****" << endl;
-        //     cout << "h             diplay this help message" << endl;
-        //     cout << "q             quit bullet" << endl;
-		// 	cout << "z             set 0 angle here" << endl;
-        //     cout << "a<angle>      set the display pointer angle" << endl;
-        //     cout << "i<interval>   set the interval for the chaser" << endl;
-        //     cout << "c<hue>        hue from  (-128 = red to 128 = green)" << endl;
-        //     cout << "w             wit sub-menu" << endl;
-		// 	cout << "*************************************************" << endl;
-        // }else if(line.compare("w") == 0){
-        //     ShowHelp();
-        //     while(1){
-        //         getline(cin, line);
-        //         if(line.compare("q") == 0){
-        //             cout << "quitting Wit sub-menu..." << endl;
-        //             break;
-        //         }else CmdProcess(*line.c_str());
-        //     }
-        // }
-    }
 }

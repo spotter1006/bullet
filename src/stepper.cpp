@@ -66,3 +66,9 @@ int Stepper::step(int dir){
     m_nPosition += dir;
     return m_nPosition;
 }
+
+void Stepper::resetPulse(){
+    m_lineReset.set_value(0);
+    usleep(2);
+    m_lineReset.set_value(1);
+}

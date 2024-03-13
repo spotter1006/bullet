@@ -12,6 +12,13 @@ using namespace std;
 
 using namespace std;
 
+const ws2811_led_t colorGradient[] = {                       // https://colordesigner.io/gradient-generator
+    0x00fe0101, 0x00fe2302, 0x00fe4503, 0x00fe6704,     // green to red
+    0x00fe8805, 0x00feaa06, 0x00fecb07, 0x00feec08,
+    0x00f1ff08, 0x00d1ff09, 0x00b1ff0a, 0x0091ff0b,
+    0x0071ff0c, 0x0052ff0d, 0x0033ff0e, 0x0014ff0f
+};
+
 class Polar{
     public:
         Polar(int left, int right, int radius);
@@ -39,6 +46,8 @@ class Polar{
         
         // Chaser pass-throughs
         inline void chaserRotate(int direction){m_chaser.rotate(direction);}
+
+        void home();
   
     private:
         Stepper m_stepper;
@@ -53,7 +62,7 @@ class Polar{
         int m_nAngle;              // Angle of chaser bar in motor steps
 
         vector<thread> m_threads;
-        ws2811_led_t redToGreen(int val);
+        inline ws2811_led_t redToGreen(int val){return colorGradient[(val + 128) / 16];}
 
         vector<ws2811_led_t> m_intensities;
         vector<ws2811_led_t> m_colors;

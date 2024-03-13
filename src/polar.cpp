@@ -11,12 +11,6 @@ using namespace std;
 atomic_flag fWaitForTick;   
 
 
-const ws2811_led_t colorGradient[] = {                       // https://colordesigner.io/gradient-generator
-    0x00fe0101, 0x00fe2302, 0x00fe4503, 0x00fe6704,     // green to red
-    0x00fe8805, 0x00feaa06, 0x00fecb07, 0x00feec08,
-    0x00f1ff08, 0x00d1ff09, 0x00b1ff0a, 0x0091ff0b,
-    0x0071ff0c, 0x0052ff0d, 0x0033ff0e, 0x0014ff0f
-};
 
 
 
@@ -66,12 +60,33 @@ void Polar::stop(){
     m_threads.clear();
 }
 
-ws2811_led_t Polar::redToGreen(int val){
-    return colorGradient[(val + 128) / 16];
-   
-}
+
 
 void Polar::setHue(int hue){
     m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
     m_chaser.setPattern(m_intensities, m_colors);
+}
+
+void Polar::home(){
+
+    while(m_stepper.getPosition() > m_nLeftSweepLimit * 2){              // Move way past the limit stalling the motor at the limit
+        m_stepper.step(-1);
+        usleep(MOTOR_STEP_INTERVAL_US * 16);         // 1/16 speed
+    }
+
+    for(int i = 0; i < (m_nRightSweepLimit - m_nLeftSweepLimit)/2; i++){       
+        m_stepper.step(1);
+        usleep(MOTOR_STEP_INTERVAL_US * 16);             
+    }
+
+    for(int i = 0; i< 8; i++){
+        m_stepper.step(-1);
+        usleep(MOTOR_STEP_INTERVAL_US * 16);  
+    }
+
+    setAngle(0);
+    m_stepper.zeroPosition();
+    m_stepper.resetPulse();         // Resets the indexer to electrical angle 45 degrees
+
+
 }

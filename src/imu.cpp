@@ -1,5 +1,5 @@
 #include "imu.hpp"
-#include "defines.hpp"
+
 #include <thread>
 #include "wit_c_sdk.h"
 using namespace std;
@@ -9,11 +9,11 @@ char s_cDataUpdate = 0;
 
 void Imu::AutoScanSensor(char* dev)
 {
-	int bauds[10] = {2400 , 4800 , 9600 , 19200 , 38400 , 57600 , 115200 , 230400 , 460800 , 921600};
+	int bauds[5] = {9600 , 19200 , 38400 , 57600 , 115200};
 	int i, iRetry;
 	unsigned char cBuff[1];
 	
-	for(i = 1; i < 10; i++)
+	for(i = 5; i >= 0; i--)
 	{
 		close(fd);
 		serial_open(dev , bauds[i]);
@@ -40,15 +40,6 @@ void Imu::AutoScanSensor(char* dev)
 	printf("please check your connection\r\n");
 }
 
-void Imu::setup(int baudIndex, int updateRate){
-	 if((serial_open(IMU_SERIAL_PORT , 9600)<0))
-	 {
-	     printf("open %s fail\n", IMU_SERIAL_PORT);
-	 }
-	else printf("open %s success\n", IMU_SERIAL_PORT);
-
-	
-}
 void Imu::start(){
 	m_thread = thread([](Imu* pImu){
 

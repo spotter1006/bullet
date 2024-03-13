@@ -13,6 +13,8 @@ class Stepper{
         inline int getPosition(){return m_nPosition;}
         inline void zeroPosition(){m_nPosition = 0;}
         inline void enable(bool enable){m_lineEnable.set_value(enable? 0:1);}
+        void resetPulse();
+    private:
         int m_nPosition;
         gpiod::line m_lineEnable;
         gpiod::line m_lineM0;

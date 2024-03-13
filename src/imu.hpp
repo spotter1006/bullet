@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <termios.h>
+#include "defines.hpp"
 
 using namespace std;
 
@@ -67,11 +68,9 @@ class Imu{
                     uiReg++;
                 }
             });
-
-
+            serial_open(IMU_SERIAL_PORT, 115200);
         }
         static int serial_open(const char *dev, int baud);
-        void setup(int baudIndex, int updateRate);
         void start();
         void stop();
         inline bool isKeepRunning(){return m_fKeepRunning;}
@@ -90,7 +89,6 @@ class Imu{
         inline int witCaliRefAngle(){return WitCaliRefAngle();}
     private:
         
-
         void AutoScanSensor(char* dev);
         bool m_fKeepRunning;
         thread m_thread;
