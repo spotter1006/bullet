@@ -73,6 +73,7 @@ class Imu{
         void start();
         void stop();
         void addMeasurements(int flags);
+        void decrementHistograms(int dec);
 
         inline bool isKeepRunning(){return m_fKeepRunning;}
         

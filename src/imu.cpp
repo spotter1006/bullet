@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <cmath>
+#include <algorithm>
 #include "wit_c_sdk.h"
 using namespace std;
 
@@ -43,9 +44,7 @@ void Imu::AutoScanSensor(char* dev)
 
 void Imu::start(){
 	m_thread = thread([](Imu* pImu){
-
-	//	float fAcc[3], fGyro[3], fAngle[3], fHeading[3];
-
+		int ageTick = 0;
 		unsigned char cBuff[1];	
 			
 		pImu->AutoScanSensor(IMU_SERIAL_PORT);
@@ -56,20 +55,14 @@ void Imu::start(){
 				WitSerialDataIn(cBuff[0]);
 			}
 
-			usleep(100000);			// 10 Hz update rate
+			usleep(100000);						// TODO:constant
+			ageTick++;
+			if(ageTick % 100 == 0)				// TODO:constant
+				pImu->decrementHistograms(1);	// TODO:constant
 			
 			if(s_cDataUpdate)
-			{
-				/*
-				for(int i = 0; i < 3; i++){
-					fAcc[i] = sReg[AX+i] / 32768.0f * 16.0f;
-					fGyro[i] = sReg[GX+i] / 32768.0f * 2000.0f;
-					fAngle[i] = sReg[Roll+i] / 32768.0f * 180.0f;
-					fHeading[i] = sReg[HX +i];
-				}
-				*/
 				pImu->addMeasurements(s_cDataUpdate);
-				}
+
 
 		}
 		
@@ -108,7 +101,9 @@ void Imu::addMeasurements(int flags){
 	} 
 
 }
-
+void Imu::decrementHistograms(int dec){
+	transform(m_headingHistogram.begin(), m_headingHistogram.end(), m_headingHistogram.begin(), [dec](int val){return (val > 0)? val-dec:0;});
+}
 int Imu::serial_open(const char *dev, int baud){
 
     fd = open(dev, O_RDWR|O_NOCTTY); 
