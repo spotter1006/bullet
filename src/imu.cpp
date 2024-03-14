@@ -4,6 +4,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 #include "wit_c_sdk.h"
 using namespace std;
 
@@ -108,6 +109,20 @@ void Imu::decrementHistograms(int dec){
 		return (val >= dec)? val-dec:0;
 	});
 }
+
+int Imu::getHeadingChange(int heading, int window){
+	int samples = accumulate(m_headingHistogram[heading - window/2], m_headingHistogram[heading + window/2], 0);		
+	double dTotal = 0;
+
+	// Weighted average of histogram in the window
+	for(int i = heading - window/2; i < heading + window/2; i++){
+		dTotal += ((double)m_headingHistogram[i] / (double)samples) * i;	// Keep precision for accumulation	
+	}
+
+	int average = (int)(dTotal / samples);
+	return average - heading;
+}
+
 int Imu::serial_open(const char *dev, int baud){
 
     fd = open(dev, O_RDWR|O_NOCTTY); 
