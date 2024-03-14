@@ -3,6 +3,7 @@
 #include <thread>
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 #include "wit_c_sdk.h"
 using namespace std;
 
@@ -32,14 +33,14 @@ void Imu::AutoScanSensor(char* dev)
 			}
 			if(s_cDataUpdate != 0)
 			{
-				printf("%d baud find sensor\r\n\r\n", bauds[i]);
+				cout << "using IMU sensor at " << bauds[i] << " baud" << endl;
 				return ;
 			}
 			iRetry--;
 		}while(iRetry);		
 	}
-	printf("can not find sensor\r\n");
-	printf("please check your connection\r\n");
+	cout << "IMU sensor not detected" << endl;
+
 }
 
 void Imu::start(){
