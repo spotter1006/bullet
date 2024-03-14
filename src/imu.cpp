@@ -102,7 +102,10 @@ void Imu::addMeasurements(int flags){
 
 }
 void Imu::decrementHistograms(int dec){
-	transform(m_headingHistogram.begin(), m_headingHistogram.end(), m_headingHistogram.begin(), [dec](int val){return (val > 0)? val-dec:0;});
+	transform(m_headingHistogram.begin(), m_headingHistogram.end(), m_headingHistogram.begin(), 
+	[dec](int val){
+		return (val >= dec)? val-dec:0;
+	});
 }
 int Imu::serial_open(const char *dev, int baud){
 
