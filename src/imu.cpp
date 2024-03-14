@@ -111,7 +111,11 @@ void Imu::decrementHistograms(int dec){
 }
 
 int Imu::getHeadingChange(int heading, int window){
-	int samples = accumulate(m_headingHistogram[heading - window/2], m_headingHistogram[heading + window/2], 0);		
+	// int samples = accumulate(m_headingHistogram[heading - window/2], m_headingHistogram[heading + window/2], 0);	
+	int samples = 0;
+	for(int i = heading - window/2; i < heading + window/2; i++){
+		samples += m_headingHistogram[i];
+	}	
 	double dTotal = 0;
 
 	// Weighted average of histogram in the window
