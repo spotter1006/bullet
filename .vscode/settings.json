@@ -1,7 +1,8 @@
 {
     "cmake.sourceDirectory": "/home/pi/swprojects/bullet",
     "files.associations": {
-        "thread": "cpp"
+        "thread": "cpp",
+        "cmath": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,

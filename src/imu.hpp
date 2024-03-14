@@ -11,6 +11,7 @@
 #include <string.h>
 #include <termios.h>
 #include "defines.hpp"
+#include <vector>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true)
+        Imu() : m_fKeepRunning(true), m_headingHistogram(1600,0)        // TODO: constant for the motor steps (1600)
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -44,26 +45,24 @@ class Imu{
    
 
             WitRegisterCallBack([](uint32_t uiReg, uint32_t uiRegNum){
-                int i;
-                for(i = 0; i < uiRegNum; i++)
+                for(int i = 0; i < uiRegNum; i++)
                 {
                     switch(uiReg)
                     {
-                        case AZ:
-                            s_cDataUpdate |= ACC_UPDATE;
+                        case AZ: 
+                            s_cDataUpdate |= ACC_UPDATE; break;
+                        case GZ: 
+                            s_cDataUpdate |= GYRO_UPDATE; break;
+                        case HZ: 
+                            s_cDataUpdate |= MAG_UPDATE; break;
+                        case Yaw: 
+                            s_cDataUpdate |= ANGLE_UPDATE; break;
+                        case TEMP:
                             break;
-                        case GZ:
-                            s_cDataUpdate |= GYRO_UPDATE;
+                        case AX: case AY: case GX: case GY: case HX: case HY: case Roll: case Pitch: case VERSION:
                             break;
-                        case HZ:
-                            s_cDataUpdate |= MAG_UPDATE;
-                            break;
-                        case Yaw:
-                            s_cDataUpdate |= ANGLE_UPDATE;
-                            break;
-                        default:
-                            s_cDataUpdate |= READ_UPDATE;
-                         break;
+                        default: 
+                            s_cDataUpdate |= READ_UPDATE; break;
                     }
                     uiReg++;
                 }
@@ -73,7 +72,10 @@ class Imu{
         static int serial_open(const char *dev, int baud);
         void start();
         void stop();
+        void addMeasurements(int flags);
+
         inline bool isKeepRunning(){return m_fKeepRunning;}
+        
         // Wrap all wit APIs
         inline int witStartAccCali(){return WitStartAccCali();}
         inline int witStopAccCali(){return WitStopAccCali();}
@@ -92,6 +94,7 @@ class Imu{
         void AutoScanSensor(char* dev);
         bool m_fKeepRunning;
         thread m_thread;
+        vector<int> m_headingHistogram;
 };
 
 

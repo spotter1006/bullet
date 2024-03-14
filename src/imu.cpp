@@ -1,6 +1,7 @@
 #include "imu.hpp"
 
 #include <thread>
+#include <cmath>
 #include "wit_c_sdk.h"
 using namespace std;
 
@@ -43,8 +44,8 @@ void Imu::AutoScanSensor(char* dev)
 void Imu::start(){
 	m_thread = thread([](Imu* pImu){
 
-		float fAcc[3], fGyro[3], fAngle[3];
-		int i , ret;
+	//	float fAcc[3], fGyro[3], fAngle[3], fHeading[3];
+
 		unsigned char cBuff[1];	
 			
 		pImu->AutoScanSensor(IMU_SERIAL_PORT);
@@ -55,38 +56,21 @@ void Imu::start(){
 				WitSerialDataIn(cBuff[0]);
 			}
 
-			usleep(500000);
+			usleep(100000);			// 10 Hz update rate
 			
 			if(s_cDataUpdate)
 			{
-				for(i = 0; i < 3; i++)
-					{
-						fAcc[i] = sReg[AX+i] / 32768.0f * 16.0f;
-						fGyro[i] = sReg[GX+i] / 32768.0f * 2000.0f;
-						fAngle[i] = sReg[Roll+i] / 32768.0f * 180.0f;
-					}
-
-				if(s_cDataUpdate & ACC_UPDATE)
-					{
-					// printf("acc:%.3f %.3f %.3f\r\n", fAcc[0], fAcc[1], fAcc[2]);
-					s_cDataUpdate &= ~ACC_UPDATE;
-					}
-				if(s_cDataUpdate & GYRO_UPDATE)
-					{
-					// printf("gyro:%.3f %.3f %.3f\r\n", fGyro[0], fGyro[1], fGyro[2]);
-					s_cDataUpdate &= ~GYRO_UPDATE;
-					}
-				if(s_cDataUpdate & ANGLE_UPDATE)
-					{
-					// printf("angle:%.3f %.3f %.3f\r\n", fAngle[0], fAngle[1], fAngle[2]);
-					s_cDataUpdate &= ~ANGLE_UPDATE;
-					}
-				if(s_cDataUpdate & MAG_UPDATE)
-					{
-					// printf("mag:%d %d %d\r\n", sReg[HX], sReg[HY], sReg[HZ]);
-					s_cDataUpdate &= ~MAG_UPDATE;
-					}
+				/*
+				for(int i = 0; i < 3; i++){
+					fAcc[i] = sReg[AX+i] / 32768.0f * 16.0f;
+					fGyro[i] = sReg[GX+i] / 32768.0f * 2000.0f;
+					fAngle[i] = sReg[Roll+i] / 32768.0f * 180.0f;
+					fHeading[i] = sReg[HX +i];
 				}
+				*/
+				pImu->addMeasurements(s_cDataUpdate);
+				}
+
 		}
 		
 		close(fd);
@@ -98,6 +82,31 @@ void Imu::start(){
 void Imu::stop(){
 	m_fKeepRunning = false;
 	// m_thread.join();
+}
+
+void Imu::addMeasurements(int flags){
+
+	if(flags & ACC_UPDATE){
+		double acc = sqrt(sReg[AX] * sReg[AX] + sReg[AY] * sReg[AY]); 
+		double accAngle = atan2(sReg[AY], sReg[AX]);
+		// TODO: store these...
+		flags &= ~ACC_UPDATE;
+	} 
+	if(flags & GYRO_UPDATE){
+		s_cDataUpdate &= ~GYRO_UPDATE;
+	}
+	if(flags & ANGLE_UPDATE){ 
+
+		s_cDataUpdate &= ~ANGLE_UPDATE;	
+	}				
+	if(flags & MAG_UPDATE){
+		double dHeading = atan2(sReg[HY], sReg[HX]);	
+		if(dHeading < 0) dHeading += M_PI;
+		int nHeading = (int)(dHeading * 254.6479); 		// TODO: constant to turn radians into motor steps
+		m_headingHistogram[nHeading] = m_headingHistogram[nHeading] + 1;		// Increment the bucket
+		flags &= ~MAG_UPDATE;
+	} 
+
 }
 
 int Imu::serial_open(const char *dev, int baud){
