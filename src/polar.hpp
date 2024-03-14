@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include "chaser.hpp"
+#include "imu.hpp"
 using namespace std;
 
 using namespace std;
@@ -26,6 +27,7 @@ class Polar{
         void setHue(int hue);
         void start();
         void stop();
+        void home();
 
         inline int getRadius(){return m_nRadius;}
         inline bool isKeepSweeping(){return m_fKeepSweeping;}
@@ -47,11 +49,27 @@ class Polar{
         // Chaser pass-throughs
         inline void chaserRotate(int direction){m_chaser.rotate(direction);}
 
-        void home();
+        // IMU pass-throughs
+        inline int witStartAccCali(){return m_imu.witStartAccCali();}
+        inline int witStopAccCali(){return m_imu.witStopAccCali();}
+        inline int witStartMagCali(){return m_imu.witStartMagCali();}
+        inline int witStopMagCali(){return m_imu.witStopMagCali();}
+        inline int witSetUartBaud(int uiBaudIndex){return m_imu.witSetUartBaud(uiBaudIndex);}
+        inline int witSetBandwidth(int uiBaudWidth){return m_imu.witSetBandwidth(uiBaudWidth);}
+        inline int witSetOutputRate(int uiRate){return m_imu.witSetOutputRate(uiRate);}
+        inline int witSetContent(int uiRsw){return m_imu.witSetContent(uiRsw);}
+        inline int witSetCanBaud(int uiBaudIndex){return m_imu.witSetCanBaud(uiBaudIndex);}
+        inline int witSaveParameter(){return m_imu.witSaveParameter();}
+        inline int witSetForReset(){return m_imu.witSetForReset();}
+        inline int witCaliRefAngle(){return m_imu.witCaliRefAngle();}
+        inline int getHeading(){return m_imu.getHeading();}
+        inline int getHeadingChange(int heading, int window){return m_imu.getHeadingChange(heading, window);}
+        
   
     private:
         Stepper m_stepper;
         Chaser m_chaser;
+        Imu m_imu;
         
         bool m_fKeepSweeping;
         int m_nLeftSweepLimit;

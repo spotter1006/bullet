@@ -8,12 +8,12 @@ using namespace std;
 int Bullet::start(int argc, char *argv[]){
 
     
-    m_imu.start();
+
 	m_polar.home();
 	m_polar.start();
 
     terminal();
-    m_imu.stop();
+
     m_polar.stop();
     return 0;
 }
@@ -43,27 +43,27 @@ void Bullet::CmdProcess(char s_cCmd)
 	switch(s_cCmd)
 	{
 		case 'a':
-			if(m_imu.witStartAccCali() != WIT_HAL_OK)
+			if(m_polar.witStartAccCali() != WIT_HAL_OK)
 				printf("\r\nSet AccCali Error\r\n");
 			break;
 		case 'm':
-			if(m_imu.witStartMagCali() != WIT_HAL_OK)
+			if(m_polar.witStartMagCali() != WIT_HAL_OK)
 				printf("\r\nSet MagCali Error\r\n");
 			break;
 		case 'e':
-			if(m_imu.witStopMagCali() != WIT_HAL_OK)
+			if(m_polar.witStopMagCali() != WIT_HAL_OK)
 				printf("\r\nSet MagCali Error\r\n");
 			break;
 		case 'u':
-			if(m_imu.witSetBandwidth(BANDWIDTH_5HZ) != WIT_HAL_OK)
+			if(m_polar.witSetBandwidth(BANDWIDTH_5HZ) != WIT_HAL_OK)
 				printf("\r\nSet Bandwidth Error\r\n");
 			break;
 		case 'U':
-			if(m_imu.witSetBandwidth(BANDWIDTH_256HZ) != WIT_HAL_OK)
+			if(m_polar.witSetBandwidth(BANDWIDTH_256HZ) != WIT_HAL_OK)
 				printf("\r\nSet Bandwidth Error\r\n");
 			break;
 		case 'B':
-			if(m_imu.witSetUartBaud(WIT_BAUD_115200) != WIT_HAL_OK)
+			if(m_polar.witSetUartBaud(WIT_BAUD_115200) != WIT_HAL_OK)
 				printf("\r\nSet Baud Error\r\n");
 			else
 				// close(fd);
@@ -71,30 +71,30 @@ void Bullet::CmdProcess(char s_cCmd)
 
 			break;
 		case 'b':
-			if(m_imu.witSetUartBaud(WIT_BAUD_9600) != WIT_HAL_OK)
+			if(m_polar.witSetUartBaud(WIT_BAUD_9600) != WIT_HAL_OK)
 				printf("\r\nSet Baud Error\r\n");
 			else
 				// close(fd);
 				// m_imu.serial_open(IMU_SERIAL_PORT, 9600);
 			break;
 		case 'R':
-			if(m_imu.witSetOutputRate(RRATE_10HZ) != WIT_HAL_OK)
+			if(m_polar.witSetOutputRate(RRATE_10HZ) != WIT_HAL_OK)
 				printf("\r\nSet Rate Error\r\n");
 			break;
 		case 'r':
-			if(m_imu.witSetOutputRate(RRATE_1HZ) != WIT_HAL_OK)
+			if(m_polar.witSetOutputRate(RRATE_1HZ) != WIT_HAL_OK)
 				printf("\r\nSet Rate Error\r\n");
 			break;
 		case 'C':
-			if(m_imu.witSetContent(RSW_ACC|RSW_GYRO|RSW_ANGLE|RSW_MAG) != WIT_HAL_OK)
+			if(m_polar.witSetContent(RSW_ACC|RSW_GYRO|RSW_ANGLE|RSW_MAG) != WIT_HAL_OK)
 				printf("\r\nSet RSW Error\r\n");
 			break;
 		case 'c':
-			if(m_imu.witSetContent(RSW_ACC) != WIT_HAL_OK)
+			if(m_polar.witSetContent(RSW_ACC) != WIT_HAL_OK)
 				printf("\r\nSet RSW Error\r\n");
 			break;
 		case 's':
-			if(m_imu.witSaveParameter() != WIT_HAL_OK)
+			if(m_polar.witSaveParameter() != WIT_HAL_OK)
 				printf("\r\nSave parameter Error\r\n");
 			break;
 		case 'h':

@@ -97,8 +97,8 @@ void Imu::addMeasurements(int flags){
 	if(flags & MAG_UPDATE){
 		double dHeading = atan2(sReg[HY], sReg[HX]);	
 		if(dHeading < 0) dHeading += M_PI;
-		int nHeading = (int)(dHeading * 254.6479); 		// TODO: constant to turn radians into motor steps
-		m_headingHistogram[nHeading] = m_headingHistogram[nHeading] + 1;		// Increment the bucket
+		m_nHeading = (int)(dHeading * 254.6479); 		// TODO: constant to turn radians into motor steps
+		m_headingHistogram[m_nHeading] = m_headingHistogram[m_nHeading] + 1;		// Increment the bucket
 		flags &= ~MAG_UPDATE;
 	} 
 
@@ -111,34 +111,32 @@ void Imu::decrementHistograms(int dec){
 }
 
 int Imu::getHeadingChange(int heading, int window){
-	// int samples = accumulate(m_headingHistogram[heading - window/2], m_headingHistogram[heading + window/2], 0);	
-	int samples = 0;
-	for(int i = heading - window/2; i < heading + window/2; i++){
-		samples += m_headingHistogram[i];
-	}	
-	double dTotal = 0;
 
-	// Weighted average of histogram in the window
+	long samples = 0;
 	for(int i = heading - window/2; i < heading + window/2; i++){
-		dTotal += ((double)m_headingHistogram[i] / (double)samples) * i;	// Keep precision for accumulation	
+		samples += m_headingHistogram[normalize(i)];
+	}	
+
+
+	// Weighted average of histogram in the window...
+	long sum = 0;
+	for(int i = heading - window/2; i < heading + window/2; i++){
+		sum += m_headingHistogram[normalize(i)] * i;
 	}
 
-	int average = (int)(dTotal / samples);
+	int average = samples > 0? sum / samples : heading;
 	return average - heading;
 }
-
+// Return angle in the range of 0 to histogram size (cicular buffer)
+int Imu::normalize(int i){		
+	int j = i < 0 ? i + m_headingHistogram.size() : i; 	
+	if(j > m_headingHistogram.size() - 1) j = j - (m_headingHistogram.size() - 1);
+	return j;
+}
 int Imu::serial_open(const char *dev, int baud){
 
     fd = open(dev, O_RDWR|O_NOCTTY); 
     if (fd < 0) return fd;
-    if(isatty(STDIN_FILENO)==0) 
-      {
-   	  printf("standard input is not a terminal device\n"); 
-      }   
-    else 
-      {
-	  printf("isatty success!\n"); 
-      }
 
     struct termios newtio,oldtio; 
     if (tcgetattr( fd,&oldtio) != 0) 

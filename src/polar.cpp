@@ -10,10 +10,6 @@ using namespace std;
 
 atomic_flag fWaitForTick;   
 
-
-
-
-
 Polar::Polar(int left, int right, int radius):
     m_nLeftSweepLimit(left),
     m_nRightSweepLimit(right),
@@ -21,7 +17,8 @@ Polar::Polar(int left, int right, int radius):
     m_nAngle(0),
     m_chaser(radius),
     m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}),      // Gamma corrected ramp
-    m_colors(radius, BLUE)
+    m_colors(radius, BLUE), 
+    m_imu()
     {
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
         itimerval timer;
@@ -33,6 +30,7 @@ Polar::Polar(int left, int right, int radius):
 }
 
 void Polar::start(){
+    
     m_threads.emplace_back(thread([](Polar *pPolar){   
         unsigned int timeTick = 0;
         while(pPolar->isKeepSweeping()){                       
@@ -41,7 +39,11 @@ void Polar::start(){
            
             if(pPolar->getInterval() != 0 && timeTick % abs(pPolar->getInterval()) == 0){         
                 pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
-            }    
+            } 
+
+            int heading = pPolar->getHeading();
+            int headingChange = pPolar->getHeadingChange(heading, 133);     // TODO: window claculation or constant. 133 is 30 degrees
+            pPolar->setAngle(headingChange);
             
             int move = pPolar->getAngle() - pPolar->getMotorPosition();
             if(move > 0){
@@ -52,15 +54,15 @@ void Polar::start(){
 
         }
     },this));
+    m_imu.start();
 }
 void Polar::stop(){
+    m_imu.stop();
     m_fKeepSweeping = false;
     for(auto& th : m_threads)
         th.join();
     m_threads.clear();
 }
-
-
 
 void Polar::setHue(int hue){
     m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
@@ -87,6 +89,4 @@ void Polar::home(){
     setAngle(0);
     m_stepper.zeroPosition();
     m_stepper.resetPulse();         // Resets the indexer to electrical angle 45 degrees
-
-
 }

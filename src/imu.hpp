@@ -30,7 +30,7 @@ extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(1600,0)        // TODO: constant for the motor steps (1600)
+        Imu() : m_fKeepRunning(true), m_headingHistogram(1600,0), m_nHeading(0)        // TODO: constant for the motor steps (1600)
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -74,7 +74,9 @@ class Imu{
         void stop();
         void addMeasurements(int flags);
         void decrementHistograms(int dec);
+        inline int getHeading(){return m_nHeading;}
         int getHeadingChange(int heading, int window);
+        int normalize(int angle);
 
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
@@ -97,6 +99,7 @@ class Imu{
         bool m_fKeepRunning;
         thread m_thread;
         vector<int> m_headingHistogram;
+        int m_nHeading;
 };
 
 
