@@ -5,6 +5,7 @@
 #include "REG.h"
 
 #include <thread>
+#include <mutex>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -30,7 +31,7 @@ extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0)        
+        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex()        
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -93,12 +94,12 @@ class Imu{
         inline int witSetForReset(){return WitSetForReset();}
         inline int witCaliRefAngle(){return WitCaliRefAngle();}
     private:
-        
         void AutoScanSensor(char* dev);
         bool m_fKeepRunning;
         thread m_thread;
         vector<int> m_headingHistogram;
         int m_nHeading;
+        timed_mutex m_mutex;
 };
 
 

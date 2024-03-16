@@ -80,7 +80,7 @@ void Imu::stop(){
 }
 
 void Imu::addMeasurements(int flags){
-
+	m_mutex.lock();
 	if(flags & ACC_UPDATE){
 		double acc = sqrt(sReg[AX] * sReg[AX] + sReg[AY] * sReg[AY]); 
 		double accAngle = atan2(sReg[AY], sReg[AX]);
@@ -101,7 +101,7 @@ void Imu::addMeasurements(int flags){
 		
 		flags &= ~MAG_UPDATE;
 	} 
-
+	m_mutex.unlock();
 }
 void Imu::decrementHistograms(int dec){
 	transform(m_headingHistogram.begin(), m_headingHistogram.end(), m_headingHistogram.begin(), 
@@ -111,6 +111,7 @@ void Imu::decrementHistograms(int dec){
 }
 
 int Imu::getHeadingChange(int heading, int window){
+	m_mutex.lock();
 	long samples = 0;
 	long sum = 0;
 
@@ -130,6 +131,7 @@ int Imu::getHeadingChange(int heading, int window){
 		else
 			it++;
 	}	
+	m_mutex.unlock();
 	int average = samples > 0? sum / samples : heading;
 	return average - heading;
 }
