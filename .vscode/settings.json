@@ -3,7 +3,8 @@
     "files.associations": {
         "thread": "cpp",
         "cmath": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "type_traits": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,

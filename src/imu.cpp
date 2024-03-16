@@ -57,10 +57,10 @@ void Imu::start(){
 				WitSerialDataIn(cBuff[0]);
 			}
 
-			usleep(100000);						// TODO:constant
+			usleep(IMU_SAMPLE_INTERVAL_US);	
 			ageTick++;
-			if(ageTick % 100 == 0)				// TODO:constant
-				pImu->decrementHistograms(1);	// TODO:constant
+			if(ageTick % IMU_LEAK_RATE == 0)				
+				pImu->decrementHistograms(1);
 			
 			if(s_cDataUpdate)
 				pImu->addMeasurements(s_cDataUpdate);
@@ -95,10 +95,10 @@ void Imu::addMeasurements(int flags){
 		s_cDataUpdate &= ~ANGLE_UPDATE;	
 	}				
 	if(flags & MAG_UPDATE){
-		double dHeading = atan2(sReg[HY], sReg[HX]);	
-		if(dHeading < 0) dHeading += M_PI;
-		m_nHeading = (int)(dHeading * 254.6479); 		// TODO: constant to turn radians into motor steps
-		m_headingHistogram[m_nHeading] = m_headingHistogram[m_nHeading] + 1;		// Increment the bucket
+		double dHeading = atan2(sReg[HY], sReg[HX]);								// -pi to pi radians					
+		m_nHeading = (int)(dHeading * RADIANS_PER_STEP + 0.5); 						// Scale to histogram size and round to nearset integer  
+		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket
+		
 		flags &= ~MAG_UPDATE;
 	} 
 
@@ -111,28 +111,29 @@ void Imu::decrementHistograms(int dec){
 }
 
 int Imu::getHeadingChange(int heading, int window){
-
 	long samples = 0;
-	for(int i = heading - window/2; i < heading + window/2; i++){
-		samples += m_headingHistogram[normalize(i)];
-	}	
-
-
-	// Weighted average of histogram in the window...
 	long sum = 0;
-	for(int i = heading - window/2; i < heading + window/2; i++){
-		sum += m_headingHistogram[normalize(i)] * i;
-	}
 
+	int mid = heading + HEADING_0_BUCKET; 
+	int left = mid - window / 2;
+	if(left < 0) left += HEADING_BUCKETS;
+
+	vector<int>::iterator it = m_headingHistogram.begin() + left;
+
+	for(int i = 0; i < window; i++){
+		int angle = distance(m_headingHistogram.begin(), it) - HEADING_0_BUCKET;
+		samples += *it;
+		sum += angle * *it;
+
+		if(it == m_headingHistogram.end())
+			it = m_headingHistogram.begin();
+		else
+			it++;
+	}	
 	int average = samples > 0? sum / samples : heading;
 	return average - heading;
 }
-// Return angle in the range of 0 to histogram size (cicular buffer)
-int Imu::normalize(int i){		
-	int j = i < 0 ? i + m_headingHistogram.size() : i; 	
-	if(j > m_headingHistogram.size() - 1) j = j - (m_headingHistogram.size() - 1);
-	return j;
-}
+
 int Imu::serial_open(const char *dev, int baud){
 
     fd = open(dev, O_RDWR|O_NOCTTY); 

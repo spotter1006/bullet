@@ -42,7 +42,7 @@ void Polar::start(){
             } 
 
             int heading = pPolar->getHeading();
-            int headingChange = pPolar->getHeadingChange(heading, 133);     // TODO: window claculation or constant. 133 is 30 degrees
+            int headingChange = pPolar->getHeadingChange(heading, HEADING_AVERAGE_WINDOW_STEPS);     
             pPolar->setAngle(headingChange);
             
             int move = pPolar->getAngle() - pPolar->getMotorPosition();
@@ -51,6 +51,7 @@ void Polar::start(){
             }else if(move < 0){
                 if(pPolar->getMotorPosition() > pPolar->getLeftSweepLimit()) pPolar->stepMotor(-1);
             }
+
 
         }
     },this));
