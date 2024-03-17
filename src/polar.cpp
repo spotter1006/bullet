@@ -41,8 +41,7 @@ void Polar::start(){
                 pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
             } 
 
-            int heading = pPolar->getHeading();
-            int headingChange = pPolar->getHeadingChange(heading, HEADING_AVERAGE_WINDOW_STEPS);     
+            int headingChange = pPolar->getHeadingChange(HEADING_AVERAGE_WINDOW_STEPS);     
             pPolar->setAngle(headingChange);
             
             int move = pPolar->getAngle() - pPolar->getMotorPosition();

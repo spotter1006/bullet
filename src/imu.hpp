@@ -76,8 +76,8 @@ class Imu{
         void addMeasurements(int flags);
         void decrementHistograms(int dec);
         inline int getHeading(){return m_nHeading;}
-        int getHeadingChange(int heading, int window);
-
+        int getHeadingChange(int window);
+        void displayData();
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs

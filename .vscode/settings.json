@@ -4,7 +4,10 @@
         "thread": "cpp",
         "cmath": "cpp",
         "ostream": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "iostream": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,

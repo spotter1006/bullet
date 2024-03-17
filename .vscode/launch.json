@@ -2,10 +2,48 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Test IMU",
+        "name": "Just show IMU data",
         "type": "cppdbg",
         "request": "launch",
-        "args": [],
+        "args": [""],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Calibrate Magnetometer",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["cm"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Calibrate Accelerometer",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["ca"],
         "stopAtEntry": false,
         "externalConsole": false,
         "cwd": "${workspaceFolder}",

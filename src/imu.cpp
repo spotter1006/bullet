@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <numeric>
+#include <iomanip>
 #include "wit_c_sdk.h"
 using namespace std;
 
@@ -34,7 +35,7 @@ void Imu::AutoScanSensor(char* dev)
 			}
 			if(s_cDataUpdate != 0)
 			{
-				cout << "using IMU sensor at " << bauds[i] << " baud" << endl;
+				//cout << "using IMU sensor at " << bauds[i] << " baud" << endl;
 				return ;
 			}
 			iRetry--;
@@ -96,7 +97,7 @@ void Imu::addMeasurements(int flags){
 	}				
 	if(flags & MAG_UPDATE){
 		double dHeading = atan2(sReg[HY], sReg[HX]);								// -pi to pi radians					
-		m_nHeading = (int)(dHeading * RADIANS_PER_STEP + 0.5); 						// Scale to histogram size and round to nearset integer  
+		m_nHeading = (int)(dHeading * STEPS_PER_RAD + 0.5); 						// Scale to histogram size and round to nearset integer  
 		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket
 		
 		flags &= ~MAG_UPDATE;
@@ -110,12 +111,12 @@ void Imu::decrementHistograms(int dec){
 	});
 }
 
-int Imu::getHeadingChange(int heading, int window){
+int Imu::getHeadingChange(int window){
 	m_mutex.lock();
 	long samples = 0;
 	long sum = 0;
 
-	int mid = heading + HEADING_0_BUCKET; 
+	int mid = m_nHeading + HEADING_0_BUCKET; 
 	int left = mid - window / 2;
 	if(left < 0) left += HEADING_BUCKETS;
 
@@ -132,8 +133,8 @@ int Imu::getHeadingChange(int heading, int window){
 			it++;
 	}	
 	m_mutex.unlock();
-	int average = samples > 0? sum / samples : heading;
-	return average - heading;
+	int average = samples > 0? sum / samples : m_nHeading;
+	return m_nHeading - average;
 }
 
 int Imu::serial_open(const char *dev, int baud){
@@ -197,4 +198,27 @@ int Imu::serial_open(const char *dev, int baud){
 	return 0;
 }
 
+/*
+// Scaling example from sample code:
+fAcc[i] = sReg[AX+i] / 32768.0f * 16.0f;
+fGyro[i] = sReg[GX+i] / 32768.0f * 2000.0f;
+fAngle[i] = sReg[Roll+i] / 32768.0f * 180.0f;
+*/
+void Imu::displayData(){
+	int16_t lReg[144];
+	m_mutex.lock();
+	memcpy(lReg, sReg, 144 * sizeof(int16_t));
+	m_mutex.unlock();
+
+	double compass = (atan2(lReg[HY], lReg[HX]) + M_PI) * 180.0 / M_PI;
+
+	double accelMag = sqrt(lReg[AX]*lReg[AX] + lReg[AY]*lReg[AY]);
+	double accelDir = (atan2(lReg[AY], lReg[AX]) + M_PI) * 180.0 / M_PI;
+
+	cout << "Accel:\t" 	<< setw(10) << lReg[AX] << setw(10)  << lReg[AY] << setw(10)  << lReg[AZ] << setw(10) << accelMag << " Gs at " << accelDir << " degrees" << endl;
+	cout << "Gyro:\t" 	<< setw(10) << lReg[GX] << setw(10)  << lReg[GY] << setw(10)  << lReg[GZ] << endl;
+	cout << "Head:\t" 	<< setw(10) << lReg[HX] << setw(10) << lReg[HY] << setw(10)  << lReg[HZ] << setw(10) << compass << " degrees" << endl;
+	cout << "Orient:\t" 	<< setw(10) << lReg[Roll] << setw(10)  << lReg[Pitch] << setw(10)  << lReg[Yaw] << endl;
+
+}
 

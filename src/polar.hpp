@@ -63,7 +63,7 @@ class Polar{
         inline int witSetForReset(){return m_imu.witSetForReset();}
         inline int witCaliRefAngle(){return m_imu.witCaliRefAngle();}
         inline int getHeading(){return m_imu.getHeading();}
-        inline int getHeadingChange(int heading, int window){return m_imu.getHeadingChange(heading, window);}
+        inline int getHeadingChange(int window){return m_imu.getHeadingChange(window);}
         
   
     private:
