@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Just show IMU data",
+        "name": "Show IMU data",
         "type": "cppdbg",
         "request": "launch",
         "args": [""],
@@ -21,7 +21,7 @@
         ]
       },
       {
-        "name": "Calibrate Magnetometer",
+        "name": "Calibrate IMU Magnetometer",
         "type": "cppdbg",
         "request": "launch",
         "args": ["cm"],
@@ -40,10 +40,48 @@
         ]
       },
       {
-        "name": "Calibrate Accelerometer",
+        "name": "Calibrate IMU Accelerometer",
         "type": "cppdbg",
         "request": "launch",
         "args": ["ca"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Set IMU Axis6 mode",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["m1"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Turn off IMU Axis6 mode",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["m0"],
         "stopAtEntry": false,
         "externalConsole": false,
         "cwd": "${workspaceFolder}",

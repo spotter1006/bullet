@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <numeric>
-#include <iomanip>
+
 #include "wit_c_sdk.h"
 using namespace std;
 
@@ -196,29 +196,5 @@ int Imu::serial_open(const char *dev, int baud){
           return -1; 
        }
 	return 0;
-}
-
-/*
-// Scaling example from sample code:
-fAcc[i] = sReg[AX+i] / 32768.0f * 16.0f;
-fGyro[i] = sReg[GX+i] / 32768.0f * 2000.0f;
-fAngle[i] = sReg[Roll+i] / 32768.0f * 180.0f;
-*/
-void Imu::displayData(){
-	int16_t lReg[144];
-	m_mutex.lock();
-	memcpy(lReg, sReg, 144 * sizeof(int16_t));
-	m_mutex.unlock();
-
-	double compass = (atan2(lReg[HY], lReg[HX]) + M_PI) * 180.0 / M_PI;
-
-	double accelMag = sqrt(lReg[AX]*lReg[AX] + lReg[AY]*lReg[AY]);
-	double accelDir = (atan2(lReg[AY], lReg[AX]) + M_PI) * 180.0 / M_PI;
-
-	cout << "Accel:\t" 	<< setw(10) << lReg[AX] << setw(10)  << lReg[AY] << setw(10)  << lReg[AZ] << setw(10) << accelMag << " Gs at " << accelDir << " degrees" << endl;
-	cout << "Gyro:\t" 	<< setw(10) << lReg[GX] << setw(10)  << lReg[GY] << setw(10)  << lReg[GZ] << endl;
-	cout << "Head:\t" 	<< setw(10) << lReg[HX] << setw(10) << lReg[HY] << setw(10)  << lReg[HZ] << setw(10) << compass << " degrees" << endl;
-	cout << "Orient:\t" 	<< setw(10) << lReg[Roll] << setw(10)  << lReg[Pitch] << setw(10)  << lReg[Yaw] << endl;
-
 }
 

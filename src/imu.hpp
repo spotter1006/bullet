@@ -77,7 +77,6 @@ class Imu{
         void decrementHistograms(int dec);
         inline int getHeading(){return m_nHeading;}
         int getHeadingChange(int window);
-        void displayData();
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs
@@ -93,6 +92,7 @@ class Imu{
         inline int witSaveParameter(){return WitSaveParameter();}
         inline int witSetForReset(){return WitSetForReset();}
         inline int witCaliRefAngle(){return WitCaliRefAngle();}
+        inline int witWriteRegister(uint32_t reg, uint16_t value){return WitWriteReg(reg, value);}
     private:
         void AutoScanSensor(char* dev);
         bool m_fKeepRunning;
