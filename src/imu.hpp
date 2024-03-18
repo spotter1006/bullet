@@ -80,7 +80,7 @@ class Imu{
         void decrementHistograms(int dec);
         inline int getHeading(){return m_nHeading;}
         int getHeadingChange(int window);
-        inline vector<int> getMagOffsets(){return m_magOffsets;};
+        void getMagOffsets(vector<int> &offsets);
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs

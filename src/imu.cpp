@@ -142,6 +142,12 @@ int Imu::getHeadingChange(int window){
 	return m_nHeading - average;
 }
 
+void Imu::getMagOffsets(vector<int> &offsets){
+	m_mutex.lock();
+	offsets = m_magOffsets;
+	m_mutex.unlock();
+}
+
 int Imu::serial_open(const char *dev, int baud){
 
     fd = open(dev, O_RDWR|O_NOCTTY); 

@@ -19,15 +19,15 @@ int main(int argc, char* argv[]){
         s_cDataUpdate = 0;
         pImu->witWriteReg(KEY, KEY_UNLOCK);
         usleep(200000);
-        pImu->witReadReg(HXOFFSET, 2);
+        pImu->witReadReg(HXOFFSET, 1);
         usleep(200000);
-        pImu->witReadReg(HYOFFSET, 2);
+        pImu->witReadReg(HYOFFSET, 1);
         usleep(200000);
-        
-        pImu->witReadReg(HZOFFSET, 2);
+        pImu->witReadReg(HZOFFSET, 1);
  
         sleep(2);
-        vector<int> magOffsets = pImu->getMagOffsets();
+        vector<int> magOffsets;
+        pImu->getMagOffsets(magOffsets);
         cout << "Magnetic bias:" << magOffsets[0] << ", " << magOffsets[1] << ", " << magOffsets[2]  << endl;
 
     }else if(cmd.compare("cm") == 0){
