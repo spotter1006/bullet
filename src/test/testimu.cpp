@@ -23,14 +23,12 @@ int main(int argc, char* argv[]){
         usleep(200000);
         pImu->witReadReg(HYOFFSET, 2);
         usleep(200000);
+        
         pImu->witReadReg(HZOFFSET, 2);
-        usleep(200000);
-        while(read(fd, cBuff, 1))
-        {
-            WitSerialDataIn(cBuff[0]);
-        }
+ 
+        sleep(2);
         vector<int> magOffsets = pImu->getMagOffsets();
-        cout << "Magnetic offsets:" << magOffsets[0] << ", " << magOffsets[1] << ", " << magOffsets[2]  << endl;
+        cout << "Magnetic bias:" << magOffsets[0] << ", " << magOffsets[1] << ", " << magOffsets[2]  << endl;
 
     }else if(cmd.compare("cm") == 0){
         cout << "starting magnetic calibration. Hit <enter> to end..." << endl;
