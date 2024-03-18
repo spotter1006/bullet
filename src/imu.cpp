@@ -63,8 +63,10 @@ void Imu::start(){
 			if(ageTick % IMU_LEAK_RATE == 0)				
 				pImu->decrementHistograms(1);
 			
-			if(s_cDataUpdate)
+			if(s_cDataUpdate){
 				pImu->addMeasurements(s_cDataUpdate);
+				s_cDataUpdate = 0;
+			}
 
 		}
 		
@@ -79,31 +81,31 @@ void Imu::stop(){
 	// m_thread.join();
 }
 
-void Imu::addMeasurements(int flags){
+void Imu::addMeasurements(uint flags){
 	m_mutex.lock();
 	if(flags & ACC_UPDATE){
 		// double acc = sqrt(sReg[AX] * sReg[AX] + sReg[AY] * sReg[AY]); 
 		// double accAngle = atan2(sReg[AY], sReg[AX]);
 		// TODO: store these...
-		flags &= ~ACC_UPDATE;
+
 	} 
 	if(flags & GYRO_UPDATE){
-		s_cDataUpdate &= ~GYRO_UPDATE;
+
 	}
 	if(flags & ANGLE_UPDATE){ 
-		s_cDataUpdate &= ~ANGLE_UPDATE;	
+
 	}				
 	if(flags & MAG_UPDATE){
 		double dHeading = atan2(sReg[HY], sReg[HX]);								// -pi to pi radians					
 		m_nHeading = (int)(dHeading * STEPS_PER_RAD + 0.5); 						// Scale to histogram size and round to nearset integer  
 		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket		
-		flags &= ~MAG_UPDATE;
+
 	} 
 	if(flags & BIAS_UPDATE){
 		for(int i = 0; i < 9; i++){
-			m_biasTable[i] = sReg[i+AXOFFSET];
+			m_biasTable[i] = sReg[i + AXOFFSET];
 		}
-		flags &= ~BIAS_UPDATE;
+
 	}
 	
 
@@ -141,7 +143,16 @@ int Imu::getHeadingChange(int window){
 	int average = samples > 0? sum / samples : m_nHeading;
 	return m_nHeading - average;
 }
+void Imu::readBiases(){
+	witWriteReg(KEY, KEY_UNLOCK);
+	usleep(200000);
+	for(int i = 0; i < 9; i++)
+	{
+		witReadReg(i + AXOFFSET, 1);
+		usleep(200000);
+	}
 
+}
 void Imu::getBiasTable(vector<int> &offsets){
 	m_mutex.lock();
 	offsets = m_biasTable;

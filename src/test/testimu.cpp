@@ -17,17 +17,9 @@ int main(int argc, char* argv[]){
     if(cmd.compare("rm") == 0){
         char cBuff[1];
         s_cDataUpdate = 0;
-        pImu->witWriteReg(KEY, KEY_UNLOCK);
-        usleep(200000);
-
-        
-        pImu->witReadReg(HXOFFSET, 1);
-        usleep(200000);
-        pImu->witReadReg(HYOFFSET, 1);
-        usleep(200000);
-        pImu->witReadReg(HZOFFSET, 1);
- 
+        pImu->readBiases();
         sleep(2);
+        
         vector<int> offsets;
         pImu->getBiasTable(offsets);
         cout << "Bias Table:" << endl;
