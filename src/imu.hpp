@@ -22,6 +22,10 @@ using namespace std;
 #define MAG_UPDATE		0x08
 #define READ_UPDATE		0x80
 
+#define MAG_OFFEST_UPDATE 0x10
+
+
+
 // Static variables needed by Wit API
 extern char s_cDataUpdate;
 extern int fd;    
@@ -31,7 +35,7 @@ extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex()        
+        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_magOffsets(3,0)        
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -58,9 +62,8 @@ class Imu{
                             s_cDataUpdate |= MAG_UPDATE; break;
                         case Yaw: 
                             s_cDataUpdate |= ANGLE_UPDATE; break;
-                        case TEMP:
-                            break;
-                        case AX: case AY: case GX: case GY: case HX: case HY: case Roll: case Pitch: case VERSION:
+                        case HZOFFSET:
+                            s_cDataUpdate |= MAG_OFFEST_UPDATE; 
                             break;
                         default: 
                             s_cDataUpdate |= READ_UPDATE; break;
@@ -77,6 +80,7 @@ class Imu{
         void decrementHistograms(int dec);
         inline int getHeading(){return m_nHeading;}
         int getHeadingChange(int window);
+        inline vector<int> getMagOffsets(){return m_magOffsets;};
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs
@@ -92,13 +96,15 @@ class Imu{
         inline int witSaveParameter(){return WitSaveParameter();}
         inline int witSetForReset(){return WitSetForReset();}
         inline int witCaliRefAngle(){return WitCaliRefAngle();}
-        inline int witWriteRegister(uint32_t reg, uint16_t value){return WitWriteReg(reg, value);}
+        inline int witWriteReg(uint32_t reg, uint16_t value){return WitWriteReg(reg, value);}
+        inline int witReadReg(uint32_t reg, uint32_t len){return WitReadReg(reg, len);}
     private:
         void AutoScanSensor(char* dev);
         bool m_fKeepRunning;
         thread m_thread;
         vector<int> m_headingHistogram;
         int m_nHeading;
+        vector<int> m_magOffsets;
         timed_mutex m_mutex;
 };
 

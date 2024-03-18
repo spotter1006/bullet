@@ -66,7 +66,6 @@ void Imu::start(){
 			if(s_cDataUpdate)
 				pImu->addMeasurements(s_cDataUpdate);
 
-
 		}
 		
 		close(fd);
@@ -83,8 +82,8 @@ void Imu::stop(){
 void Imu::addMeasurements(int flags){
 	m_mutex.lock();
 	if(flags & ACC_UPDATE){
-		double acc = sqrt(sReg[AX] * sReg[AX] + sReg[AY] * sReg[AY]); 
-		double accAngle = atan2(sReg[AY], sReg[AX]);
+		// double acc = sqrt(sReg[AX] * sReg[AX] + sReg[AY] * sReg[AY]); 
+		// double accAngle = atan2(sReg[AY], sReg[AX]);
 		// TODO: store these...
 		flags &= ~ACC_UPDATE;
 	} 
@@ -92,16 +91,22 @@ void Imu::addMeasurements(int flags){
 		s_cDataUpdate &= ~GYRO_UPDATE;
 	}
 	if(flags & ANGLE_UPDATE){ 
-
 		s_cDataUpdate &= ~ANGLE_UPDATE;	
 	}				
 	if(flags & MAG_UPDATE){
 		double dHeading = atan2(sReg[HY], sReg[HX]);								// -pi to pi radians					
 		m_nHeading = (int)(dHeading * STEPS_PER_RAD + 0.5); 						// Scale to histogram size and round to nearset integer  
-		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket
-		
+		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket		
 		flags &= ~MAG_UPDATE;
 	} 
+	if(flags & MAG_OFFEST_UPDATE){
+		m_magOffsets[0] = sReg[HXOFFSET];
+		m_magOffsets[1] = sReg[HYOFFSET];
+		m_magOffsets[2] = sReg[HZOFFSET];
+		flags &= ~MAG_OFFEST_UPDATE;
+	}
+	
+
 	m_mutex.unlock();
 }
 void Imu::decrementHistograms(int dec){

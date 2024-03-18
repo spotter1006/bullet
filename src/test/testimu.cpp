@@ -9,11 +9,30 @@ using namespace std;
 int main(int argc, char* argv[]){
     cout << "IMU test" <<endl;
     Imu *pImu = new Imu();
+    pImu->start();
 
     string cmd;
     if(argc > 1) cmd=string(argv[1]);
 
-    if(cmd.compare("cm") == 0){
+    if(cmd.compare("rm") == 0){
+        char cBuff[1];
+        s_cDataUpdate = 0;
+        pImu->witWriteReg(KEY, KEY_UNLOCK);
+        usleep(200000);
+        pImu->witReadReg(HXOFFSET, 2);
+        usleep(200000);
+        pImu->witReadReg(HYOFFSET, 2);
+        usleep(200000);
+        pImu->witReadReg(HZOFFSET, 2);
+        usleep(200000);
+        while(read(fd, cBuff, 1))
+        {
+            WitSerialDataIn(cBuff[0]);
+        }
+        vector<int> magOffsets = pImu->getMagOffsets();
+        cout << "Magnetic offsets:" << magOffsets[0] << ", " << magOffsets[1] << ", " << magOffsets[2]  << endl;
+
+    }else if(cmd.compare("cm") == 0){
         cout << "starting magnetic calibration. Hit <enter> to end..." << endl;
         pImu->witStartMagCali();
         getline(cin, cmd);
@@ -32,29 +51,20 @@ int main(int argc, char* argv[]){
             cout << "format: m<0,1> where 1 is axis6 mode" << endl;
         }else{
             int mode = stoi(cmd.substr(1));
-            pImu->witWriteRegister(AXIS6, mode);
+            pImu->witWriteReg(AXIS6, mode);
             pImu->witSaveParameter();
             cout << "parameters saved" << endl;
         }
-    }
-    sleep(2);
-    pImu->start();
-
-    cout << "reading data ..." << endl;
-    while(1){
-        sleep(.75);
-
-
-        cout << "Accel:\t" 	<< setw(10) << sReg[AX] << setw(10)  << sReg[AY] << setw(10)  << sReg[AZ] << "\n" <<
-            "Gyro:\t" 	<< setw(10) << sReg[GX] << setw(10)  << sReg[GY] << setw(10)  << sReg[GZ] << "\n" <<
-            "Mag:\t" 	<< setw(10) << sReg[HX] << setw(10) << sReg[HY] << setw(10)  << sReg[HZ] <<  "\n" <<
-            "RPY:\t" << setw(10) << sReg[Roll]  << setw(10)  << sReg[Pitch]   << setw(10)  << sReg[Yaw]  << endl;
-
-
-
-        //Go back up 4 lines
-        cout << "\x1b[A\x1b[A\x1b[A\x1b[A";
-
+    }else{
+        cout << "reading data ..." << endl;
+        while(1){
+            sleep(.75);
+            cout << "Accel:\t" 	<< setw(10) << sReg[AX] << setw(10)  << sReg[AY] << setw(10)  << sReg[AZ] << "\n" <<
+                "Gyro:\t" 	<< setw(10) << sReg[GX] << setw(10)  << sReg[GY] << setw(10)  << sReg[GZ] << "\n" <<
+                "Mag:\t" 	<< setw(10) << sReg[HX] << setw(10) << sReg[HY] << setw(10)  << sReg[HZ] <<  "\n" <<
+                "RPY:\t" << setw(10) << sReg[Roll]  << setw(10)  << sReg[Pitch]   << setw(10)  << sReg[Yaw]  << endl;
+            cout << "\x1b[A\x1b[A\x1b[A\x1b[A"; //Go back up 4 lines
+        }
     }
 }
 /*
