@@ -22,9 +22,7 @@ using namespace std;
 #define MAG_UPDATE		0x08
 #define READ_UPDATE		0x80
 
-#define MAG_OFFEST_UPDATE 0x10
-
-
+#define BIAS_UPDATE 0x10
 
 // Static variables needed by Wit API
 extern char s_cDataUpdate;
@@ -35,7 +33,7 @@ extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_magOffsets(3,0)        
+        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0)        
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -48,29 +46,26 @@ class Imu{
 	            usleep(ms * 1000);
             });
    
-
             WitRegisterCallBack([](uint32_t uiReg, uint32_t uiRegNum){
-                for(int i = 0; i < uiRegNum; i++)
+                switch(uiReg)
                 {
-                    switch(uiReg)
-                    {
-                        case AZ: 
-                            s_cDataUpdate |= ACC_UPDATE; break;
-                        case GZ: 
-                            s_cDataUpdate |= GYRO_UPDATE; break;
-                        case HZ: 
-                            s_cDataUpdate |= MAG_UPDATE; break;
-                        case Yaw: 
-                            s_cDataUpdate |= ANGLE_UPDATE; break;
-                        case HZOFFSET:
-                            s_cDataUpdate |= MAG_OFFEST_UPDATE; 
-                            break;
-                        default: 
-                            s_cDataUpdate |= READ_UPDATE; break;
-                    }
-                    uiReg++;
+                    case AZ: 
+                        s_cDataUpdate |= ACC_UPDATE; break;
+                    case GZ: 
+                        s_cDataUpdate |= GYRO_UPDATE; break;
+                    case HZ: 
+                        s_cDataUpdate |= MAG_UPDATE; break;
+                    case Yaw: 
+                        s_cDataUpdate |= ANGLE_UPDATE; break;
+                    case HZOFFSET:
+                        s_cDataUpdate |= BIAS_UPDATE; 
+                        break;
+                    default: 
+                        s_cDataUpdate |= READ_UPDATE; break;
                 }
+                uiReg++;
             });
+
             serial_open(IMU_SERIAL_PORT, 115200);
         }
         static int serial_open(const char *dev, int baud);
@@ -80,7 +75,7 @@ class Imu{
         void decrementHistograms(int dec);
         inline int getHeading(){return m_nHeading;}
         int getHeadingChange(int window);
-        void getMagOffsets(vector<int> &offsets);
+        void getBiasTable(vector<int> &offsets);
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs
@@ -104,7 +99,7 @@ class Imu{
         thread m_thread;
         vector<int> m_headingHistogram;
         int m_nHeading;
-        vector<int> m_magOffsets;
+        vector<int> m_biasTable;
         timed_mutex m_mutex;
 };
 

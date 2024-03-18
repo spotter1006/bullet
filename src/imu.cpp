@@ -99,11 +99,11 @@ void Imu::addMeasurements(int flags){
 		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket		
 		flags &= ~MAG_UPDATE;
 	} 
-	if(flags & MAG_OFFEST_UPDATE){
-		m_magOffsets[0] = sReg[HXOFFSET];
-		m_magOffsets[1] = sReg[HYOFFSET];
-		m_magOffsets[2] = sReg[HZOFFSET];
-		flags &= ~MAG_OFFEST_UPDATE;
+	if(flags & BIAS_UPDATE){
+		for(int i = 0; i < 9; i++){
+			m_biasTable[i] = sReg[i+AXOFFSET];
+		}
+		flags &= ~BIAS_UPDATE;
 	}
 	
 
@@ -142,9 +142,9 @@ int Imu::getHeadingChange(int window){
 	return m_nHeading - average;
 }
 
-void Imu::getMagOffsets(vector<int> &offsets){
+void Imu::getBiasTable(vector<int> &offsets){
 	m_mutex.lock();
-	offsets = m_magOffsets;
+	offsets = m_biasTable;
 	m_mutex.unlock();
 }
 

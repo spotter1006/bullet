@@ -19,6 +19,8 @@ int main(int argc, char* argv[]){
         s_cDataUpdate = 0;
         pImu->witWriteReg(KEY, KEY_UNLOCK);
         usleep(200000);
+
+        
         pImu->witReadReg(HXOFFSET, 1);
         usleep(200000);
         pImu->witReadReg(HYOFFSET, 1);
@@ -26,16 +28,24 @@ int main(int argc, char* argv[]){
         pImu->witReadReg(HZOFFSET, 1);
  
         sleep(2);
-        vector<int> magOffsets;
-        pImu->getMagOffsets(magOffsets);
-        cout << "Magnetic bias:" << magOffsets[0] << ", " << magOffsets[1] << ", " << magOffsets[2]  << endl;
+        vector<int> offsets;
+        pImu->getBiasTable(offsets);
+        cout << "Bias Table:" << endl;
+        for(int i = 0; i <3; i++){
+            for(int j = 0; j < 3; j++){
+                cout << offsets[i + j] << " ";
+            }
+            cout << endl;
+        }
 
     }else if(cmd.compare("cm") == 0){
         cout << "starting magnetic calibration. Hit <enter> to end..." << endl;
         pImu->witStartMagCali();
         getline(cin, cmd);
         pImu->witStopMagCali();
+        usleep(200000);
         pImu->witSaveParameter();
+        usleep(200000);
         cout << "magnetic calibration ended and parameters saved" << endl;
     }else if(cmd.compare("ca") == 0){
         cout << "starting accelerometer calibration. Hit <enter> to end..." << endl;
