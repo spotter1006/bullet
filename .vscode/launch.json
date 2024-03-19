@@ -2,10 +2,29 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Read IMU magnetic offsets",
+        "name": "Read IMU settings",
         "type": "cppdbg",
         "request": "launch",
-        "args": ["rm"],
+        "args": ["rs"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Read IMU bias table",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["rb"],
         "stopAtEntry": false,
         "externalConsole": false,
         "cwd": "${workspaceFolder}",

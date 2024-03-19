@@ -105,7 +105,12 @@ void Imu::addMeasurements(uint flags){
 		for(int i = 0; i < 9; i++){
 			m_biasTable[i] = sReg[i + AXOFFSET];
 		}
-
+	}
+	if(flags & SETTTINGS_UPDATE){
+		m_settings[0] = sReg[RSW];
+		m_settings[1] = sReg[RRATE];
+		m_settings[2] = sReg[BAUD];
+		m_settings[3] = sReg[AXIS6];
 	}
 	
 
@@ -148,16 +153,35 @@ void Imu::readBiases(){
 	usleep(200000);
 	for(int i = 0; i < 9; i++)
 	{
-		witReadReg(i + AXOFFSET, 1);
+		witReadReg(i + AXOFFSET, 2);
 		usleep(200000);
 	}
 
 }
-void Imu::getBiasTable(vector<int> &offsets){
+void Imu::getBiasTable(vector<uint16_t> &offsets){
 	m_mutex.lock();
 	offsets = m_biasTable;
 	m_mutex.unlock();
 }
+void Imu::readSettings(){
+	witWriteReg(KEY, KEY_UNLOCK);
+	usleep(200000);
+	witReadReg(RSW, 2);
+	usleep(200000);
+	witReadReg(RRATE, 2);
+	usleep(200000);
+	witReadReg(BAUD, 2);
+	usleep(200000);
+	witReadReg(AXIS6, 2);
+	usleep(200000);
+
+}
+void Imu::getSettings(vector<uint16_t> &settings){
+	m_mutex.lock();
+	settings = m_settings;
+	m_mutex.unlock();
+}
+
 
 int Imu::serial_open(const char *dev, int baud){
 

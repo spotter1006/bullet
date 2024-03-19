@@ -23,6 +23,7 @@ using namespace std;
 #define READ_UPDATE		0x80
 
 #define BIAS_UPDATE 0x10
+#define SETTTINGS_UPDATE 0x20
 
 // Static variables needed by Wit API
 extern char s_cDataUpdate;
@@ -33,7 +34,7 @@ extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0)        
+        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0), m_settings(4,0)       
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -58,13 +59,11 @@ class Imu{
                             s_cDataUpdate |= MAG_UPDATE; break;
                         case Yaw: 
                             s_cDataUpdate |= ANGLE_UPDATE; break;
-
-
-                        case AXOFFSET: case AYOFFSET: case AZOFFSET:
-                        case GXOFFSET: case GYOFFSET: case GZOFFSET:
-                        case HXOFFSET: case HYOFFSET: case HZOFFSET:
-                            s_cDataUpdate |= BIAS_UPDATE; 
-                            break;
+                        case AXOFFSET: case AYOFFSET: case AZOFFSET: case GXOFFSET: case GYOFFSET: case GZOFFSET: case HXOFFSET: case HYOFFSET: case HZOFFSET: 
+                            s_cDataUpdate |= BIAS_UPDATE; break;
+                        case RSW: case RRATE: case BAUD: case AXIS6:
+                            s_cDataUpdate |= SETTTINGS_UPDATE; break;
+                        
                         default: 
                             s_cDataUpdate |= READ_UPDATE; break;
                     }
@@ -83,7 +82,9 @@ class Imu{
         inline int getHeading(){return m_nHeading;}
         int getHeadingChange(int window);
         void readBiases();
-        void getBiasTable(vector<int> &offsets);
+        void getBiasTable(vector<uint16_t> &offsets);
+        void readSettings();
+        void getSettings(vector<uint16_t> &settings);
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs
@@ -107,8 +108,13 @@ class Imu{
         thread m_thread;
         vector<int> m_headingHistogram;
         int m_nHeading;
-        vector<int> m_biasTable;
+        vector<uint16_t> m_biasTable;
+        vector<uint16_t> m_settings;
+ 
+
         timed_mutex m_mutex;
+        
+
 };
 
 
