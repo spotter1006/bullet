@@ -108,6 +108,16 @@ int main(int argc, char* argv[]){
             pImu->witSaveParameter();
             cout << "parameters saved" << endl;
         }
+    }
+    else if (cmd[0] == 'r'){
+        if(cmd.size() != 2){
+            cout << "output rate: 1-13 for 0.2Hz..200Hz, single or none" << endl;
+        }else{
+            int rate = stoi(cmd.substr(1));
+            pImu->witSetOutputRate(rate);
+            pImu->witSaveParameter();
+            cout << "parameters saved" << endl;
+        }
     }else{
         cout << "reading data ..." << endl;
         while(1){
