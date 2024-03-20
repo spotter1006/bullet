@@ -175,6 +175,8 @@ void Imu::readSettings(){
 	usleep(200000);
 	witReadReg(AXIS6, 2);
 	usleep(200000);
+	witReadReg(BANDWIDTH, 2);
+	usleep(200000);
 
 }
 void Imu::getSettings(vector<uint16_t> &settings){
@@ -188,7 +190,12 @@ void Imu::setAxis6(int val){
 	WitWriteReg(AXIS6, val);
 	usleep(20000);
 }
-
+void Imu::setBandwidth(int bw){
+	WitWriteReg(KEY, KEY_UNLOCK);
+	usleep(20000);
+	WitWriteReg(BANDWIDTH, bw);
+	usleep(20000);
+}
 int Imu::serial_open(const char *dev, int baud){
 
     fd = open(dev, O_RDWR|O_NOCTTY); 

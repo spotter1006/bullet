@@ -95,10 +95,18 @@ int main(int argc, char* argv[]){
             int mode = stoi(cmd.substr(1));
             pImu->setAxis6(mode);
             pImu->witSaveParameter();
-            cout << "parameters saved" << endl;
+            cout << "axis6 algorithm set to " << mode << endl;
         }
-    }
-    else if (cmd[0] == 'r'){
+    }else if(cmd[0] == 'b'){
+        if(cmd.size() != 2){
+            cout << "format: b<1..10> for .2 to 200, 11 single return, 12 no return>" << endl;
+        }else{
+            int bw = stoi(cmd.substr(1));
+            pImu->setBandwidth(bw);
+            pImu->witSaveParameter();
+            cout << "bandwidth set to " << bw << endl;
+        }
+    }else if (cmd[0] == 'r'){
         if(cmd.size() != 2){
             cout << "output rate: 1-13 for 0.2Hz..200Hz, single or none" << endl;
         }else{

@@ -86,6 +86,7 @@ class Imu{
         void readSettings();
         void getSettings(vector<uint16_t> &settings);
         void setAxis6(int on);
+        void setBandwidth(int bw);
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs
