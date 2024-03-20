@@ -111,6 +111,7 @@ void Imu::addMeasurements(uint flags){
 		m_settings[1] = sReg[RRATE];
 		m_settings[2] = sReg[BAUD];
 		m_settings[3] = sReg[AXIS6];
+		m_settings[4] = sReg[BANDWIDTH];
 	}
 	
 
@@ -181,7 +182,12 @@ void Imu::getSettings(vector<uint16_t> &settings){
 	settings = m_settings;
 	m_mutex.unlock();
 }
-
+void Imu::setAxis6(int val){
+	WitWriteReg(KEY, KEY_UNLOCK);
+	usleep(20000);
+	WitWriteReg(AXIS6, val);
+	usleep(20000);
+}
 
 int Imu::serial_open(const char *dev, int baud){
 

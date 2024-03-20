@@ -34,7 +34,7 @@ extern DelaymsCb p_WitDelaymsFunc;
 
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0), m_settings(4,0)       
+        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0), m_settings(5,0)       
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -61,7 +61,7 @@ class Imu{
                             s_cDataUpdate |= ANGLE_UPDATE; break;
                         case AXOFFSET: case AYOFFSET: case AZOFFSET: case GXOFFSET: case GYOFFSET: case GZOFFSET: case HXOFFSET: case HYOFFSET: case HZOFFSET: 
                             s_cDataUpdate |= BIAS_UPDATE; break;
-                        case RSW: case RRATE: case BAUD: case AXIS6:
+                        case RSW: case RRATE: case BAUD: case AXIS6: case BANDWIDTH:
                             s_cDataUpdate |= SETTTINGS_UPDATE; break;
                         
                         default: 
@@ -85,6 +85,7 @@ class Imu{
         void getBiasTable(vector<uint16_t> &offsets);
         void readSettings();
         void getSettings(vector<uint16_t> &settings);
+        void setAxis6(int on);
         inline bool isKeepRunning(){return m_fKeepRunning;}
         
         // Wrap all wit APIs

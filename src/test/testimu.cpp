@@ -6,6 +6,39 @@
 #include "../imu.hpp"
 using namespace std;
 
+void showSettings(Imu* pImu){
+    char cBuff[1];
+ 
+        vector<uint16_t> settings;
+        pImu->getSettings(settings);    // Thread safe
+
+        string bauds[10] ={"invalid", "4800","9600","19200","38400","57600","115200","230400","460800","921600"};
+        string baud=bauds[(settings[2] & 0x07)];
+
+        string rates[13]={"invalid", "0.2","0.5","1","2","5","10","20","50","100","200","single return","no return"};
+        string outputRate = rates[(settings[1] & 0x07)];
+
+        string features[11] = {"TIME ","ACC ","GYRO ","ANGLE ","MAG ","PORT ","PRESS ","GPS ","VELOCITY ","QUATER ","GSA "};
+        string outputs = "";
+        uint bits = settings[0] & 0x17;
+        uint mask = 0x0001;
+        for(int i = 0; i < 11; i++){
+            if(bits & mask) outputs += features[i];
+            mask = mask << 1;
+        }
+
+        string axis6 = (settings[3] == 0x01)? "on":"off";
+
+        string bandwidths[7] = {"256Hz","188Hz","98Hz","42Hz","20Hz","10Hz","5Hz"};
+        string bandwidth=bandwidths[settings[4] & 0x07];
+
+        cout << "Output content: " << outputs << endl;
+        cout << "Output rate: " << outputRate << endl;
+        cout << "Baud rate: " << baud << endl;
+        cout << "Axis6 algorithm: " << axis6 << endl;
+        cout << "bandwidth: " << bandwidth << endl;
+        
+}
 int main(int argc, char* argv[]){
     cout << "IMU test" <<endl;
     Imu *pImu = new Imu();
@@ -20,52 +53,8 @@ int main(int argc, char* argv[]){
         s_cDataUpdate = 0;
         pImu->readSettings();  
         sleep(2);   
-        vector<uint16_t> settings;
-        pImu->getSettings(settings);
-        cout << "Settings:" << endl;
-
-        uint baud = 0;
-        switch(settings[2] & 0x07){
-            case 0x01: baud =4800; break;
-            case 0x02: baud =9600; break;
-            case 0x03: baud =19200; break;
-            case 0x04: baud =38400; break;
-            case 0x05: baud =57600; break;
-            case 0x06: baud =115200; break;
-            case 0x07: baud =230400; break;
-            case 0x08: baud =460800; break;
-            case 0x09: baud =921600; break;
-        }
-        string outputRate = "";
-        switch(settings[1] & 0x07){
-            case 0x01: outputRate = "0.2Hz"; break;
-            case 0x02: outputRate = "0.5Hz"; break;
-            case 0x03: outputRate = "1Hz"; break;
-            case 0x04: outputRate = "2Hz"; break;
-            case 0x05: outputRate = "5Hz"; break;
-            case 0x06: outputRate = "10Hz"; break;
-            case 0x07: outputRate = "20Hz"; break;
-            case 0x08: outputRate = "50Hz"; break;
-            case 0x09: outputRate = "100Hz"; break;
-            case 0x0B: outputRate = "200Hz"; break;
-            case 0x0C: outputRate = "single return"; break;
-            case 0x0D: outputRate = "no return"; break;
-        }
-        string features[11] = {"TIME ","ACC ","GYRO ","ANGLE ","MAG ","PORT ","PRESS ","GPS ","VELOCITY ","QUATER ","GSA "};
-        string outputs = "";
-        uint bits = settings[0] & 0x17;
-        uint mask = 0x0001;
-        for(int i = 0; i < 11; i++){
-            if(bits & mask) outputs += features[i];
-            mask = mask << 1;
-        }
-
-        string axis6 = (settings[3] == 0x01)? "on":"off";
-
-        cout << "Output content: " << outputs << endl;
-        cout << dec << "Output rate: " << outputRate << endl;
-        cout << dec << "Baud rate: " << baud << endl;
-        cout << "Axis6 algorithm: " << axis6 << endl;
+        showSettings(pImu);
+       
         
     }else if(cmd.compare("rb") == 0){
         char cBuff[1];
@@ -104,7 +93,7 @@ int main(int argc, char* argv[]){
             cout << "format: m<0,1> where 1 is axis6 mode" << endl;
         }else{
             int mode = stoi(cmd.substr(1));
-            pImu->witWriteReg(AXIS6, mode);
+            pImu->setAxis6(mode);
             pImu->witSaveParameter();
             cout << "parameters saved" << endl;
         }
@@ -119,7 +108,6 @@ int main(int argc, char* argv[]){
             cout << "parameters saved" << endl;
         }
     }else{
-        cout << "reading data ..." << endl;
         while(1){
             sleep(.75);
             cout << "Accel:\t" 	<< setw(10) << sReg[AX] << setw(10)  << sReg[AY] << setw(10)  << sReg[AZ] << "\n" <<
