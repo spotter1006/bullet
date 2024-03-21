@@ -39,7 +39,7 @@
 				"-o",
 				"${workspaceFolder}/build/release/bullet",
 				"-lgpiodcxx",		
-				"-lFusion"
+				"-l:libFusion.a"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -67,7 +67,7 @@
 				"-o",
 				"${workspaceFolder}/build/debug/testimu",
 				"-L/usr/local/lib",
-				"-lFusion"
+				"-l:libFusion.a"
 
 			],
 			"options": {

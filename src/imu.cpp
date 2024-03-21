@@ -47,7 +47,7 @@ void Imu::AutoScanSensor(char* dev)
 
 void Imu::start(){
 	m_thread = thread([](Imu* pImu){
-		int ageTick = 0;
+
 		unsigned char cBuff[1];	
 			
 		pImu->AutoScanSensor(IMU_SERIAL_PORT);
@@ -59,9 +59,6 @@ void Imu::start(){
 			}
 
 			usleep(IMU_SAMPLE_INTERVAL_US);	
-			ageTick++;
-			if(ageTick % IMU_LEAK_RATE == 0)				
-				pImu->decrementHistograms(1);
 			
 			if(s_cDataUpdate){
 				pImu->addMeasurements(s_cDataUpdate);
@@ -82,24 +79,25 @@ void Imu::stop(){
 
 void Imu::addMeasurements(uint flags){
 	m_mutex.lock();
-	if(flags & ACC_UPDATE){
+	if(flags & ACC_UPDATE && flags & GYRO_UPDATE && flags & MAG_UPDATE){		// Wait till all three are ready
+		// Wit library stores in double, fusion values take float 
+		m_accel.axis.x = sReg[AX] / GS_PER_ACCEL; 
+		m_accel.axis.y = sReg[AY] / GS_PER_ACCEL; 
+		m_accel.axis.z = sReg[AZ] / GS_PER_ACCEL;
+		m_gyro.axis.x = sReg[GX] / DEGREES_PER_SECOND_PER_GYRO; 
+		m_gyro.axis.y = sReg[GY] / DEGREES_PER_SECOND_PER_GYRO; 
+		m_gyro.axis.z = sReg[GZ] / DEGREES_PER_SECOND_PER_GYRO;
+		m_mag.axis.x = 	sReg[HX] / DEGREES_PER_ANGLE; 
+		m_mag.axis.y = sReg[HY] / DEGREES_PER_ANGLE; 
+		m_mag.axis.z = sReg[HZ] / DEGREES_PER_ANGLE;
+			
+		FusionAhrsUpdate(&m_fusion, m_gyro, m_accel, m_mag, 1000000/IMU_SAMPLE_INTERVAL_US);
+		s_cDataUpdate &= (~ACC_UPDATE & ~GYRO_UPDATE & ~MAG_UPDATE) ;
 
-		s_cDataUpdate &= ~ACC_UPDATE;
 	} 
-	if(flags & GYRO_UPDATE){
-		s_cDataUpdate &= ~GYRO_UPDATE;
-	}
 	if(flags & ANGLE_UPDATE){ 
 		s_cDataUpdate &= ~ANGLE_UPDATE;
-
-	}				
-	if(flags & MAG_UPDATE){
-		double dHeading = atan2(sReg[HY], sReg[HX]);								// -pi to pi radians					
-		m_nHeading = (int)(dHeading * STEPS_PER_RAD + 0.5); 						// Scale to histogram size and round to nearset integer  
-		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket		
-		s_cDataUpdate &= ~MAG_UPDATE;
-
-	} 
+	}	
 	if(flags & BIAS_UPDATE){
 		for(int i = 0; i < 9; i++){
 			m_biasTable[i] = sReg[i + AXOFFSET];
@@ -114,55 +112,16 @@ void Imu::addMeasurements(uint flags){
 		m_settings[4] = sReg[BANDWIDTH];
 		s_cDataUpdate &= ~SETTTINGS_UPDATE;
 	}
-	
-
 	m_mutex.unlock();
 }
-void Imu::decrementHistograms(int dec){
-	transform(m_headingHistogram.begin(), m_headingHistogram.end(), m_headingHistogram.begin(), 
-	[dec](int val){
-		return (val >= dec)? val-dec:0;
-	});
-}
-void Imu::getLinearAcceleration(double &accel){
-	/*
-	 pitch α, yaw β, and roll γ
-	g= 9.81 m/s^s
-	A′ =A −⟨−gsin(β),gcos(β)sin(γ),gcos(β)cos(γ)⟩
-	"It is important to note that performs the roll first, then the pitch, and finally the yaw.
-	*/
 
+void Imu::getLinearAcceleration(FusionVector &linearAccel){
 	m_mutex.lock();
-
+	linearAccel = FusionAhrsGetLinearAcceleration(&m_fusion);
 	m_mutex.unlock();
-// 
 
 }
-int Imu::getHeadingChange(int window){
-	m_mutex.lock();
-	long samples = 0;
-	long sum = 0;
 
-	int mid = m_nHeading + HEADING_0_BUCKET; 
-	int left = mid - window / 2;
-	if(left < 0) left += HEADING_BUCKETS;
-
-	vector<int>::iterator it = m_headingHistogram.begin() + left;
-
-	for(int i = 0; i < window; i++){
-		int angle = distance(m_headingHistogram.begin(), it) - HEADING_0_BUCKET;
-		samples += *it;
-		sum += angle * *it;
-
-		if(it == m_headingHistogram.end())
-			it = m_headingHistogram.begin();
-		else
-			it++;
-	}	
-	m_mutex.unlock();
-	int average = samples > 0? sum / samples : m_nHeading;
-	return m_nHeading - average;
-}
 void Imu::readBiases(){
 	witWriteReg(KEY, KEY_UNLOCK);
 	usleep(200000);

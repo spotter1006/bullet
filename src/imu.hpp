@@ -33,11 +33,10 @@ extern SerialWrite p_WitSerialWriteFunc;
 extern DelaymsCb p_WitDelaymsFunc;
 
 
-
-
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0), m_settings(5,0)
+        Imu() : m_fKeepRunning(true), m_mutex(), m_biasTable(9,0), m_settings(5,0),
+        m_accel{0,0,0}, m_gyro{0,0,0}, m_mag{0,0,0}
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -81,10 +80,7 @@ class Imu{
         void start();
         void stop();
         void addMeasurements(uint flags);
-        void decrementHistograms(int dec);
-        inline int getHeading(){return m_nHeading;}
-        int getHeadingChange(int window);
-        void getLinearAcceleration(double &accel);
+        void getLinearAcceleration(FusionVector &linearAccel);
         void readBiases();
         void getBiasTable(vector<uint16_t> &offsets);
         void readSettings();
@@ -112,14 +108,16 @@ class Imu{
         void AutoScanSensor(char* dev);
         bool m_fKeepRunning;
         thread m_thread;
-        vector<int> m_headingHistogram;
-        int m_nHeading;
+
         vector<uint16_t> m_biasTable;
         vector<uint16_t> m_settings;
-
         timed_mutex m_mutex;
         
         FusionAhrs m_fusion;
+        FusionVector m_accel;
+        FusionVector m_gyro;
+        FusionVector m_mag;
+
 };
 
 

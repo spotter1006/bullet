@@ -5,13 +5,13 @@ This is a device that monitors the  performance of sailboats in real time. Measu
 Debug
 
 ``
-/usr/bin/g++ -pthread -fdiagnostics-color=always -g /home/pi/swprojects/bullet/src/*.c* -o /home/pi/swprojects/bullet/build/debug/bullet -L/usr/local/lib -l:libu8g2arm.a -lgpiodcxx -l:libws2811.a
+/usr/bin/g++ -pthread -fdiagnostics-color=always -g /home/pi/swprojects/bullet/src/*.c* -o /home/pi/swprojects/bullet/build/debug/bullet -L/usr/local/lib -l:libu8g2arm.a -lgpiodcxx -l:libws2811.a "-l:libFusion.a"
 ``
 
 Release
 
 ``
-/usr/bin/g++ -pthread /home/pi/swprojects/bullet/src/*.c* -o /home/pi/swprojects/bullet/build/debug/bullet -L/usr/local/lib -l:libu8g2arm.a -lgpiodcxx -l:libws2811.a
+/usr/bin/g++ -pthread /home/pi/swprojects/bullet/src/*.c* -o /home/pi/swprojects/bullet/build/debug/bullet -L/usr/local/lib -l:libu8g2arm.a -lgpiodcxx -l:libws2811.a "-l:libFusion.a"
 ``
 
 ## Run 
@@ -29,15 +29,7 @@ sudo ~/swprojects/bullet/build/release/bullet
 ``
 
 
-## Graphics 
-A graphics engine renders frames for animations to be displayed on the polar display. 
 
-
-- Polar class - Represents the polar chart display 
-    - Stepper class - interfaces to a DRV8825 stepper motor driver to spin the polar axis
-    - Frame collection (Frame class) - Video buffer frames to show on the polar chart in sequence for animation effects
-        - Bar collection (Bar class) - Represents the WS2811 addressable LED string at a sequence of angles to create the animation
-            - LED collection (ws2811_led struct) - Represents the individual LEDs on the bar
 
 
 ## Inertial Measurement Unit
