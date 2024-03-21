@@ -78,6 +78,10 @@ void Imu::stop(){
 }
 
 void Imu::addMeasurements(uint flags){
+
+// auto finish = std::chrono::high_resolution_clock::now();
+// std::chrono::duration<double, std::milli> elapsed = finish - start;
+
 	m_mutex.lock();
 	if(flags & ACC_UPDATE && flags & GYRO_UPDATE && flags & MAG_UPDATE){		// Wait till all three are ready
 		// Wit library stores in double, fusion values take float 
@@ -90,12 +94,30 @@ void Imu::addMeasurements(uint flags){
 		m_mag.axis.x = 	sReg[HX] / DEGREES_PER_ANGLE; 
 		m_mag.axis.y = sReg[HY] / DEGREES_PER_ANGLE; 
 		m_mag.axis.z = sReg[HZ] / DEGREES_PER_ANGLE;
-			
-		FusionAhrsUpdate(&m_fusion, m_gyro, m_accel, m_mag, 1000000/IMU_SAMPLE_INTERVAL_US);
+
+
+ 		// Apply calibration
+        m_gyro = FusionCalibrationInertial(m_gyro, gyroscopeMisalignment, gyroscopeSensitivity, gyroscopeOffset);
+        m_accel = FusionCalibrationInertial(m_accel, accelerometerMisalignment, accelerometerSensitivity, accelerometerOffset);
+        m_mag = FusionCalibrationMagnetic(m_mag, softIronMatrix, hardIronOffset);
+
+        // Update gyroscope offset correction algorithm
+        m_gyro = FusionOffsetUpdate(&offset, m_gyro);
+
+		auto elapsed = chrono::high_resolution_clock::now() - m_lastImuUpdate;
+		auto deltaTime = chrono::duration_cast<std::chrono::duration<float>>(elapsed);
+
+		// Update gyroscope AHRS algorithm
+        FusionAhrsUpdate(&m_fusion, m_gyro, m_accel, m_mag, deltaTime.count());	
+		m_lastImuUpdate = chrono::high_resolution_clock::now();
+
 		s_cDataUpdate &= (~ACC_UPDATE & ~GYRO_UPDATE & ~MAG_UPDATE) ;
 
 	} 
-	if(flags & ANGLE_UPDATE){ 
+
+ 		
+
+	if(flags & ANGLE_UPDATE){ 			// This is from the Wit internal fusion stuff, ignore for now
 		s_cDataUpdate &= ~ANGLE_UPDATE;
 	}	
 	if(flags & BIAS_UPDATE){

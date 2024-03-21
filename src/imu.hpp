@@ -36,7 +36,16 @@ extern DelaymsCb p_WitDelaymsFunc;
 class Imu{
     public:
         Imu() : m_fKeepRunning(true), m_mutex(), m_biasTable(9,0), m_settings(5,0),
-        m_accel{0,0,0}, m_gyro{0,0,0}, m_mag{0,0,0}
+        m_accel{0,0,0}, m_gyro{0,0,0}, m_mag{0,0,0},
+        gyroscopeMisalignment{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        gyroscopeSensitivity{1.0f, 1.0f, 1.0f},
+        gyroscopeOffset{0.0f, 0.0f, 0.0f},
+        accelerometerMisalignment{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        accelerometerSensitivity{1.0f, 1.0f, 1.0f},
+        accelerometerOffset{0.0f, 0.0f, 0.0f},
+        softIronMatrix{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        hardIronOffset{0.0f, 0.0f, 0.0f}, 
+        offset()
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -74,6 +83,17 @@ class Imu{
                 
             });
             FusionAhrsInitialise(&m_fusion);
+                // Set AHRS algorithm settings
+            const FusionAhrsSettings settings = {
+                .convention = FusionConventionNwu,
+                .gain = 0.5f,
+                .gyroscopeRange = 2000.0f, /* replace this with actual gyroscope range in degrees/s */
+                .accelerationRejection = 10.0f,
+                .magneticRejection = 10.0f,
+                .recoveryTriggerPeriod = 5 * (IMU_SAMPLE_INTERVAL_US /1000000), /* 5 seconds */
+            };
+            FusionAhrsSetSettings(&m_fusion, &settings);
+            m_lastImuUpdate =  chrono::high_resolution_clock::now();
             serial_open(IMU_SERIAL_PORT, 115200);
         }
         static int serial_open(const char *dev, int baud);
@@ -117,6 +137,18 @@ class Imu{
         FusionVector m_accel;
         FusionVector m_gyro;
         FusionVector m_mag;
+
+        FusionMatrix gyroscopeMisalignment;
+        FusionVector gyroscopeSensitivity;
+        FusionVector gyroscopeOffset;
+        FusionMatrix accelerometerMisalignment;
+        FusionVector accelerometerSensitivity;
+        FusionVector accelerometerOffset;
+        FusionMatrix softIronMatrix;
+        FusionVector hardIronOffset;
+        FusionOffset offset;
+
+        chrono::_V2::system_clock::time_point m_lastImuUpdate;
 
 };
 
