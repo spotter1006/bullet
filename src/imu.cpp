@@ -65,7 +65,6 @@ void Imu::start(){
 			
 			if(s_cDataUpdate){
 				pImu->addMeasurements(s_cDataUpdate);
-				s_cDataUpdate = 0;
 			}
 
 		}
@@ -84,27 +83,28 @@ void Imu::stop(){
 void Imu::addMeasurements(uint flags){
 	m_mutex.lock();
 	if(flags & ACC_UPDATE){
-		// double acc = sqrt(sReg[AX] * sReg[AX] + sReg[AY] * sReg[AY]); 
-		// double accAngle = atan2(sReg[AY], sReg[AX]);
-		// TODO: store these...
 
+		s_cDataUpdate &= ~ACC_UPDATE;
 	} 
 	if(flags & GYRO_UPDATE){
-
+		s_cDataUpdate &= ~GYRO_UPDATE;
 	}
 	if(flags & ANGLE_UPDATE){ 
+		s_cDataUpdate &= ~ANGLE_UPDATE;
 
 	}				
 	if(flags & MAG_UPDATE){
 		double dHeading = atan2(sReg[HY], sReg[HX]);								// -pi to pi radians					
 		m_nHeading = (int)(dHeading * STEPS_PER_RAD + 0.5); 						// Scale to histogram size and round to nearset integer  
 		m_headingHistogram[m_nHeading + HEADING_0_BUCKET]++;						// Increment the bucket		
+		s_cDataUpdate &= ~MAG_UPDATE;
 
 	} 
 	if(flags & BIAS_UPDATE){
 		for(int i = 0; i < 9; i++){
 			m_biasTable[i] = sReg[i + AXOFFSET];
 		}
+		s_cDataUpdate &= ~BIAS_UPDATE;
 	}
 	if(flags & SETTTINGS_UPDATE){
 		m_settings[0] = sReg[RSW];
@@ -112,6 +112,7 @@ void Imu::addMeasurements(uint flags){
 		m_settings[2] = sReg[BAUD];
 		m_settings[3] = sReg[AXIS6];
 		m_settings[4] = sReg[BANDWIDTH];
+		s_cDataUpdate &= ~SETTTINGS_UPDATE;
 	}
 	
 
@@ -123,7 +124,20 @@ void Imu::decrementHistograms(int dec){
 		return (val >= dec)? val-dec:0;
 	});
 }
+void Imu::getLinearAcceleration(double &accel){
+	/*
+	 pitch α, yaw β, and roll γ
+	g= 9.81 m/s^s
+	A′ =A −⟨−gsin(β),gcos(β)sin(γ),gcos(β)cos(γ)⟩
+	"It is important to note that performs the roll first, then the pitch, and finally the yaw.
+	*/
 
+	m_mutex.lock();
+
+	m_mutex.unlock();
+// 
+
+}
 int Imu::getHeadingChange(int window){
 	m_mutex.lock();
 	long samples = 0;

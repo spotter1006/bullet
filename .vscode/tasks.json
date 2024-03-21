@@ -13,9 +13,9 @@
 				"-o",
 				"${workspaceFolder}/build/debug/bullet",
 				"-L/usr/local/lib",
-				// "-l:libu8g2arm.a",	// Display library	(SPI)
-				"-lgpiodcxx",		// for GPIO access. This has to be after the object file creation step or symbols are not found
-				"-l:libws2811.a"
+				"-lgpiodcxx",		
+				"-l:libws2811.a",
+				"-l:libFusion.a"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -38,7 +38,8 @@
 				"${workspaceFolder}/*.c*",
 				"-o",
 				"${workspaceFolder}/build/release/bullet",
-				"-lgpiodcxx"		// This has to be after the object file creation step or symbols are not found
+				"-lgpiodcxx",		
+				"-lFusion"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -66,6 +67,7 @@
 				"-o",
 				"${workspaceFolder}/build/debug/testimu",
 				"-L/usr/local/lib",
+				"-lFusion"
 
 			],
 			"options": {

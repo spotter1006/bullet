@@ -13,6 +13,7 @@
 #include <termios.h>
 #include "defines.hpp"
 #include <vector>
+#include <Fusion.h>
 
 using namespace std;
 
@@ -32,9 +33,11 @@ extern SerialWrite p_WitSerialWriteFunc;
 extern DelaymsCb p_WitDelaymsFunc;
 
 
+
+
 class Imu{
     public:
-        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0), m_settings(5,0)       
+        Imu() : m_fKeepRunning(true), m_headingHistogram(HEADING_BUCKETS,0), m_nHeading(0), m_mutex(), m_biasTable(9,0), m_settings(5,0)
         {
             WitInit(WIT_PROTOCOL_NORMAL, 0x50);
 
@@ -69,9 +72,9 @@ class Imu{
                     }
                     uiReg++;
                 }
-
+                
             });
-
+            FusionAhrsInitialise(&m_fusion);
             serial_open(IMU_SERIAL_PORT, 115200);
         }
         static int serial_open(const char *dev, int baud);
@@ -81,6 +84,7 @@ class Imu{
         void decrementHistograms(int dec);
         inline int getHeading(){return m_nHeading;}
         int getHeadingChange(int window);
+        void getLinearAcceleration(double &accel);
         void readBiases();
         void getBiasTable(vector<uint16_t> &offsets);
         void readSettings();
@@ -112,11 +116,10 @@ class Imu{
         int m_nHeading;
         vector<uint16_t> m_biasTable;
         vector<uint16_t> m_settings;
- 
 
         timed_mutex m_mutex;
         
-
+        FusionAhrs m_fusion;
 };
 
 
