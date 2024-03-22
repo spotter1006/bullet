@@ -85,15 +85,15 @@ void Imu::addMeasurements(uint flags){
 	m_mutex.lock();
 	if(flags & ACC_UPDATE && flags & GYRO_UPDATE && flags & MAG_UPDATE){		// Wait till all three are ready
 		// Wit library stores in double, fusion values take float 
-		m_accel.axis.x = sReg[AX] / GS_PER_ACCEL; 
-		m_accel.axis.y = sReg[AY] / GS_PER_ACCEL; 
-		m_accel.axis.z = sReg[AZ] / GS_PER_ACCEL;
-		m_gyro.axis.x = sReg[GX] / DEGREES_PER_SECOND_PER_GYRO; 
-		m_gyro.axis.y = sReg[GY] / DEGREES_PER_SECOND_PER_GYRO; 
-		m_gyro.axis.z = sReg[GZ] / DEGREES_PER_SECOND_PER_GYRO;
-		m_mag.axis.x = 	sReg[HX] / DEGREES_PER_ANGLE; 
-		m_mag.axis.y = sReg[HY] / DEGREES_PER_ANGLE; 
-		m_mag.axis.z = sReg[HZ] / DEGREES_PER_ANGLE;
+		m_accel.axis.x = sReg[AX] / ACCEL_PER_G; 
+		m_accel.axis.y = sReg[AY] / ACCEL_PER_G; 
+		m_accel.axis.z = sReg[AZ] / ACCEL_PER_G;
+		m_gyro.axis.x = sReg[GX] / GYRO_PER_DEGREES_PER_SECOND; 
+		m_gyro.axis.y = sReg[GY] / GYRO_PER_DEGREES_PER_SECOND; 
+		m_gyro.axis.z = sReg[GZ] / GYRO_PER_DEGREES_PER_SECOND;
+		m_mag.axis.x = 	sReg[HX] / ANGLE_PER_DEGREE; 
+		m_mag.axis.y = sReg[HY] / ANGLE_PER_DEGREE; 
+		m_mag.axis.z = sReg[HZ] / ANGLE_PER_DEGREE;
 
 
  		// Apply calibration
