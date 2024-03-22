@@ -81,6 +81,40 @@
 				"isDefault": true
 			},
 			"detail": "compiler: /usr/bin/g++-9"
+		},
+		{
+			"type": "cppbuild",
+			"label": "Polar test",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-pthread",
+				"-fdiagnostics-color=always",
+				"-g",
+				"${workspaceFolder}/src/test/testpolar.cpp",
+				"${workspaceFolder}/src/wit_c_sdk.c", 
+				"${workspaceFolder}/src/polar.cpp*",
+				"${workspaceFolder}/src/stepper.cpp*",
+				"${workspaceFolder}/src/chaser.cpp*",
+				"${workspaceFolder}/src/imu.cpp*",
+				"-o",
+				"${workspaceFolder}/build/debug/testpolar",
+				"-L/usr/local/lib",
+				"-l:libFusion.a",
+				"-lgpiodcxx",		
+				"-l:libws2811.a",
+
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: /usr/bin/g++-9"
 		}
 	]
 }

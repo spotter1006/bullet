@@ -28,6 +28,9 @@ class Polar{
         void start();
         void stop();
         void home();
+        void decrementHistogram();
+        int incrementHeading(float heading);
+        int getHeadingVariance(int center, int width);
 
         inline int getRadius(){return m_nRadius;}
         inline bool isKeepSweeping(){return m_fKeepSweeping;}
@@ -62,6 +65,9 @@ class Polar{
         inline int witSaveParameter(){return m_imu.witSaveParameter();}
         inline int witSetForReset(){return m_imu.witSetForReset();}
         inline int witCaliRefAngle(){return m_imu.witCaliRefAngle();}
+        inline FusionVector getLinearAcceleration(){return m_imu.getLinearAcceleration();}
+        inline FusionQuaternion getQuaternion (){return m_imu.getQuaternion();}
+        inline FusionEuler quaternionToEuler(const FusionQuaternion quaternion){return m_imu.quaternionToEuler(quaternion);}
         
   
     private:
@@ -82,6 +88,7 @@ class Polar{
 
         vector<ws2811_led_t> m_intensities;
         vector<ws2811_led_t> m_colors;
+        vector<int> m_headings;
 
 };
 #endif

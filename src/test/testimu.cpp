@@ -129,9 +129,4 @@ int main(int argc, char* argv[]){
         }
     }
 }
-/*
-// Scaling example from sample code:
-fAcc[i] = sReg[AX+i] / 32768.0f * 16.0f;
-fGyro[i] = sReg[GX+i] / 32768.0f * 2000.0f;
-fAngle[i] = sReg[Roll+i] / 32768.0f * 180.0f;
-*/
+

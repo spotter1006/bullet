@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <atomic>
 #include <string.h>
+#include <algorithm>
 using namespace std;
 
 atomic_flag fWaitForTick;   
@@ -18,6 +19,7 @@ Polar::Polar(int left, int right, int radius):
     m_chaser(radius),
     m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}),      // Gamma corrected ramp
     m_colors(radius, BLUE), 
+    m_headings(HEADING_BUCKETS,0),
     m_imu()
     {
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
@@ -41,9 +43,20 @@ void Polar::start(){
                 pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
             } 
 
-            int headingChange = pPolar->getHeadingChange(HEADING_AVERAGE_WINDOW_STEPS);     
-            pPolar->setAngle(headingChange);
+            int headingChange = 0;
+            FusionVector linearAcceleration = pPolar->getLinearAcceleration();
+            FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
             
+            int bucket = pPolar->incrementHeading(orientation.angle.yaw);        // Increment corresponding histogram bucket           
+            if(timeTick % IMU_LEAK_RATE == 0){
+                pPolar->decrementHistogram();                        // Age out ol;der entries
+            }
+
+            int variance = pPolar->getHeadingVariance(bucket, HEADING_AVERAGE_WINDOW_STEPS);
+            pPolar->setAngle(variance);
+
+            // Set chaser speed based on linear acceleration ...
+
             int move = pPolar->getAngle() - pPolar->getMotorPosition();
             if(move > 0){
                 if(pPolar->getMotorPosition() < pPolar->getRightSweepLimit()) pPolar->stepMotor(1);
@@ -56,6 +69,35 @@ void Polar::start(){
     },this));
     m_imu.start();
 }
+int Polar::getHeadingVariance(int center, int width){
+    long sum = 0;
+    long samples = 0;
+
+    int left = center - width /2;
+    if(left < 0)
+         left = m_headings.size() + left;
+    auto it = m_headings.begin() + left;
+    int headingVal = left - m_headings.size() / 2;
+    for(int i = 0; i < width; i++){
+        samples += *it;
+        sum += *it * headingVal;
+        headingVal++;
+        if(it == m_headings.end())
+            it = m_headings.begin();
+        else
+            it++;
+    }
+    int average = sum / samples;
+    return center - average;
+    
+}
+int Polar::incrementHeading(float heading){
+    int i = (heading + 180.0) * STEPS_PER_DEGREE + 0.5;
+    if(i < 0) i = 0;
+    if(i > m_headings.size()) i = m_headings.size();
+    m_headings[i]++;
+    return i;
+ }
 void Polar::stop(){
     m_imu.stop();
     m_fKeepSweeping = false;
@@ -89,4 +131,10 @@ void Polar::home(){
     setAngle(0);
     m_stepper.zeroPosition();
     m_stepper.resetPulse();         // Resets the indexer to electrical angle 45 degrees
+}
+
+void Polar::decrementHistogram(){
+    transform(m_headings.begin(), m_headings.end(), m_headings.begin(), [](int val){
+        return (val > 0)? val -1 : 0;
+    });
 }
