@@ -81,11 +81,14 @@ int Polar::getHeadingVariance(int center, int width){
     for(int i = 0; i < width; i++){
         samples += *it;
         sum += *it * headingVal;
-        headingVal++;
-        if(it == m_headings.end())
+
+        if(it == m_headings.end()){
             it = m_headings.begin();
-        else
+            headingVal = -(m_headings.size()/ 2);
+        }else{
             it++;
+            headingVal++;
+        }
     }
     int average = sum / samples;
     return center - average;
@@ -94,9 +97,12 @@ int Polar::getHeadingVariance(int center, int width){
 int Polar::incrementHeading(float heading){
     int i = (heading + 180.0) * STEPS_PER_DEGREE + 0.5;
     if(i < 0) i = 0;
-    if(i > m_headings.size()) i = m_headings.size();
+    if(i > m_headings.size() - 1) i = m_headings.size() - 1;
     m_headings[i]++;
     return i;
+ }
+ void Polar::clearHistory(){
+    transform(m_headings.begin(), m_headings.end(), m_headings.begin(), [](int val){return 0;});
  }
 void Polar::stop(){
     m_imu.stop();

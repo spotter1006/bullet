@@ -25,6 +25,11 @@ int main(int argc, char* argv[] ){
         pPolar->incrementHeading(2.25);
         evaluate(800, pPolar->getHeadingVariance(HEADING_BUCKETS/2, 22));
 
+        pPolar->clearHistory();
+        cout << "Wrap around test ... ";
+        pPolar->incrementHeading(180.0);
+        pPolar->incrementHeading(-180.0);
+        evaluate(0, pPolar->getHeadingVariance(0, 22));
 
 
     }catch(string error){

@@ -31,6 +31,7 @@ class Polar{
         void decrementHistogram();
         int incrementHeading(float heading);
         int getHeadingVariance(int center, int width);
+        void clearHistory();
 
         inline int getRadius(){return m_nRadius;}
         inline bool isKeepSweeping(){return m_fKeepSweeping;}
