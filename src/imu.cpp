@@ -137,13 +137,6 @@ void Imu::addMeasurements(uint flags){
 	m_mutex.unlock();
 }
 
-void Imu::getLinearAcceleration(FusionVector &linearAccel){
-	m_mutex.lock();
-	linearAccel = FusionAhrsGetLinearAcceleration(&m_fusion);
-	m_mutex.unlock();
-
-}
-
 void Imu::readBiases(){
 	witWriteReg(KEY, KEY_UNLOCK);
 	usleep(200000);

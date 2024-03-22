@@ -32,7 +32,6 @@ extern int fd;
 extern SerialWrite p_WitSerialWriteFunc;
 extern DelaymsCb p_WitDelaymsFunc;
 
-
 class Imu{
     public:
         Imu() : m_fKeepRunning(true), m_mutex(), m_biasTable(9,0), m_settings(5,0),
@@ -96,20 +95,17 @@ class Imu{
             m_lastImuUpdate =  chrono::high_resolution_clock::now();
             serial_open(IMU_SERIAL_PORT, 115200);
         }
-        static int serial_open(const char *dev, int baud);
+        
         void start();
         void stop();
-        void addMeasurements(uint flags);
-        void getLinearAcceleration(FusionVector &linearAccel);
-        void readBiases();
-        void getBiasTable(vector<uint16_t> &offsets);
-        void readSettings();
-        void getSettings(vector<uint16_t> &settings);
-        void setAxis6(int on);
-        void setBandwidth(int bw);
+
         inline bool isKeepRunning(){return m_fKeepRunning;}
-        
-        // Wrap all wit APIs
+
+        // Fusion APIs
+        inline FusionVector getLinearAcceleration(){return FusionAhrsGetLinearAcceleration(&m_fusion);}
+        inline FusionQuaternion getQuaternion (){return FusionAhrsGetQuaternion(&m_fusion);}
+        inline  FusionEuler quaternionToEuler(const FusionQuaternion quaternion){return FusionQuaternionToEuler(quaternion);}
+        // IMU APIs
         inline int witStartAccCali(){return WitStartAccCali();}
         inline int witStopAccCali(){return WitStopAccCali();}
         inline int witStartMagCali(){return WitStartMagCali();}
@@ -124,8 +120,17 @@ class Imu{
         inline int witCaliRefAngle(){return WitCaliRefAngle();}
         inline int witWriteReg(uint32_t reg, uint16_t value){return WitWriteReg(reg, value);}
         inline int witReadReg(uint32_t reg, uint32_t len){return WitReadReg(reg, len);}
+        void readBiases();
+        void getBiasTable(vector<uint16_t> &offsets);
+        void readSettings();
+        void getSettings(vector<uint16_t> &settings);
+        void setAxis6(int on);
+        void setBandwidth(int bw);
+
     private:
+        void addMeasurements(uint flags);
         void AutoScanSensor(char* dev);
+        static int serial_open(const char *dev, int baud);
         bool m_fKeepRunning;
         thread m_thread;
 
@@ -149,7 +154,6 @@ class Imu{
         FusionOffset offset;
 
         chrono::_V2::system_clock::time_point m_lastImuUpdate;
-
 };
 
 

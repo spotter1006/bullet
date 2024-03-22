@@ -118,16 +118,14 @@ int main(int argc, char* argv[]){
     }else{
         while(1){
             sleep(.75);
-            FusionVector accel;
-            pImu->getLinearAcceleration(accel);
-cout << setprecision(3);
-            cout << "Accel:\t" 	<< setw(10) << sReg[AX] << setw(10)  << sReg[AY] << setw(10)  << sReg[AZ] << "\n" <<
-                "Gyro:\t" 	<< setw(10) << sReg[GX] << setw(10)  << sReg[GY] << setw(10)  << sReg[GZ] << "\n" <<
-                "Mag:\t" 	<< setw(10) << sReg[HX] << setw(10) << sReg[HY] << setw(10)  << sReg[HZ] <<  "\n" <<
-                "RPY:\t" << setw(10) << sReg[Roll]  << setw(10)  << sReg[Pitch]   << setw(10)  << sReg[Yaw] <<"\n"  
-                "Linear Accel:\t " <<  setw(10) << accel.axis.x <<  setw(10) << accel.axis.y <<  setw(10) << accel.axis.z << endl;
+            FusionVector accel = pImu->getLinearAcceleration();
+            FusionEuler euler = pImu->quaternionToEuler(pImu->getQuaternion());
+            cout << setprecision(3);
+            cout <<  
+                "Linear Accel:\t " <<  setw(10) << accel.axis.x <<  setw(10) << accel.axis.y <<  setw(10) << accel.axis.z << "\n" << 
+                "Orientation:\t " << setw(10) << euler.angle.roll << setw(10) << euler.angle.pitch << setw(10) << euler.angle.yaw << endl;
 
-            cout << "\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A"; //Go back up 5 lines
+            cout << "\x1b[A\x1b[A"; //Go back up 6 lines
         }
     }
 }
