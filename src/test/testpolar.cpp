@@ -16,6 +16,7 @@ void addHeadings(Polar* pPolar, float heading, int samples){
         pPolar->addHeading(heading);
     }
 }
+#define WINDOW_SIZE 22
 int main(int argc, char* argv[] ){
 
     Polar* pPolar = new Polar(-MOTOR_SWEEP_STEPS/2, MOTOR_SWEEP_STEPS/2, LED_STRING_PIXELS);
@@ -27,25 +28,27 @@ int main(int argc, char* argv[] ){
         pPolar->addHeading(0.25);
         addHeadings(pPolar, 0.0,100);
         pPolar->addHeading(2.25);       // Heading goes right 10 buckets (2.25 degrees)
-        evaluate(10, pPolar->getHeadingVariance(22));
+        evaluate(10, pPolar->getHeadingVariance(WINDOW_SIZE));
+
+        cout << "Go left test ..." ;
+        pPolar->addHeading(-2.25);       // Heading goes right 10 buckets (2.25 degrees)
+        evaluate(-10, pPolar->getHeadingVariance(WINDOW_SIZE));
 
         pPolar->clearHistory();
         cout << "Wrap around test ... ";
         // Average of 0 through ends of histogram buffer
         addHeadings(pPolar, -179.9, 100);
         addHeadings(pPolar, 179.9, 100);
-        evaluate(0, pPolar->getHeadingVariance(22));
+        evaluate(0, pPolar->getHeadingVariance(WINDOW_SIZE));
 
         pPolar->clearHistory();
-        cout << "Left right test ..." << endl;
+        cout << "Local lefty righty test ..." << endl;
         addHeadings(pPolar, -60.0, 100);
         addHeadings(pPolar, 60.0, 100);
         cout << "left: ";
-        evaluate(0, pPolar->getHeadingVariance(22));
+        evaluate(0, pPolar->getHeadingVariance(WINDOW_SIZE));
         cout << "right:";
-        evaluate(0, pPolar->getHeadingVariance(22));
-
-
+        evaluate(0, pPolar->getHeadingVariance(WINDOW_SIZE));
 
     }catch(string error){
         cout << error << endl;
