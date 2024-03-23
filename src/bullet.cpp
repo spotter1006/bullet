@@ -132,7 +132,7 @@ void Bullet:: terminal(){
 			case 'i':
 				interval = stoi(line.substr(1));
 				cout << "Setting interval to " << interval << endl;
-				m_polar.setIterval(interval);
+				m_polar.setInterval(interval);
 				break;
 			case 'c':
 				hue = stoi(line.substr(1));

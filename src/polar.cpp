@@ -45,8 +45,9 @@ void Polar::start(){
             } 
 
             int headingChange = 0;
-            FusionVector linearAcceleration = pPolar->getLinearAcceleration();
+            FusionVector accel = pPolar->getLinearAcceleration();
             FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
+            float accelmag = sqrt(accel.axis.x * accel.axis.x + accel.axis.y * accel.axis.y + accel.axis.z * accel.axis.z );
             
             int bucket = pPolar->addHeading(orientation.angle.yaw);        // Increment corresponding histogram bucket           
             if(timeTick % IMU_LEAK_RATE == 0){
