@@ -29,8 +29,8 @@ class Polar{
         void stop();
         void home();
         void decrementHistogram();
-        int incrementHeading(float heading);
-        int getHeadingVariance(int center, int width);
+        int addHeading(float heading);
+        int getHeadingVariance(int width);
         void clearHistory();
 
         inline int getRadius(){return m_nRadius;}
@@ -90,6 +90,7 @@ class Polar{
         vector<ws2811_led_t> m_intensities;
         vector<ws2811_led_t> m_colors;
         vector<int> m_headings;
+        int m_nCurrentHeading;
 
 };
 #endif

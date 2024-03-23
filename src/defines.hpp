@@ -68,4 +68,7 @@
 #define GYRO_PER_DEGREES_PER_SECOND 32768.0f * 2000.0f
 #define ANGLE_PER_DEGREE 32768.0f * 180.0f;
 
+#define index_to_angle(index)(index - HEADING_0_BUCKET)
+#define angle_to_index(angle)(angle + HEADING_0_BUCKET)
+
 #endif

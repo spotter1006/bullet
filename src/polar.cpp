@@ -21,7 +21,7 @@ Polar::Polar(int left, int right, int radius):
     m_colors(radius, BLUE), 
     m_headings(HEADING_BUCKETS,0),
     m_imu()
-    {
+{
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
         itimerval timer;
         timer.it_interval.tv_usec = timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;      
@@ -29,6 +29,7 @@ Polar::Polar(int left, int right, int radius):
         setitimer(ITIMER_REAL, &timer, NULL);
         m_fKeepSweeping = true;
         m_chaser.setPattern(m_intensities, m_colors);
+        m_nCurrentHeading=0;
 }
 
 void Polar::start(){
@@ -47,12 +48,12 @@ void Polar::start(){
             FusionVector linearAcceleration = pPolar->getLinearAcceleration();
             FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
             
-            int bucket = pPolar->incrementHeading(orientation.angle.yaw);        // Increment corresponding histogram bucket           
+            int bucket = pPolar->addHeading(orientation.angle.yaw);        // Increment corresponding histogram bucket           
             if(timeTick % IMU_LEAK_RATE == 0){
                 pPolar->decrementHistogram();                        // Age out ol;der entries
             }
 
-            int variance = pPolar->getHeadingVariance(bucket, HEADING_AVERAGE_WINDOW_STEPS);
+            int variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
             pPolar->setAngle(variance);
 
             // Set chaser speed based on linear acceleration ...
@@ -69,34 +70,30 @@ void Polar::start(){
     },this));
     m_imu.start();
 }
-int Polar::getHeadingVariance(int center, int width){
+int Polar::getHeadingVariance(int width){
     long sum = 0;
     long samples = 0;
 
-    int left = center - width /2;
-    if(left < 0)
-         left = m_headings.size() + left;
-    auto it = m_headings.begin() + left;
-    int headingVal = left - m_headings.size() / 2;
-    for(int i = 0; i < width; i++){
-        samples += *it;
-        sum += *it * headingVal;
+    int index = m_nCurrentHeading - width/2;
+    if(index < 0) index = m_headings.size() + index;
+    int count = width;
+    while(count){
+        samples += m_headings[index]; 
+        sum += index_to_angle(index) * m_headings[index];
 
-        if(it == m_headings.end()){
-            it = m_headings.begin();
-            headingVal = -(m_headings.size()/ 2);
-        }else{
-            it++;
-            headingVal++;
-        }
+        if(index == m_headings.size() - 1 ) index = 0; else index++;
+        count--;
     }
+
+    if(samples == 0)   return 0;
     int average = sum / samples;
-    return center - average;
-    
+    return index_to_angle(m_nCurrentHeading) - average;
 }
-int Polar::incrementHeading(float heading){
+
+int Polar::addHeading(float heading){
     int i = (heading + 180.0) * STEPS_PER_DEGREE + 0.5;
     if(i < 0) i = 0;
+    m_nCurrentHeading = i;
     if(i > m_headings.size() - 1) i = m_headings.size() - 1;
     m_headings[i]++;
     return i;
