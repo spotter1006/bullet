@@ -6,19 +6,19 @@
 #include "../imu.hpp"
 using namespace std;
 
+string bauds[10] ={"invalid", "4800","9600","19200","38400","57600","115200","230400","460800","921600"};
+string rates[13]={"invalid", "0.2","0.5","1","2","5","10","20","50","100","200","single return","no return"};
+string features[11] = {"TIME ","ACC ","GYRO ","ANGLE ","MAG ","PORT ","PRESS ","GPS ","VELOCITY ","QUATER ","GSA "};
+string bandwidths[7] = {"256Hz","188Hz","98Hz","42Hz","20Hz","10Hz","5Hz"};
+
 void showSettings(Imu* pImu){
     char cBuff[1];
  
         vector<uint16_t> settings;
         pImu->getSettings(settings);    // Thread safe
-
-        string bauds[10] ={"invalid", "4800","9600","19200","38400","57600","115200","230400","460800","921600"};
+        
         string baud=bauds[(settings[2] & 0x07)];
-
-        string rates[13]={"invalid", "0.2","0.5","1","2","5","10","20","50","100","200","single return","no return"};
         string outputRate = rates[(settings[1] & 0x07)];
-
-        string features[11] = {"TIME ","ACC ","GYRO ","ANGLE ","MAG ","PORT ","PRESS ","GPS ","VELOCITY ","QUATER ","GSA "};
         string outputs = "";
         uint bits = settings[0] & 0x17;
         uint mask = 0x0001;
@@ -26,10 +26,7 @@ void showSettings(Imu* pImu){
             if(bits & mask) outputs += features[i];
             mask = mask << 1;
         }
-
         string axis6 = (settings[3] == 0x01)? "on":"off";
-
-        string bandwidths[7] = {"256Hz","188Hz","98Hz","42Hz","20Hz","10Hz","5Hz"};
         string bandwidth=bandwidths[settings[4] & 0x07];
 
         cout << "Output content: " << outputs << endl;
@@ -104,7 +101,8 @@ int main(int argc, char* argv[]){
             int bw = stoi(cmd.substr(1));
             pImu->setBandwidth(bw);
             pImu->witSaveParameter();
-            cout << "bandwidth set to " << bw << endl;
+            
+            cout << "bandwidth set to " << bandwidths[bw] << endl;
         }
     }else if (cmd[0] == 'r'){
         if(cmd.size() != 2){

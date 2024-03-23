@@ -192,6 +192,25 @@
         ]
       },
       {
+        "name": "Set bandwidth to 256 Hz",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["b0"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
         "name": "Set bandwidth to 10 Hz",
         "type": "cppdbg",
         "request": "launch",
