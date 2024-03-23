@@ -75,19 +75,23 @@ int Polar::getHeadingVariance(int width){
     long samples = 0;
 
     int index = m_nCurrentHeading - width/2;
-    if(index < 0) index = m_headings.size() + index;
+    if(index < 0) index = HEADING_BUCKETS+ index;
     int count = width;
     while(count){
         samples += m_headings[index]; 
-        sum += index_to_angle(index) * m_headings[index];
-
-        if(index == m_headings.size() - 1 ) index = 0; else index++;
+        int weight = index_to_angle(index) * m_headings[index];
+        sum += weight;
+        index = (index + 1) % HEADING_BUCKETS;
         count--;
     }
 
     if(samples == 0)   return 0;
     int average = sum / samples;
-    return index_to_angle(m_nCurrentHeading) - average;
+
+    int diff = index_to_angle(m_nCurrentHeading) - average;
+    if(abs(diff) >= 800) diff=0;
+
+    return diff;
 }
 
 int Polar::addHeading(float heading){
