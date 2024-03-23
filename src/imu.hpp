@@ -84,9 +84,9 @@ class Imu{
             FusionAhrsInitialise(&m_fusion);
                 // Set AHRS algorithm settings
             const FusionAhrsSettings settings = {
-                .convention = FusionConventionNwu,
+                .convention = FusionConventionNed,
                 .gain = 0.5f,
-                .gyroscopeRange = 2000.0f, /* replace this with actual gyroscope range in degrees/s */
+                .gyroscopeRange = 2000.0f, 
                 .accelerationRejection = 10.0f,
                 .magneticRejection = 10.0f,
                 .recoveryTriggerPeriod = 5 * (IMU_SAMPLE_INTERVAL_US /1000000), /* 5 seconds */

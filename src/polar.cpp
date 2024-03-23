@@ -50,7 +50,7 @@ void Polar::start(){
             
             int bucket = pPolar->addHeading(orientation.angle.yaw);        // Increment corresponding histogram bucket           
             if(timeTick % IMU_LEAK_RATE == 0){
-                pPolar->decrementHistogram();                        // Age out ol;der entries
+                pPolar->decrementHistogram();                        // Age out older entries
             }
 
             int variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
@@ -94,7 +94,8 @@ int Polar::getHeadingVariance(int width){
     return diff;
 }
 
-int Polar::addHeading(float heading){
+int Polar::
+addHeading(float heading){
     int i = (heading + 180.0) * STEPS_PER_DEGREE + 0.5;
     if(i < 0) i = 0;
     m_nCurrentHeading = i;
