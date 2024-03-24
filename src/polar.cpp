@@ -19,13 +19,17 @@ Polar::Polar(int left, int right, int radius):
     m_chaser(radius),
     m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}),      // Gamma corrected ramp
     m_colors(radius, BLUE), 
-    m_headings(HEADING_BUCKETS,0),
     m_imu(),
-    m_yAccels()
+    m_yAccels(),
+    m_headings(),
+    m_fCurrentHeading(0),
+    m_fKeepSweeping(true)
 {
-        m_fKeepSweeping = true;
         m_chaser.setPattern(m_intensities, m_colors);
-        m_nCurrentHeading=0;
+        // Initialize map of 1/10 degree fixed point integer heading histogram buckets over +/- 180 degrees. Initialze the sums to 0
+        for(int i = -1800; i <= 1800; i++){
+            m_headings.insert(make_pair(i, 0));
+        }
 }
 
 void Polar::start(){
@@ -38,9 +42,10 @@ void Polar::start(){
             if(timeTick % IMU_READ_MULTIPLIER == 0){
                 FusionVector accel = pPolar->getLinearAcceleration();
                 FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
-/*               
+                /*               
                 // pPolar->addAccel(accel.axis.y);
                 // float acc = pPolar->getAverageYAccel();      TODO:
+                 
                 float acc =accel.axis.y;
                 if(acc == 0 ){
                     pPolar->setChaserInterval(0);
@@ -56,19 +61,20 @@ void Polar::start(){
                     
                     pPolar->setChaserInterval(val);
                 }
-  
+                */
             
                 pPolar->addHeading(orientation.angle.yaw);              // Increment corresponding histogram bucket           
                 if(timeTick % IMU_LEAK_RATE == 0){
                     pPolar->decrementHistogram();                        // Age out older entries
                 }
 
-                int variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
-                pPolar->setAngle(variance);
-*/ 
-                pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);
-            }
+                float variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
+                pPolar->setAngle(variance / ANGLE_PER_DEGREE);
 
+                // pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);
+                
+            }
+            timeTick++;
             pPolar->setMotorTargetPosition(pPolar->getAngle());
             this_thread::sleep_until(wakeTime);
 
@@ -78,48 +84,44 @@ void Polar::start(){
     m_stepper.start();
     m_chaser.start();
 }
-int Polar::getHeadingVariance(int width){
-    long sum = 0;
-    long samples = 0;
+float Polar::getHeadingVariance(int widthTenthDegrees){
+    float sum = 0;
+    unsigned int samples = 0;
+    int center = round(m_fCurrentHeading * 10);
 
-    int index = m_nCurrentHeading - width/2;
-    if(index < 0) index = HEADING_BUCKETS+ index;
-    int count = width;
-    while(count){
-        samples += m_headings[index]; 
-        int weight = index_to_angle(index) * m_headings[index];
-        sum += weight;
-        index = (index + 1) % HEADING_BUCKETS;
-        count--;
+    for(int i = center - widthTenthDegrees / 2; i <= center + widthTenthDegrees ; i++){
+        samples += m_headings[i];
+        if(m_headings[i] != 0){
+            float degrees = i / 10.0;
+            float weight = m_headings[i];
+            sum += degrees * weight;
+        }
     }
 
-    if(samples == 0)   return 0;
-    int average = sum / samples;
+    if(sum == 0) return 0;
+    float average = sum / samples;
+    return round(m_fCurrentHeading - average);
 
-    int diff = index_to_angle(m_nCurrentHeading) - average;
-    if(abs(diff) >= 800) diff=0;
-
-    return diff;
 }
 float Polar::getAverageYAccel(){
     float sum = accumulate(m_yAccels.begin(), m_yAccels.end(), 0);
    return  sum / m_yAccels.size();
 }
-int Polar::addHeading(float heading){
-    int i = (heading + 180.0) * STEPS_PER_DEGREE + 0.5;
-    if(i < 0) i = 0;
-    m_nCurrentHeading = i;
-    if(i > m_headings.size() - 1) i = m_headings.size() - 1;
-    m_headings[i]++;
-    return i;
- }
- void Polar::addAccel(float accel){
+void Polar::addHeading(float heading){
+    m_fCurrentHeading = heading;
+    float tenths = heading * 10;
+    int roundedTenth = round(tenths);
+    m_headings[roundedTenth]++;                                  // Increment histogram bucket
+}
+void Polar::addAccel(float accel){
     m_yAccels.push_front(accel);
     m_yAccels.resize(ACCEL_SAMPLES);
  }
 
  void Polar::clearHistory(){
-    transform(m_headings.begin(), m_headings.end(), m_headings.begin(), [](int val){return 0;});
+    for_each(m_headings.begin(), m_headings.end(), [](pair<const int, unsigned int>& p) {
+        p.second = 0;
+    });
     transform(m_yAccels.begin(), m_yAccels.end(), m_yAccels.begin(), [](float val){return 0.0;});
  }
 void Polar::stop(){
@@ -138,7 +140,7 @@ void Polar::setHue(int hue){
 }
 
 void Polar::decrementHistogram(){
-    transform(m_headings.begin(), m_headings.end(), m_headings.begin(), [](int val){
-        return (val > 0)? val -1 : 0;
+    for_each(m_headings.begin(), m_headings.end(), [](pair<const int, unsigned int>& p) {
+        p.second = p.second - 1;
     });
 }

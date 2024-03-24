@@ -5,6 +5,7 @@
 #include <ws2811/ws2811.h>
 #include <vector>
 #include<list>
+#include <map>
 #include <thread>
 #include <signal.h>
 #include <sys/time.h>
@@ -30,9 +31,9 @@ class Polar{
         void stop();
         // void home();
         void decrementHistogram();
-        int addHeading(float heading);
+        void addHeading(float heading);
         void addAccel(float accel);
-        int getHeadingVariance(int width);
+        float getHeadingVariance(int widthTenthDegrees);
         float getAverageYAccel();
         void clearHistory();
 
@@ -93,8 +94,8 @@ class Polar{
 
         vector<ws2811_led_t> m_intensities;
         vector<ws2811_led_t> m_colors;
-        vector<int> m_headings;
-        int m_nCurrentHeading;
+        map<int, unsigned int> m_headings;        // Fixed point headings with 0.1 degrees between keys. Value is the count of headings at that heading.
+        float m_fCurrentHeading;                   // In degrees
 
         list<float>m_yAccels;
 

@@ -13,6 +13,7 @@
 #define DRV8825_STEP_GPIO       5       // RASPI pin 29
 #define DRV8825_DIR_GPIO        6       // RASPI pin 31
  
+ // Motion 
 #define MOTOR_SWEEP_STEPS       280     // 63 degrees  
 #define MOTOR_MIN_STEP_INTERVAL_US  800  
 #define MOTOR_MAX_STEP_INTERVAL_US  4000  
@@ -21,7 +22,6 @@
 // WS2812 Addressable LED array
 #define BLACK   0x00000000
 #define WHITE   0xffffffff
-
 #define RED     0x00ff0000
 #define GREEN   0x0000ff00
 #define BLUE    0x000000ff
@@ -30,28 +30,25 @@
 #define GREEN80 0x00008000
 #define RED80   0x00800000
 #define BLUE80  0x00000080
-
 #define LED_STRING_FREQUENCY 800000
 #define LED_STRING_PIXELS 10
 #define WSS2812_DATA_GPIO 18    // RASPI pin 12 (PCM CLK)
 
+// IMU
 #define IMU_SERIAL_PORT (char*)"/dev/ttyS0"
+#define ACCEL_PER_G 32768.0f * 16.0f
+#define GYRO_PER_DEGREES_PER_SECOND 32768.0f * 2000.0f
+#define ANGLE_PER_DEGREE 32768.0f * 180.0f
+#define index_to_angle(index)(index - HEADING_0_BUCKET)
+#define angle_to_index(angle)(angle + HEADING_0_BUCKET)
 
-#define HEADING_BUCKETS 1601       
-#define HEADING_0_BUCKET 800
-
+// Headings histogram 
 #define IMU_SAMPLE_INTERVAL_US 100000
 #define IMU_READ_MULTIPLIER 10
 #define IMU_LEAK_RATE 20
 #define STEPS_PER_DEGREE 8.0 / 1.8       
 #define HEADING_AVERAGE_WINDOW_STEPS 134
-
-#define ACCEL_PER_G 32768.0f * 16.0f
-#define GYRO_PER_DEGREES_PER_SECOND 32768.0f * 2000.0f
-#define ANGLE_PER_DEGREE 32768.0f * 180.0f;
-
-#define index_to_angle(index)(index - HEADING_0_BUCKET)
-#define angle_to_index(angle)(angle + HEADING_0_BUCKET)
+#define HEADING_BUCKETS 360 * 10       
 
 #define ACCEL_SAMPLES 100
 
