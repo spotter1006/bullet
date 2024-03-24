@@ -42,7 +42,7 @@ void Polar::start(){
             
             // Wait for precise time interval
             while(fWaitForTick.test_and_set()) usleep(2);           
-            // timeTick++;       
+            timeTick++;       
            
             // if(pPolar->getChaserInterval() != 0 && timeTick % abs(pPolar->getChaserInterval()) == 0){         
             //     pPolar->chaserRotate(pPolar->getChaserInterval() < 0 ? -1 : 1);    
