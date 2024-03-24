@@ -51,7 +51,7 @@ void Polar::start(){
             if(timeTick % IMU_READ_MULTIPLIER == 0){
                 FusionVector accel = pPolar->getLinearAcceleration();
                 FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
-                
+/*               
                 // pPolar->addAccel(accel.axis.y);
                 // float acc = pPolar->getAverageYAccel();      TODO:
                 float acc =accel.axis.y;
@@ -77,6 +77,8 @@ void Polar::start(){
 
                 int variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
                 pPolar->setAngle(variance);
+*/ 
+                pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);
             }
 
             int move = pPolar->getAngle() - pPolar->getMotorPosition();

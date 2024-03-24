@@ -11,7 +11,8 @@
 #define DRV8825_STEP_GPIO       5       // RASPI pin 29
 #define DRV8825_DIR_GPIO        6       // RASPI pin 31
  
-#define MOTOR_SWEEP_STEPS       280   // 63 degrees  
+// #define MOTOR_SWEEP_STEPS       280   // 63 degrees  
+#define MOTOR_SWEEP_STEPS       400   // 90 degrees  TODO: CHANGE ME
 
 #define MOTOR_STEP_INTERVAL_US  800     // 106 ms per sweep
 // #define MOTOR_STEP_INTERVAL_US  1000     // 133 ms per sweep
