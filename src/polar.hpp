@@ -52,6 +52,7 @@ class Polar{
         inline int getMotorPosition(){return m_stepper.getPosition();}
         inline void zeroMotorAngle(){m_stepper.zeroPosition();}
         inline void enableMotor(bool enable){m_stepper.enable(enable);}
+        inline void setMotorTargetPosition(int position){m_stepper.setTargetPosition(position);}
         
         // Chaser pass-throughs
         inline void chaserRotate(int direction){m_chaser.rotate(direction);}

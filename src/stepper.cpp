@@ -1,17 +1,15 @@
 #include "stepper.hpp"
 #include "defines.hpp"
 #include <gpiod.hpp>
-#include <thread>
 #include <iostream>
 #include <signal.h>
-#include <thread>
 #include <sys/time.h>
 #include <unistd.h>
 using namespace std;
 
-
 Stepper::Stepper(){
     m_nPosition = 0;
+    m_nTargetPosition = 0;
     gpiod::chip ioChip = gpiod::chip("gpiochip0");
 
     m_lineEnable =  ioChip.get_line(DRV8825_EN_GPIO);   
@@ -41,6 +39,7 @@ Stepper::Stepper(){
     m_lineM1.set_value(1);
     m_lineM2.set_value(0);
 
+    m_fKeepRunning = true;
 }
 
 Stepper::~Stepper(){
@@ -59,7 +58,6 @@ Stepper::~Stepper(){
 // 1 for positive direction, -1 for negative. 1 step.
 int Stepper::step(int dir){
     m_lineDir.set_value(dir > 0); 
-    
     m_lineStep.set_value(1);
     usleep(2);
     m_lineStep.set_value(0);
@@ -71,4 +69,30 @@ void Stepper::resetPulse(){
     m_lineReset.set_value(0);
     usleep(2);
     m_lineReset.set_value(1);
+}
+
+void Stepper::start(){
+    m_fKeepRunning = true;
+    m_thread = thread([](Stepper* pStepper){
+        while(pStepper->isKeepRunning()){
+            auto wakeTime = chrono::high_resolution_clock::now() + chrono::nanoseconds(MOTOR_STEP_INTERVAL_US);
+
+            int move = pStepper->getTargetPosition() - pStepper->getPosition();
+
+            if(move > 0){
+                 pStepper->step(1);
+            }else if(move < 0){
+                 pStepper->step(-1);
+            }
+
+
+            this_thread::sleep_until(wakeTime);
+        }
+    }, this);
+    m_thread.detach();
+
+}
+void Stepper::stop(){
+    m_fKeepRunning = false;
+    // m_thread.join();
 }

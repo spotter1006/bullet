@@ -35,7 +35,7 @@ Polar::Polar(int left, int right, int radius):
 }
 
 void Polar::start(){
-    
+
     m_threads.emplace_back(thread([](Polar *pPolar){   
         unsigned int timeTick = 0;
         while(pPolar->isKeepSweeping()){                       
@@ -81,17 +81,13 @@ void Polar::start(){
                 pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);
             }
 
-            int move = pPolar->getAngle() - pPolar->getMotorPosition();
-            if(move > 0){
-                if(pPolar->getMotorPosition() < pPolar->getRightSweepLimit()) pPolar->stepMotor(1);
-            }else if(move < 0){
-                if(pPolar->getMotorPosition() > pPolar->getLeftSweepLimit()) pPolar->stepMotor(-1);
-            }
+            pPolar->setMotorTargetPosition(pPolar->getAngle());
 
 
         }
     },this));
     m_imu.start();
+    m_stepper.start();
 }
 int Polar::getHeadingVariance(int width){
     long sum = 0;
@@ -138,6 +134,7 @@ int Polar::addHeading(float heading){
     transform(m_yAccels.begin(), m_yAccels.end(), m_yAccels.begin(), [](float val){return 0.0;});
  }
 void Polar::stop(){
+    m_stepper.stop();
     m_imu.stop();
     m_fKeepSweeping = false;
     for(auto& th : m_threads)
