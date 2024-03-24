@@ -6,18 +6,11 @@
 using namespace std;
 
 int Bullet::start(int argc, char *argv[]){
-
-    
-
-	m_polar.home();
 	m_polar.start();
-
     terminal();
-
     m_polar.stop();
     return 0;
 }
-
 
 // WIT Motion IMU sub menu...
 void Bullet::ShowHelp(void)

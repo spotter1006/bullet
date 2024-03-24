@@ -28,7 +28,7 @@ class Polar{
         void setHue(int hue);
         void start();
         void stop();
-        void home();
+        // void home();
         void decrementHistogram();
         int addHeading(float heading);
         void addAccel(float accel);

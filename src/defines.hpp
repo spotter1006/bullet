@@ -12,8 +12,8 @@
 #define DRV8825_DIR_GPIO        6       // RASPI pin 31
  
 // #define MOTOR_SWEEP_STEPS       280   // 63 degrees  
-#define MOTOR_SWEEP_STEPS       400   // 90 degrees  TODO: CHANGE ME
-
+#define MOTOR_SWEEP_STEPS       400     // 90 degrees  TODO: CHANGE ME
+#define MAIN_LOOP_INTERVAL_US   10000    // 10 mS
 #define MOTOR_STEP_INTERVAL_US  800     // 106 ms per sweep
 // #define MOTOR_STEP_INTERVAL_US  1000     // 133 ms per sweep
 // #define MOTOR_STEP_INTERVAL_US  720     // 95.76 ms per sweep
@@ -21,6 +21,7 @@
 // WS2812 Addressable LED array
 #define BLACK   0x00000000
 #define WHITE   0xffffffff
+
 #define RED     0x00ff0000
 #define GREEN   0x0000ff00
 #define BLUE    0x000000ff

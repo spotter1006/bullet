@@ -10,7 +10,6 @@
 #include <numeric>
 using namespace std;
 
-atomic_flag fWaitForTick;   
 
 Polar::Polar(int left, int right, int radius):
     m_nLeftSweepLimit(left),
@@ -24,11 +23,6 @@ Polar::Polar(int left, int right, int radius):
     m_imu(),
     m_yAccels()
 {
-        signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
-        itimerval timer;
-        timer.it_interval.tv_usec = timer.it_value.tv_usec = MOTOR_STEP_INTERVAL_US;      
-        timer.it_interval.tv_sec = timer.it_value.tv_sec = 0;
-        setitimer(ITIMER_REAL, &timer, NULL);
         m_fKeepSweeping = true;
         m_chaser.setPattern(m_intensities, m_colors);
         m_nCurrentHeading=0;
@@ -39,15 +33,8 @@ void Polar::start(){
     m_threads.emplace_back(thread([](Polar *pPolar){   
         unsigned int timeTick = 0;
         while(pPolar->isKeepSweeping()){                       
-            
-            // Wait for precise time interval
-            while(fWaitForTick.test_and_set()) usleep(2);           
-            timeTick++;       
            
-            // if(pPolar->getChaserInterval() != 0 && timeTick % abs(pPolar->getChaserInterval()) == 0){         
-            //     pPolar->chaserRotate(pPolar->getChaserInterval() < 0 ? -1 : 1);    
-            // } 
-
+            auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(MAIN_LOOP_INTERVAL_US); 
             if(timeTick % IMU_READ_MULTIPLIER == 0){
                 FusionVector accel = pPolar->getLinearAcceleration();
                 FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
@@ -83,7 +70,7 @@ void Polar::start(){
             }
 
             pPolar->setMotorTargetPosition(pPolar->getAngle());
-
+            this_thread::sleep_until(wakeTime);
 
         }
     },this));
@@ -148,28 +135,6 @@ void Polar::stop(){
 void Polar::setHue(int hue){
     m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
     m_chaser.setPattern(m_intensities, m_colors);
-}
-
-void Polar::home(){
-
-    while(m_stepper.getPosition() > m_nLeftSweepLimit * 2){              // Move way past the limit stalling the motor at the limit
-        m_stepper.step(-1);
-        usleep(MOTOR_STEP_INTERVAL_US * 16);         // 1/16 speed
-    }
-
-    for(int i = 0; i < (m_nRightSweepLimit - m_nLeftSweepLimit)/2; i++){       
-        m_stepper.step(1);
-        usleep(MOTOR_STEP_INTERVAL_US * 16);             
-    }
-
-    for(int i = 0; i< 8; i++){
-        m_stepper.step(-1);
-        usleep(MOTOR_STEP_INTERVAL_US * 16);  
-    }
-
-    setAngle(0);
-    m_stepper.zeroPosition();
-    m_stepper.resetPulse();         // Resets the indexer to electrical angle 45 degrees
 }
 
 void Polar::decrementHistogram(){
