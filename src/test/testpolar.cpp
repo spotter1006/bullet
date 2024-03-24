@@ -2,7 +2,7 @@
 #include <iostream>
 #include<sstream>
 
-void evaluate(int expected, int result){
+void evaluate(float expected, float result){
     ostringstream error;
     if(result == expected){
         cout << "pass" << endl;
@@ -25,31 +25,33 @@ int main(int argc, char* argv[] ){
         cout << "Go right test ..." ;
         // Average of 0 degrees
         pPolar->addHeading(-2.5f);
-        pPolar->addHeading(2.5f);
         addHeadings(pPolar, 0.0f, 100);       // 100 headings at 0 degrees
+        pPolar->addHeading(2.5f);
         
-        pPolar->addHeading(10.0f);       // Heading goes right 10 buckets (2.25 degrees)
-        evaluate(10, pPolar->getHeadingVariance(WINDOW_SIZE));
+        pPolar->addHeading(10.0f);       // Heading goes right 10 degrees
+        evaluate(10.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
 
+        pPolar->clearHistory();
         cout << "Go left test ..." ;
-        pPolar->addHeading(-20.0f);       // Heading goes right 10 buckets (2.25 degrees)
-        evaluate(-10, pPolar->getHeadingVariance(WINDOW_SIZE));
+        addHeadings(pPolar, 0.0f, 100);       // 100 headings at 0 degrees
+        pPolar->addHeading(-10.0f);       // Heading goes right 10 degrees
+        evaluate(-10.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
 
         pPolar->clearHistory();
         cout << "Wrap around test ... ";
-        // Average of 0 through ends of histogram buffer
+        // Average of 0 through south heading (180 to -180)
         addHeadings(pPolar, -179.9f, 100);
         addHeadings(pPolar, 179.9f, 100);
-        evaluate(0, pPolar->getHeadingVariance(WINDOW_SIZE));
+        evaluate(0.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
 
         pPolar->clearHistory();
         cout << "Local lefty righty test ..." << endl;
         addHeadings(pPolar, -60.0f, 100);
         addHeadings(pPolar, 60.0f, 100);
         cout << "left: ";
-        evaluate(0, pPolar->getHeadingVariance(WINDOW_SIZE));
+        evaluate(0.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
         cout << "right:";
-        evaluate(0, pPolar->getHeadingVariance(WINDOW_SIZE));
+        evaluate(0.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
 
         pPolar->clearHistory();
         for(int i =0; i < ACCEL_SAMPLES; i++){
