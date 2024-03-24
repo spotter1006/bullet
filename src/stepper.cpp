@@ -65,6 +65,16 @@ int Stepper::step(int dir){
     return m_nPosition;
 }
 
+int Stepper::step(){
+    if(m_nPosition == m_nTargetPosition) 
+        return m_nPosition;
+
+    int dir = (m_nPosition > m_nTargetPosition)? -1 : 1;
+    step(dir);
+
+    return m_nPosition;
+}
+
 void Stepper::resetPulse(){
     m_lineReset.set_value(0);
     usleep(2);
@@ -77,14 +87,7 @@ void Stepper::start(){
         while(pStepper->isKeepRunning()){
             auto wakeTime = chrono::high_resolution_clock::now() + chrono::nanoseconds(MOTOR_STEP_INTERVAL_US);
 
-            int move = pStepper->getTargetPosition() - pStepper->getPosition();
-
-            if(move > 0){
-                 pStepper->step(1);
-            }else if(move < 0){
-                 pStepper->step(-1);
-            }
-
+            pStepper->step();
 
             this_thread::sleep_until(wakeTime);
         }

@@ -10,6 +10,7 @@ class Stepper{
         Stepper();
         ~Stepper();
         int step(int dir);
+        int step();
         inline int getMotorDirection(){return (m_lineDir.get_value() == 1)? 1 : -1;}
         inline int getPosition(){return m_nPosition;}
         inline int getTargetPosition(){return m_nTargetPosition;}
@@ -26,6 +27,7 @@ class Stepper{
         gpiod::line m_lineEnable;
         gpiod::line m_lineM0;
         gpiod::line m_lineM1;
+        
         gpiod::line m_lineM2;
         gpiod::line m_lineReset;
         gpiod::line m_lineSleep;
