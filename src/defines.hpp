@@ -1,6 +1,8 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
+#define MAIN_LOOP_INTERVAL_US   10000    
+
 // DRV8825 stepper motor driver
 #define DRV8825_EN_GPIO         17      // RASPI pin 11
 #define DRV8825_M0_GPIO         27      // RASPI pin 13
@@ -12,8 +14,9 @@
 #define DRV8825_DIR_GPIO        6       // RASPI pin 31
  
 #define MOTOR_SWEEP_STEPS       280     // 63 degrees  
-#define MAIN_LOOP_INTERVAL_US   10000    
-#define MOTOR_MIN_STEP_INTERVAL_US  800     
+#define MOTOR_MIN_STEP_INTERVAL_US  800  
+#define MOTOR_MAX_STEP_INTERVAL_US  4000  
+#define MOTOR_ACCEL 5
 
 // WS2812 Addressable LED array
 #define BLACK   0x00000000

@@ -14,6 +14,7 @@ class Stepper{
         inline int getMotorDirection(){return (m_lineDir.get_value() == 1)? 1 : -1;}
         inline int getPosition(){return m_nPosition;}
         inline int getTargetPosition(){return m_nTargetPosition;}
+        inline int getStepInterval(){return m_nStepIntervalUs;}
         inline void setTargetPosition(int position){m_nTargetPosition = position;}
         inline void zeroPosition(){m_nPosition = 0;}
         inline void enable(bool enable){m_lineEnable.set_value(enable? 0:1);}

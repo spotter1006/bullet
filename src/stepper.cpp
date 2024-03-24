@@ -11,7 +11,7 @@ Stepper::Stepper(){
     m_fKeepRunning = true;
     m_nPosition = 0;
     m_nTargetPosition = 0;
-    m_nStepIntervalUs = INT32_MAX;
+    m_nStepIntervalUs = MOTOR_MAX_STEP_INTERVAL_US;
     gpiod::chip ioChip = gpiod::chip("gpiochip0");
 
     m_lineEnable =  ioChip.get_line(DRV8825_EN_GPIO);   
@@ -68,8 +68,14 @@ int Stepper::step(int dir){
 }
 
 int Stepper::step(){
-    if(m_nPosition != m_nTargetPosition) 
+    if(m_nPosition == m_nTargetPosition){ 
+        m_nStepIntervalUs = MOTOR_MAX_STEP_INTERVAL_US;
+    }else{
         step((m_nPosition > m_nTargetPosition)? -1 : 1);
+    }
+
+    if(m_nStepIntervalUs > MOTOR_MIN_STEP_INTERVAL_US && m_nStepIntervalUs < MOTOR_MAX_STEP_INTERVAL_US)
+        m_nStepIntervalUs -= MOTOR_ACCEL;
     return m_nPosition;
 }
 
@@ -83,10 +89,8 @@ void Stepper::start(){
     m_fKeepRunning = true;
     m_thread = thread([](Stepper* pStepper){
         while(pStepper->isKeepRunning()){
-            auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(MOTOR_MIN_STEP_INTERVAL_US);
-
+            auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(pStepper->getStepInterval());
             pStepper->step();
-
             this_thread::sleep_until(wakeTime);
         }
     }, this);
