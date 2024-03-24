@@ -2,6 +2,7 @@
 #define _CHASER_H_
 #include "defines.hpp"  
 #include <vector>
+#include <thread>
 #include <ws2811/ws2811.h>
 using namespace std;
 
@@ -10,8 +11,8 @@ class Chaser{
         Chaser(int leds):
         m_pattern(leds, BLACK),
         m_reversePattern(leds, BLACK),
-        m_ledstring()
-
+        m_ledstring(),
+        m_nInterval(100)
         {
             m_ledstring.freq = LED_STRING_FREQUENCY;
             m_ledstring.dmanum =10;
@@ -32,12 +33,20 @@ class Chaser{
             ws2811_render(&m_ledstring);
             ws2811_fini(&m_ledstring);
         }
+        void start();
+        void stop();
         void rotate(int direction);
         void setPattern(vector<uint32_t> intensities, vector<ws2811_led_t> colors);
+        inline bool isKeepRunning(){return m_fKeepRunning;}
+        inline void setInterval(int interval){m_nInterval = interval;}
+        inline int getInterval(){return m_nInterval;}
     private:
         vector<ws2811_led_t> m_pattern;
         vector<ws2811_led_t> m_reversePattern;
         ws2811_t m_ledstring;
+        thread m_thread;
+        bool m_fKeepRunning;
+        int m_nInterval;            // Interval between pattern shifts of animation in units of calls to chaser.rotate(). Bipolar, aslo sets rotate direction
 
 };
 #endif

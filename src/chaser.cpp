@@ -45,3 +45,20 @@ void Chaser::setPattern(vector<uint32_t> intensities, vector<ws2811_led_t> color
     m_reversePattern = m_pattern;
     reverse(m_reversePattern.begin(), m_reversePattern.end());
 }
+void Chaser::start(){
+    m_fKeepRunning=true;
+    m_thread = thread([](Chaser* pChaser){
+        while(pChaser->isKeepRunning()){
+            auto wakeTime = chrono::high_resolution_clock::now() + chrono::milliseconds(abs(pChaser->getInterval())); 
+            if(pChaser->getInterval() != 0 ){         
+                pChaser->rotate(pChaser->getInterval() < 0 ? -1 : 1);    
+            } 
+            this_thread::sleep_until(wakeTime);
+        }
+    }, this);
+    m_thread.detach();
+}
+void Chaser::stop(){
+    m_fKeepRunning = false;
+    // m_thread.join();
+}

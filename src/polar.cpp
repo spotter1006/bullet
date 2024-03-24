@@ -42,11 +42,11 @@ void Polar::start(){
             
             // Wait for precise time interval
             while(fWaitForTick.test_and_set()) usleep(2);           
-            timeTick++;       
+            // timeTick++;       
            
-            if(pPolar->getChaserInterval() != 0 && timeTick % abs(pPolar->getChaserInterval()) == 0){         
-                pPolar->chaserRotate(pPolar->getChaserInterval() < 0 ? -1 : 1);    
-            } 
+            // if(pPolar->getChaserInterval() != 0 && timeTick % abs(pPolar->getChaserInterval()) == 0){         
+            //     pPolar->chaserRotate(pPolar->getChaserInterval() < 0 ? -1 : 1);    
+            // } 
 
             if(timeTick % IMU_READ_MULTIPLIER == 0){
                 FusionVector accel = pPolar->getLinearAcceleration();
@@ -65,6 +65,7 @@ void Polar::start(){
                     }else{
                         val = interval;
                     }
+                    
                     
                     pPolar->setChaserInterval(val);
                 }
@@ -88,6 +89,7 @@ void Polar::start(){
     },this));
     m_imu.start();
     m_stepper.start();
+    m_chaser.start();
 }
 int Polar::getHeadingVariance(int width){
     long sum = 0;
@@ -134,6 +136,7 @@ int Polar::addHeading(float heading){
     transform(m_yAccels.begin(), m_yAccels.end(), m_yAccels.begin(), [](float val){return 0.0;});
  }
 void Polar::stop(){
+    m_chaser.stop();
     m_stepper.stop();
     m_imu.stop();
     m_fKeepSweeping = false;
