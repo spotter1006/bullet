@@ -24,6 +24,7 @@ class Stepper{
     private:
         int m_nPosition;
         int m_nTargetPosition;
+        int m_nStepIntervalUs;
         gpiod::line m_lineEnable;
         gpiod::line m_lineM0;
         gpiod::line m_lineM1;

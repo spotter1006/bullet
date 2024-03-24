@@ -8,8 +8,10 @@
 using namespace std;
 
 Stepper::Stepper(){
+    m_fKeepRunning = true;
     m_nPosition = 0;
     m_nTargetPosition = 0;
+    m_nStepIntervalUs = INT32_MAX;
     gpiod::chip ioChip = gpiod::chip("gpiochip0");
 
     m_lineEnable =  ioChip.get_line(DRV8825_EN_GPIO);   
@@ -39,7 +41,7 @@ Stepper::Stepper(){
     m_lineM1.set_value(1);
     m_lineM2.set_value(0);
 
-    m_fKeepRunning = true;
+
 }
 
 Stepper::~Stepper(){
@@ -66,12 +68,8 @@ int Stepper::step(int dir){
 }
 
 int Stepper::step(){
-    if(m_nPosition == m_nTargetPosition) 
-        return m_nPosition;
-
-    int dir = (m_nPosition > m_nTargetPosition)? -1 : 1;
-    step(dir);
-
+    if(m_nPosition != m_nTargetPosition) 
+        step((m_nPosition > m_nTargetPosition)? -1 : 1);
     return m_nPosition;
 }
 
@@ -85,7 +83,7 @@ void Stepper::start(){
     m_fKeepRunning = true;
     m_thread = thread([](Stepper* pStepper){
         while(pStepper->isKeepRunning()){
-            auto wakeTime = chrono::high_resolution_clock::now() + chrono::nanoseconds(MOTOR_STEP_INTERVAL_US);
+            auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(MOTOR_MIN_STEP_INTERVAL_US);
 
             pStepper->step();
 

@@ -13,7 +13,7 @@
  
 #define MOTOR_SWEEP_STEPS       280     // 63 degrees  
 #define MAIN_LOOP_INTERVAL_US   10000    
-#define MOTOR_STEP_INTERVAL_US  800     
+#define MOTOR_MIN_STEP_INTERVAL_US  800     
 
 // WS2812 Addressable LED array
 #define BLACK   0x00000000
@@ -31,9 +31,6 @@
 #define LED_STRING_FREQUENCY 800000
 #define LED_STRING_PIXELS 10
 #define WSS2812_DATA_GPIO 18    // RASPI pin 12 (PCM CLK)
-
-// #define ANIMATION_FRAMES 30
-// #define AMIMATION_INTERVAL_MS 100
 
 #define IMU_SERIAL_PORT (char*)"/dev/ttyS0"
 
