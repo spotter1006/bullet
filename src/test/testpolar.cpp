@@ -50,6 +50,13 @@ int main(int argc, char* argv[] ){
         cout << "right:";
         evaluate(0, pPolar->getHeadingVariance(WINDOW_SIZE));
 
+        pPolar->clearHistory();
+        for(int i =0; i < ACCEL_SAMPLES; i++){
+            pPolar->addAccel(1.0);
+        }
+        float result = pPolar->getAverageYAccel();
+        cout << "Average accel = " << result << endl;
+
     }catch(string error){
         cout << error << endl;
     }

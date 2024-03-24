@@ -7,6 +7,7 @@
 #include <atomic>
 #include <string.h>
 #include <algorithm>
+#include <numeric>
 using namespace std;
 
 atomic_flag fWaitForTick;   
@@ -14,13 +15,14 @@ atomic_flag fWaitForTick;
 Polar::Polar(int left, int right, int radius):
     m_nLeftSweepLimit(left),
     m_nRightSweepLimit(right),
-    m_nInterval(100),
+    m_nChaserInterval(100),
     m_nAngle(0),
     m_chaser(radius),
     m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}),      // Gamma corrected ramp
     m_colors(radius, BLUE), 
     m_headings(HEADING_BUCKETS,0),
-    m_imu()
+    m_imu(),
+    m_yAccels()
 {
         signal(SIGALRM, [](int signo){fWaitForTick.clear();});   
         itimerval timer;
@@ -37,27 +39,45 @@ void Polar::start(){
     m_threads.emplace_back(thread([](Polar *pPolar){   
         unsigned int timeTick = 0;
         while(pPolar->isKeepSweeping()){                       
-            while(fWaitForTick.test_and_set()) usleep(2);   // Wait for precise time interval
+            
+            // Wait for precise time interval
+            while(fWaitForTick.test_and_set()) usleep(2);           
             timeTick++;       
            
-            if(pPolar->getInterval() != 0 && timeTick % abs(pPolar->getInterval()) == 0){         
-                pPolar->chaserRotate(pPolar->getInterval() < 0? -1 : 1);    
+            if(pPolar->getChaserInterval() != 0 && timeTick % abs(pPolar->getChaserInterval()) == 0){         
+                pPolar->chaserRotate(pPolar->getChaserInterval() < 0 ? -1 : 1);    
             } 
 
-            int headingChange = 0;
-            FusionVector accel = pPolar->getLinearAcceleration();
-            FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
-            float accelmag = sqrt(accel.axis.x * accel.axis.x + accel.axis.y * accel.axis.y + accel.axis.z * accel.axis.z );
+            if(timeTick % IMU_READ_MULTIPLIER == 0){
+                FusionVector accel = pPolar->getLinearAcceleration();
+                FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
+                
+                // pPolar->addAccel(accel.axis.y);
+                // float acc = pPolar->getAverageYAccel();      TODO:
+                float acc =accel.axis.y;
+                if(acc == 0 ){
+                    pPolar->setChaserInterval(0);
+                }else{
+                    float interval = 50.0 / acc;
+                    int val = 0;
+                    if(fabs(interval) > 300){
+                        val = signbit(interval)? -300 : 300;
+                    }else{
+                        val = interval;
+                    }
+                    
+                    pPolar->setChaserInterval(val);
+                }
+  
             
-            int bucket = pPolar->addHeading(orientation.angle.yaw);        // Increment corresponding histogram bucket           
-            if(timeTick % IMU_LEAK_RATE == 0){
-                pPolar->decrementHistogram();                        // Age out older entries
+                pPolar->addHeading(orientation.angle.yaw);              // Increment corresponding histogram bucket           
+                if(timeTick % IMU_LEAK_RATE == 0){
+                    pPolar->decrementHistogram();                        // Age out older entries
+                }
+
+                int variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
+                pPolar->setAngle(variance);
             }
-
-            int variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
-            pPolar->setAngle(variance);
-
-            // Set chaser speed based on linear acceleration ...
 
             int move = pPolar->getAngle() - pPolar->getMotorPosition();
             if(move > 0){
@@ -94,9 +114,11 @@ int Polar::getHeadingVariance(int width){
 
     return diff;
 }
-
-int Polar::
-addHeading(float heading){
+float Polar::getAverageYAccel(){
+    float sum = accumulate(m_yAccels.begin(), m_yAccels.end(), 0);
+   return  sum / m_yAccels.size();
+}
+int Polar::addHeading(float heading){
     int i = (heading + 180.0) * STEPS_PER_DEGREE + 0.5;
     if(i < 0) i = 0;
     m_nCurrentHeading = i;
@@ -104,8 +126,14 @@ addHeading(float heading){
     m_headings[i]++;
     return i;
  }
+ void Polar::addAccel(float accel){
+    m_yAccels.push_front(accel);
+    m_yAccels.resize(ACCEL_SAMPLES);
+ }
+
  void Polar::clearHistory(){
     transform(m_headings.begin(), m_headings.end(), m_headings.begin(), [](int val){return 0;});
+    transform(m_yAccels.begin(), m_yAccels.end(), m_yAccels.begin(), [](float val){return 0.0;});
  }
 void Polar::stop(){
     m_imu.stop();

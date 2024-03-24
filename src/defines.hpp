@@ -60,6 +60,7 @@
 #define HEADING_0_BUCKET 800
 
 #define IMU_SAMPLE_INTERVAL_US 100000
+#define IMU_READ_MULTIPLIER 10
 #define IMU_LEAK_RATE 20
 #define STEPS_PER_DEGREE 8.0 / 1.8       
 #define HEADING_AVERAGE_WINDOW_STEPS 134
@@ -70,5 +71,7 @@
 
 #define index_to_angle(index)(index - HEADING_0_BUCKET)
 #define angle_to_index(angle)(angle + HEADING_0_BUCKET)
+
+#define ACCEL_SAMPLES 100
 
 #endif

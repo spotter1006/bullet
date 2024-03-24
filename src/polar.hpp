@@ -4,6 +4,7 @@
 #include "stepper.hpp"
 #include <ws2811/ws2811.h>
 #include <vector>
+#include<list>
 #include <thread>
 #include <signal.h>
 #include <sys/time.h>
@@ -30,7 +31,9 @@ class Polar{
         void home();
         void decrementHistogram();
         int addHeading(float heading);
+        void addAccel(float accel);
         int getHeadingVariance(int width);
+        float getAverageYAccel();
         void clearHistory();
 
         inline int getRadius(){return m_nRadius;}
@@ -40,8 +43,8 @@ class Polar{
         inline int getRightSweepLimit(){return m_nRightSweepLimit;}
         inline int getAngle(){return m_nAngle;}
         inline void setAngle(int angle){m_nAngle = angle;}
-        inline int getInterval(){return m_nInterval;}
-        inline void setInterval(int interval){m_nInterval = interval;}
+        inline int getChaserInterval(){return m_nChaserInterval;}
+        inline void setChaserInterval(int interval){m_nChaserInterval = interval;}
 
         // Stepper pass-throughs
         inline int stepMotor(int dir){return m_stepper.step(dir);}
@@ -81,7 +84,7 @@ class Polar{
         int m_nRightSweepLimit;
         int m_nRadius;
 
-        int m_nInterval;            // Interval between pattern shifts of animation in units of calls to chaser.rotate(). Bipolar, aslo tess rotate direction
+        int m_nChaserInterval;            // Interval between pattern shifts of animation in units of calls to chaser.rotate(). Bipolar, aslo sets rotate direction
         int m_nAngle;              // Angle of chaser bar in motor steps
 
         vector<thread> m_threads;
@@ -91,6 +94,8 @@ class Polar{
         vector<ws2811_led_t> m_colors;
         vector<int> m_headings;
         int m_nCurrentHeading;
+
+        list<float>m_yAccels;
 
 };
 #endif
