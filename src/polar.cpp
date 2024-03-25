@@ -105,7 +105,7 @@ float Polar::getHeadingVariance(int widthTenthDegrees){
     
     // Center + 1 going right
     count = halfWidth;
-    i = center;
+    i = center+1;
     while(count){   
         samples += m_headings[i];
         sum += ((float)i) * ((float)m_headings[i]);

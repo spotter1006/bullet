@@ -56,10 +56,10 @@ int main(int argc, char* argv[] ){
 
         pPolar->clearHistory();
         cout << "average test ...";
+        addHeadings(pPolar, 5.0f, 100);
         addHeadings(pPolar, 10.0f, 100);
-        addHeadings(pPolar, 30.0f, 100);
         pPolar->setCurrentHeading(0.0f);
-        evaluate(-20.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
+        evaluate(-7.5f, pPolar->getHeadingVariance(WINDOW_SIZE));
 
         pPolar->clearHistory();
         for(int i =0; i < ACCEL_SAMPLES; i++){
