@@ -47,6 +47,7 @@ class Polar{
         inline int getChaserInterval(){return m_nChaserInterval;}
         inline void setChaserInterval(int interval){m_nChaserInterval = interval;}
         inline void setCurrentHeading(float heading){m_fCurrentHeading = heading;}
+        inline unsigned int getHeadingCount(float heading){return m_headings[round(heading * 10.0)];}
 
         // Stepper pass-throughs
         inline int stepMotor(int dir){return m_stepper.step(dir);}

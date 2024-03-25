@@ -35,46 +35,43 @@ Polar::Polar(int left, int right, int radius):
 void Polar::start(){
 
     m_threads.emplace_back(thread([](Polar *pPolar){   
-        unsigned int timeTick = 0;
+
         while(pPolar->isKeepSweeping()){                       
            
             auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(MAIN_LOOP_INTERVAL_US); 
-            if(timeTick % IMU_READ_MULTIPLIER == 0){
-                FusionVector accel = pPolar->getLinearAcceleration();
-                FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
-                /*               
-                // pPolar->addAccel(accel.axis.y);
-                // float acc = pPolar->getAverageYAccel();      TODO:
-                 
-                float acc =accel.axis.y;
-                if(acc == 0 ){
-                    pPolar->setChaserInterval(0);
-                }else{
-                    float interval = 50.0 / acc;
-                    int val = 0;
-                    if(fabs(interval) > 300){
-                        val = signbit(interval)? -300 : 300;
-                    }else{
-                        val = interval;
-                    }
-                    
-                    
-                    pPolar->setChaserInterval(val);
-                }
-                */
-            
-                pPolar->addHeading(orientation.angle.yaw);              // Increment corresponding histogram bucket           
-                if(timeTick % IMU_LEAK_RATE == 0){
-                    pPolar->decrementHistogram();                        // Age out older entries
-                }
 
-                float variance = pPolar->getHeadingVariance(HEADING_AVERAGE_WINDOW_STEPS);
-                pPolar->setAngle(variance / ANGLE_PER_DEGREE);
-
-                // pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);
+            FusionVector accel = pPolar->getLinearAcceleration();
+            FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
+            /*               
+            // pPolar->addAccel(accel.axis.y);
+            // float acc = pPolar->getAverageYAccel();      TODO:
                 
+            float acc =accel.axis.y;
+            if(acc == 0 ){
+                pPolar->setChaserInterval(0);
+            }else{
+                float interval = 50.0 / acc;
+                int val = 0;
+                if(fabs(interval) > 300){
+                    val = signbit(interval)? -300 : 300;
+                }else{
+                    val = interval;
+                }
+                
+                
+                pPolar->setChaserInterval(val);
             }
-            timeTick++;
+            */
+        
+            pPolar->addHeading(orientation.angle.yaw);              // Increment corresponding histogram bucket           
+            pPolar->setCurrentHeading(orientation.angle.yaw);
+
+            float variance = pPolar->getHeadingVariance(HEADING_WINDOW_TENTHS);
+             pPolar->setAngle(variance * STEPS_PER_DEGREE);
+
+            // pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);
+                
+
             pPolar->setMotorTargetPosition(pPolar->getAngle());
             this_thread::sleep_until(wakeTime);
 
@@ -118,7 +115,7 @@ float Polar::getHeadingVariance(int widthTenthDegrees){
 
     float average = samples == 0? 0.0f : (sum / samples) / 10.0f;
 
-    return m_fCurrentHeading - average;
+    return average - m_fCurrentHeading;
 
 }
 float Polar::getAverageYAccel(){
@@ -158,6 +155,6 @@ void Polar::setHue(int hue){
 
 void Polar::decrementHistogram(){
     for_each(m_headings.begin(), m_headings.end(), [](pair<const int, unsigned int>& p) {
-        p.second = p.second - 1;
+        if(p.second > 0) p.second--;
     });
 }

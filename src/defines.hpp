@@ -47,7 +47,7 @@
 #define IMU_READ_MULTIPLIER 10
 #define IMU_LEAK_RATE 20
 #define STEPS_PER_DEGREE 8.0 / 1.8       
-#define HEADING_AVERAGE_WINDOW_STEPS 134
+#define HEADING_WINDOW_TENTHS 300       // 30 degrees
 #define HEADING_BUCKETS 360 * 10       
 
 #define ACCEL_SAMPLES 100
