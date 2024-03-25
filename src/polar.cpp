@@ -87,20 +87,35 @@ void Polar::start(){
 float Polar::getHeadingVariance(int widthTenthDegrees){
     float sum = 0;
     unsigned int samples = 0;
-    int center = round(m_fCurrentHeading * 10);
+    int center = round(m_fCurrentHeading * 10.0f);
+    int halfWidth = widthTenthDegrees / 2;
 
-    for(int i = center - widthTenthDegrees / 2; i <= center + widthTenthDegrees ; i++){
+    // center going left
+    int count = halfWidth;
+    int i = center;
+    while(count){ 
         samples += m_headings[i];
-        if(m_headings[i] != 0){
-            float degrees = i / 10.0;
-            float weight = m_headings[i];
-            sum += degrees * weight;
-        }
+        sum += ((float)i) * ((float)m_headings[i]);
+        if(i == 0) i = HEADING_BUCKETS - 1;  
+        else i--; 
+        count--;
+    }
+    
+    // Center + 1 going right
+    count = halfWidth;
+    i = center + 1;
+    while(count){   
+        samples += m_headings[i];
+        sum += ((float)i) * ((float)m_headings[i]);
+        if(i == HEADING_BUCKETS - 1) i = 0;
+        else  i++; 
+        count--;
     }
 
+
     if(sum == 0) return 0;
-    float average = sum / samples;
-    return round(m_fCurrentHeading - average);
+    float average = (sum / samples) / 10.0f;
+    return round((m_fCurrentHeading - average));
 
 }
 float Polar::getAverageYAccel(){
