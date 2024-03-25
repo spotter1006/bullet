@@ -22,12 +22,12 @@ int main(int argc, char* argv[] ){
     Polar* pPolar = new Polar(-MOTOR_SWEEP_STEPS/2, MOTOR_SWEEP_STEPS/2, LED_STRING_PIXELS);
     try{
         
-        // cout << "Go right test ..." ;
-        // pPolar->addHeading(-0.5f);
-        // addHeadings(pPolar, 0.0f, 100);       // 100 headings at 0 degrees
-        // pPolar->addHeading(0.5f);
-        // pPolar->addHeading(10.0f);       // Heading goes right 10 degrees
-        // evaluate(10.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
+        cout << "Go right test ..." ;
+        pPolar->addHeading(-0.5f);
+        addHeadings(pPolar, 0.0f, 100);       // 100 headings at 0 degrees
+        pPolar->addHeading(0.5f);
+        pPolar->addHeading(10.0f);       // Heading goes right 10 degrees
+        evaluate(10.0f, pPolar->getHeadingVariance(WINDOW_SIZE));
 
         pPolar->clearHistory();
         cout << "Go left test ..." ;
