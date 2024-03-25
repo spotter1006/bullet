@@ -96,26 +96,29 @@ float Polar::getHeadingVariance(int widthTenthDegrees){
     while(count){ 
         samples += m_headings[i];
         sum += ((float)i) * ((float)m_headings[i]);
-        if(i == 0) i = HEADING_BUCKETS - 1;  
-        else i--; 
+        if(i == -HEADING_BUCKETS/2) 
+            i = HEADING_BUCKETS/2;  
+        else 
+            i--; 
         count--;
     }
     
     // Center + 1 going right
     count = halfWidth;
-    i = center + 1;
+    i = center;
     while(count){   
         samples += m_headings[i];
         sum += ((float)i) * ((float)m_headings[i]);
-        if(i == HEADING_BUCKETS - 1) i = 0;
-        else  i++; 
+        if(i == HEADING_BUCKETS/2) 
+            i = -HEADING_BUCKETS/2;
+        else  
+            i++; 
         count--;
     }
 
+    float average = samples == 0? 0.0f : (sum / samples) / 10.0f;
 
-    if(sum == 0) return 0;
-    float average = (sum / samples) / 10.0f;
-    return round((m_fCurrentHeading - average));
+    return m_fCurrentHeading - average;
 
 }
 float Polar::getAverageYAccel(){
@@ -123,7 +126,6 @@ float Polar::getAverageYAccel(){
    return  sum / m_yAccels.size();
 }
 void Polar::addHeading(float heading){
-    m_fCurrentHeading = heading;
     float tenths = heading * 10;
     int roundedTenth = round(tenths);
     m_headings[roundedTenth]++;                                  // Increment histogram bucket
