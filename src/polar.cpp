@@ -23,7 +23,8 @@ Polar::Polar(int left, int right, int radius):
     m_yAccels(),
     m_headings(),
     m_fCurrentHeading(0),
-    m_fKeepSweeping(true)
+    m_fKeepSweeping(true),
+    m_HeadingsMutex()
 {
         m_chaser.setPattern(m_intensities, m_colors);
         // Initialize map of 1/10 degree fixed point integer heading histogram buckets over +/- 180 degrees. Initialze the sums to 0
@@ -67,16 +68,23 @@ void Polar::start(){
             pPolar->setCurrentHeading(orientation.angle.yaw);
 
             float variance = pPolar->getHeadingVariance(HEADING_WINDOW_TENTHS);
+
              pPolar->setAngle(variance * STEPS_PER_DEGREE);
-
-            // pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);
+            // pPolar->setAngle(orientation.angle.yaw * STEPS_PER_DEGREE);  // live view
                 
-
             pPolar->setMotorTargetPosition(pPolar->getAngle());
             this_thread::sleep_until(wakeTime);
 
         }
     },this));
+
+    m_threads.emplace_back(thread([](Polar* pPolar){
+        auto wakeTime = chrono::high_resolution_clock::now() + chrono::milliseconds(100); 
+        pPolar->decrementHistogram();
+        this_thread::sleep_until(wakeTime);
+
+    },this));
+
     m_imu.start();
     m_stepper.start();
     m_chaser.start();
@@ -86,7 +94,7 @@ float Polar::getHeadingVariance(int widthTenthDegrees){
     unsigned int samples = 0;
     int center = round(m_fCurrentHeading * 10.0f);
     int halfWidth = widthTenthDegrees / 2;
-
+    m_HeadingsMutex.lock();
     // center going left
     int count = halfWidth;
     int i = center;
@@ -112,10 +120,10 @@ float Polar::getHeadingVariance(int widthTenthDegrees){
             i++; 
         count--;
     }
-
+    m_HeadingsMutex.unlock();
     float average = samples == 0? 0.0f : (sum / samples) / 10.0f;
 
-    return average - m_fCurrentHeading;
+    return m_fCurrentHeading -average;
 
 }
 float Polar::getAverageYAccel(){
@@ -125,7 +133,9 @@ float Polar::getAverageYAccel(){
 void Polar::addHeading(float heading){
     float tenths = heading * 10;
     int roundedTenth = round(tenths);
+    m_HeadingsMutex.lock();
     m_headings[roundedTenth]++;                                  // Increment histogram bucket
+    m_HeadingsMutex.unlock();
 }
 void Polar::addAccel(float accel){
     m_yAccels.push_front(accel);
@@ -133,9 +143,11 @@ void Polar::addAccel(float accel){
  }
 
  void Polar::clearHistory(){
+    m_HeadingsMutex.lock();
     for_each(m_headings.begin(), m_headings.end(), [](pair<const int, unsigned int>& p) {
         p.second = 0;
     });
+    m_HeadingsMutex.unlock();
     transform(m_yAccels.begin(), m_yAccels.end(), m_yAccels.begin(), [](float val){return 0.0;});
  }
 void Polar::stop(){
@@ -154,7 +166,9 @@ void Polar::setHue(int hue){
 }
 
 void Polar::decrementHistogram(){
+    m_HeadingsMutex.lock();
     for_each(m_headings.begin(), m_headings.end(), [](pair<const int, unsigned int>& p) {
         if(p.second > 0) p.second--;
     });
+    m_HeadingsMutex.unlock();
 }

@@ -98,7 +98,7 @@ class Polar{
         vector<ws2811_led_t> m_colors;
         map<int, unsigned int> m_headings;        // Fixed point headings with 0.1 degrees between keys. Value is the count of headings at that heading.
         float m_fCurrentHeading;                   // In degrees
-
+        timed_mutex m_HeadingsMutex;
         list<float>m_yAccels;
 
 };
