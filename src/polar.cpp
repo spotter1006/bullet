@@ -23,7 +23,8 @@ void Polar::start(){
             FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
 
 
-            pPolar->setChaserInterval(100);
+            // pPolar->setChaserInterval(100);
+            
             pPolar->setMotorTargetPosition(20 * STEPS_PER_DEGREE);
             this_thread::sleep_until(wakeTime);
 
@@ -47,8 +48,5 @@ void Polar::stop(){
     m_threads.clear();
 }
 
-void Polar::setHue(int hue){
-    m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
-    m_chaser.setPattern(m_intensities, m_colors);
-}
+
 

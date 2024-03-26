@@ -62,3 +62,11 @@ void Chaser::stop(){
     m_fKeepRunning = false;
     // m_thread.join();
 }
+ void Chaser::setIntensities(vector<ws2811_led_t> intensities){
+    m_intensities = intensities;
+    setPattern(m_intensities, m_colors);
+}
+void Chaser::setHue(int hue){
+    m_colors = vector<ws2811_led_t>(m_colors.size(), redToGreen(hue));  // Monotone 
+    setPattern(m_intensities, m_colors);
+}
