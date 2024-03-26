@@ -7,8 +7,8 @@
 
 class Bullet{
     public:
-        Bullet(int left, int right, int pixels): 
-        m_polar(left, right, pixels),
+        Bullet(int pixels): 
+        m_polar(pixels),
         m_fStop(false){}
 
         int start(int argc, char *argv[]);
