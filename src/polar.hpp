@@ -30,8 +30,8 @@ class Polar{
         void start();
         void stop();
         // void home();
-        void decrementHistogram();
-        void addHeading(float heading);
+        void decrementHistogram(int counts);
+        void addHeading(float heading,int counts);
         void addAccel(float accel);
         float getHeadingVariance(int widthTenthDegrees);
         float getAverageYAccel();

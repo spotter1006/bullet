@@ -64,7 +64,7 @@ void Polar::start(){
             }
             */
         
-            pPolar->addHeading(orientation.angle.yaw);              // Increment corresponding histogram bucket           
+            pPolar->addHeading(orientation.angle.yaw, 2);              // Increment corresponding histogram bucket           
             pPolar->setCurrentHeading(orientation.angle.yaw);
 
             float variance = pPolar->getHeadingVariance(HEADING_WINDOW_TENTHS);
@@ -80,7 +80,7 @@ void Polar::start(){
 
     m_threads.emplace_back(thread([](Polar* pPolar){
         auto wakeTime = chrono::high_resolution_clock::now() + chrono::milliseconds(100); 
-        pPolar->decrementHistogram();
+        pPolar->decrementHistogram(1);
         this_thread::sleep_until(wakeTime);
 
     },this));
@@ -130,11 +130,11 @@ float Polar::getAverageYAccel(){
     float sum = accumulate(m_yAccels.begin(), m_yAccels.end(), 0);
    return  sum / m_yAccels.size();
 }
-void Polar::addHeading(float heading){
+void Polar::addHeading(float heading, int counts){
     float tenths = heading * 10;
     int roundedTenth = round(tenths);
     m_HeadingsMutex.lock();
-    m_headings[roundedTenth]++;                                  // Increment histogram bucket
+    m_headings[roundedTenth]+=counts;                                  // Increment histogram bucket
     m_HeadingsMutex.unlock();
 }
 void Polar::addAccel(float accel){
@@ -165,10 +165,10 @@ void Polar::setHue(int hue){
     m_chaser.setPattern(m_intensities, m_colors);
 }
 
-void Polar::decrementHistogram(){
+void Polar::decrementHistogram(int counts){
     m_HeadingsMutex.lock();
-    for_each(m_headings.begin(), m_headings.end(), [](pair<const int, unsigned int>& p) {
-        if(p.second > 0) p.second--;
+    for_each(m_headings.begin(), m_headings.end(), [counts](pair<const int, unsigned int>& p) {
+        if(p.second >= counts) p.second-= counts;
     });
     m_HeadingsMutex.unlock();
 }
