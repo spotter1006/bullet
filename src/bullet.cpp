@@ -120,7 +120,7 @@ void Bullet:: terminal(){
 			case 'a':
 				angle = stoi(line.substr(1));
 				cout << "Setting angle to " << angle << endl;
-				m_polar.setAngle(angle);      
+				m_polar.setMotorTargetPosition(angle);      
 				break;
 			case 'i':
 				interval = stoi(line.substr(1));

@@ -11,7 +11,7 @@
         "cwd": "${workspaceFolder}",
         "program": "${workspaceFolder}/build/debug/testpolar",
         "MIMode": "gdb",
-        "miDebuggerPath": "/usr/bin/gdb",
+        "miDebuggerPath": "${workspaceFolder}/bin/sudo_gdb.sh",
         "setupCommands": [
           {
             "description": "Enable pretty-printing for gdb",

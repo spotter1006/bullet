@@ -51,6 +51,8 @@
 #define HEADING_BUCKETS 360 * 10       
 
 #define ACCEL_SAMPLES 100
+#define HEADING_AVERAGE_SAMPLES 1000
+#define TACKING_ANGLE 30.0f
 
 
 // Gamma table:

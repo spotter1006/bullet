@@ -123,7 +123,7 @@ int main(int argc, char* argv[]){
                 "Linear Accel:\t " <<  setw(10) << accel.axis.x <<  setw(10) << accel.axis.y <<  setw(10) << accel.axis.z << "\n" << 
                 "Orientation:\t " << setw(10) << euler.angle.roll << setw(10) << euler.angle.pitch << setw(10) << euler.angle.yaw << endl;
 
-            cout << "\x1b[A\x1b[A"; //Go back up 6 lines
+            cout << "\x1b[A\x1b[A"; //Go back up 2 lines
         }
     }
 }
