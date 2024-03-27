@@ -7,10 +7,7 @@
 
 class Bullet{
     public:
-        Bullet(int pixels): 
-        m_polar(pixels),
-        m_fStop(false){}
-
+        Bullet(): m_polar(), m_fStop(false){}
         int start(int argc, char *argv[]);
         inline void stop(int sigNum){m_fStop = (sigNum == SIGINT);}
     private:

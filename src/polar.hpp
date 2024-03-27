@@ -18,18 +18,20 @@ using namespace std;
 
 class Polar{
     public:
-
-        Polar(int radius): m_chaser(), m_imu(), m_fkeepRunning(true){}
-
+        Polar(): m_fkeepRunning(true), m_fHeadingSum(0), m_nHeadingSamples(0){}
         void start();
         void stop();
+        void update();
         // void home();
 
         inline bool iskeepRunning(){return m_fkeepRunning;}
         inline void setkeepRunning(bool val){m_fkeepRunning=val;}
+        inline float getHeadingChange(){return m_fHeadingChange;}
+        inline float getAverageHeading(){return m_fHeadingAverage;}
 
         // Chaser pass-throughs
         inline void setHue(int hue){m_chaser.setHue(hue);}
+
         inline int getChaserInterval(){return m_chaser.getInterval();}
         inline void setChaserInterval(int interval){m_chaser.setInterval(interval);}
  
@@ -41,7 +43,6 @@ class Polar{
         inline void enableMotor(bool enable){m_stepper.enable(enable);}
         inline void setMotorTargetPosition(int position){m_stepper.setTargetPosition(position);}
         
-
         // IMU pass-throughs
         inline int witStartAccCali(){return m_imu.witStartAccCali();}
         inline int witStopAccCali(){return m_imu.witStopAccCali();}
@@ -65,11 +66,14 @@ class Polar{
     private:
         Stepper m_stepper;
         Chaser m_chaser;
-        Imu m_imu;
-        
+        Imu m_imu;       
         bool m_fkeepRunning;
-
         vector<thread> m_threads;
+
+        float m_fHeadingSum;
+        unsigned int m_nHeadingSamples;
+        float m_fHeadingAverage;
+        float m_fHeadingChange;
 
 
 };

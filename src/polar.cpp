@@ -12,20 +12,17 @@ using namespace std;
 
 
 void Polar::start(){
-
     m_threads.emplace_back(thread([](Polar *pPolar){   
 
         while(pPolar->iskeepRunning()){                       
            
             auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(MAIN_LOOP_INTERVAL_US); 
-
-            FusionVector accel = pPolar->getLinearAcceleration();
-            FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
-
+            pPolar->update();
+            float headingChange = pPolar->getHeadingChange();
 
             // pPolar->setChaserInterval(100);
-            
-            pPolar->setMotorTargetPosition(20 * STEPS_PER_DEGREE);
+
+            pPolar->setMotorTargetPosition(headingChange * STEPS_PER_DEGREE);
             this_thread::sleep_until(wakeTime);
 
         }
@@ -37,9 +34,32 @@ void Polar::start(){
     m_chaser.start();
 }
 
+void Polar::update(){
+    FusionVector accel = getLinearAcceleration();
+    FusionEuler orientation = quaternionToEuler(getQuaternion());
+
+    // Reset average on tacks or jibes
+    if(fabs(orientation.angle.yaw - m_fHeadingAverage) > TACKING_ANGLE){
+        m_fHeadingAverage = orientation.angle.yaw;
+        m_nHeadingSamples = 1;
+        m_fHeadingSum = 0;
+    }else{
+        m_fHeadingSum += orientation.angle.yaw;
+        m_nHeadingSamples++;
+
+        if(m_nHeadingSamples >= HEADING_AVERAGE_SAMPLES){
+            m_fHeadingAverage = m_fHeadingSum / m_nHeadingSamples;
+
+            m_nHeadingSamples = 0;
+            m_fHeadingSum = 0;
+        }
+    }
+    m_fHeadingChange = orientation.angle.yaw - m_fHeadingAverage;
+}
 
 void Polar::stop(){
     m_chaser.stop();
+    
     m_stepper.stop();
     m_imu.stop();
     m_fkeepRunning = false;

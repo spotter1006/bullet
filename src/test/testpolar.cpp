@@ -1,32 +1,19 @@
 #include "../polar.hpp"
 #include <iostream>
 #include<sstream>
+#include <iomanip>
 
-void evaluate(float expected, float result){
-    ostringstream error;
-    if(result == expected){
-        cout << "pass" << endl;
-    }else{
-        error << "fail. Expected " << expected << ", got " << result;
-        throw(error.str());
-    }
-}
 
-#define WINDOW_SIZE 220 // 22 degrees (+/- 11)
+
 int main(int argc, char* argv[] ){
-    string line;
-    Polar* pPolar = new Polar(LED_STRING_PIXELS);
+    Polar* pPolar = new Polar();
     pPolar->start();
 
-    cout << "Running. <enter> to stop ..." << endl;
-    getline(cin, line);
-
-
-    try{
-
-       evaluate(pPolar->getChaserInterval(), -100);
-    }catch(string error){
-        cout << error << endl;
+    cout << "Running. <ctrl-c> to stop ..." << endl;
+    while(1){
+        sleep(1);
+        cout << "Heading change: " << setw(10) << pPolar->getHeadingChange() << " Average: " << setw(10) << pPolar->getAverageHeading() << endl;
+        cout << "\x1b[A"; //Go back up 1 line
     }
 
 }
