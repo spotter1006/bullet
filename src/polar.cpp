@@ -38,21 +38,14 @@ void Polar::update(){
     FusionVector accel = getLinearAcceleration();
     FusionEuler orientation = quaternionToEuler(getQuaternion());
 
+    m_headings.push_front(orientation.angle.yaw);
+    if(m_headings.size() > HEADING_AVERAGE_SAMPLES) m_headings.resize(HEADING_AVERAGE_SAMPLES);
+    m_fHeadingAverage = accumulate(m_headings.begin(),m_headings.end(),0) / (float)m_headings.size();
+
     // Reset average on tacks or jibes
     if(fabs(orientation.angle.yaw - m_fHeadingAverage) > TACKING_ANGLE){
         m_fHeadingAverage = orientation.angle.yaw;
-        m_nHeadingSamples = 1;
-        m_fHeadingSum = 0;
-    }else{
-        m_fHeadingSum += orientation.angle.yaw;
-        m_nHeadingSamples++;
 
-        if(m_nHeadingSamples >= HEADING_AVERAGE_SAMPLES){
-            m_fHeadingAverage = m_fHeadingSum / m_nHeadingSamples;
-
-            m_nHeadingSamples = 0;
-            m_fHeadingSum = 0;
-        }
     }
     m_fHeadingChange = orientation.angle.yaw - m_fHeadingAverage;
 }

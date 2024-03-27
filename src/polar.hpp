@@ -18,7 +18,7 @@ using namespace std;
 
 class Polar{
     public:
-        Polar(): m_fkeepRunning(true), m_fHeadingSum(0), m_nHeadingSamples(0){}
+        Polar(): m_fkeepRunning(true), m_headings(HEADING_AVERAGE_SAMPLES,0){}
         void start();
         void stop();
         void update();
@@ -70,7 +70,9 @@ class Polar{
         bool m_fkeepRunning;
         vector<thread> m_threads;
 
-        float m_fHeadingSum;
+
+        list<float>m_headings;
+
         unsigned int m_nHeadingSamples;
         float m_fHeadingAverage;
         float m_fHeadingChange;
