@@ -7,7 +7,7 @@
 #include <unistd.h>
 using namespace std;
 
-Stepper::Stepper(){
+Stepper::Stepper(int microstepMode){
     m_fKeepRunning = true;
     m_nPosition = 0;
     m_nTargetPosition = 0;
@@ -35,13 +35,8 @@ Stepper::Stepper(){
     m_lineSleep.set_value(1);
     m_lineEnable.set_value(0);
     m_lineReset.set_value(1);
-    
-    // 1/8 step
-    m_lineM0.set_value(1);
-    m_lineM1.set_value(1);
-    m_lineM2.set_value(0);
-
-
+        
+    setMicrostepping(microstepMode);    // Full step
 }
 
 Stepper::~Stepper(){
@@ -101,3 +96,24 @@ void Stepper::stop(){
     m_fKeepRunning = false;
     // m_thread.join();
 }
+
+
+void Stepper::setMicrostepping(char unsigned val){
+    /*
+        val MODE2   MODE1   MODE0   STEP MODE
+        0    0       0       0       Full step (2-phase excitation) with 71% current
+        1    0       0       1       1/2 step (1-2 phase excitation)
+        2    0       1       0       1/4 step (W1-2 phase excitation)
+        3    0       1       1       8 microsteps/step
+        4    1       0       0       16 microsteps/step
+        5    1       0       1       32 microsteps/step
+        6    1       1       0       32 microsteps/step
+        7    1       1       1       32 microsteps/step
+    */
+
+    m_lineM0.set_value(val & 0x01);
+    m_lineM1.set_value(val & 0x02);
+    m_lineM2.set_value(val & 0x04);
+
+}
+

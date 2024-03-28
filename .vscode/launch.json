@@ -2,6 +2,25 @@
     "version": "0.2.0",
     "configurations": [
       {
+        "name": "Stepper Test",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["rs"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/teststepper",
+        "MIMode": "gdb",
+        "miDebuggerPath": "${workspaceFolder}/bin/sudo_gdb.sh",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
         "name": "Polar Test",
         "type": "cppdbg",
         "request": "launch",

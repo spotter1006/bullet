@@ -7,7 +7,7 @@ extern gpiod::chip chip;
 
 class Stepper{
     public:
-        Stepper();
+        Stepper(int microstepMode);
         ~Stepper();
         int step(int dir);
         int step();
@@ -20,6 +20,7 @@ class Stepper{
         inline void enable(bool enable){m_lineEnable.set_value(enable? 0:1);}
         inline bool isKeepRunning(){return m_fKeepRunning;}
         void resetPulse();
+        void setMicrostepping(unsigned char val);
         void start();
         void stop();
     private:
