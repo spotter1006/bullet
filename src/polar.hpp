@@ -13,13 +13,11 @@
 #include "imu.hpp"
 using namespace std;
 
-using namespace std;
-
-
 class Polar{
     public:
-        Polar(): m_fkeepRunning(true), m_headings(HEADING_AVERAGE_SAMPLES,0){}
+        Polar(): m_fkeepRunning(true), m_headings(HEADING_AVERAGE_SAMPLES,0), m_stepper(3){}
         void start();
+    
         void stop();
         void update();
         // void home();
@@ -61,7 +59,6 @@ class Polar{
         inline FusionVector getLinearAcceleration(){return m_imu.getLinearAcceleration();}
         inline FusionQuaternion getQuaternion (){return m_imu.getQuaternion();}
         inline FusionEuler quaternionToEuler(const FusionQuaternion quaternion){return m_imu.quaternionToEuler(quaternion);}
-        
   
     private:
         Stepper m_stepper;
@@ -69,16 +66,8 @@ class Polar{
         Imu m_imu;       
         bool m_fkeepRunning;
         vector<thread> m_threads;
-
-
         list<float>m_headings;
-
-        unsigned int m_nHeadingSamples;
         float m_fHeadingAverage;
         float m_fHeadingChange;
-
-
 };
 #endif
-
-
