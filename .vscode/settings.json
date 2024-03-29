@@ -12,7 +12,8 @@
         "deque": "cpp",
         "list": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "chrono": "cpp"
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,
