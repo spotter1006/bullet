@@ -39,5 +39,5 @@ class Stepper{
         thread m_thread;
         bool m_fKeepRunning;
 
-};
+}; 
 #endif

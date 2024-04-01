@@ -1,7 +1,7 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
-#define MAIN_LOOP_INTERVAL_US   10000    
+#define MAIN_LOOP_INTERVAL_US   10000    // 10ms
 
 // DRV8825 stepper motor driver
 #define DRV8825_EN_GPIO         17      // RASPI pin 11
@@ -13,17 +13,23 @@
 #define DRV8825_STEP_GPIO       5       // RASPI pin 29
 #define DRV8825_DIR_GPIO        6       // RASPI pin 31
  
-// Unipolar stepper driver
-#define PHASE_1_GPIO 17
-#define PHASE_2_GPIO 27
-#define PHASE_3_GPIO 23
-#define PHASE_4_GPIO 24
-
  // Motion 
 #define MOTOR_SWEEP_STEPS       280     // 63 degrees  
 #define MOTOR_MIN_STEP_INTERVAL_US  800  
 #define MOTOR_MAX_STEP_INTERVAL_US  4000  
 #define MOTOR_ACCEL 5
+
+
+// Unipolar stepper driver
+#define PHASE_1_GPIO 17     // Pin 11
+#define PHASE_2_GPIO 27     // pin 13
+#define PHASE_3_GPIO 22     // pin 15
+#define PHASE_4_GPIO 23     // pin 16
+      
+#define UNIPOLAR_STEPS_PER_DEGREE 1.425f            // Empirically measured
+#define UNIPOLAR_MIN_STEP_INTERVAL_MS  2  
+#define UNIPOLAR_MAX_STEP_INTERVAL_MS  10  
+#define UNIPOLAR_ACCEL 5
 
 // WS2812 Addressable LED array
 #define BLACK   0x00000000
@@ -60,8 +66,7 @@
 #define HEADING_AVERAGE_SAMPLES 1000
 #define TACKING_ANGLE 30.0f
 
-#define UNIPOLAR_STEP_INTERVAL_MS 2     // 500 Hz
-#define DEGREES_PER_UNIPOLAR_STEP 64 * 64
+
 
 // Gamma table:
 // {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
