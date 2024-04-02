@@ -17,6 +17,7 @@ class Unipolar{
         void setPosition(int &position);
         void setTargetPosition(int position);
         void setTargetPosition(float degrees);
+        void home();
         inline int getStepInterval(){return m_nStepInterval;}
     private:
         gpiod::line m_line1;

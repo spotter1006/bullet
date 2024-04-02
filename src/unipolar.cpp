@@ -16,7 +16,7 @@ Unipolar::Unipolar():
     {
         using namespace gpiod;
 
-        m_nStepInterval = UNIPOLAR_MIN_STEP_INTERVAL_MS;
+        m_nStepInterval = UNIPOLAR_MIN_STEP_INTERVAL_US;
         m_line1 =     chip("gpiochip0").get_line(PHASE_1_GPIO);
         m_line1.request({"bullet", line_request::DIRECTION_OUTPUT , 0},0); 
         m_line2 =     chip("gpiochip0").get_line(PHASE_2_GPIO);
@@ -28,7 +28,8 @@ Unipolar::Unipolar():
 
         m_thread = thread([](Unipolar* pUnipolar){
             while(pUnipolar->isKeepRunning()){                                 
-                auto wakeTime = chrono::high_resolution_clock::now() + chrono::milliseconds(UNIPOLAR_MIN_STEP_INTERVAL_MS); 
+                // auto wakeTime = chrono::high_resolution_clock::now() + chrono::milliseconds(UNIPOLAR_MIN_STEP_INTERVAL_MS); 
+                auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(UNIPOLAR_MIN_STEP_INTERVAL_US);
                 pUnipolar->step();
                 this_thread::sleep_until(wakeTime);
             }
@@ -109,6 +110,17 @@ void Unipolar::setTargetPosition(float degrees){
     setTargetPosition((int)round(degrees * UNIPOLAR_STEPS_PER_DEGREE));
 }
 void Unipolar::reset(){
+    m_mutex.lock();
     m_nPosition = 0;
     m_nStepIndex = 0;
+    m_nTargetPosition=0;
+    m_mutex.unlock();
+}
+void Unipolar::home(){
+    setTargetPosition(UNIPOLAR_TRAVEL * 1.5f);
+    sleep(1);
+    reset();
+    setTargetPosition(-UNIPOLAR_TRAVEL / 2.0f);
+    sleep(1);
+    reset();
 }

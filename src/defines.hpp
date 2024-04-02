@@ -27,9 +27,12 @@
 #define PHASE_4_GPIO 23     // pin 16
       
 #define UNIPOLAR_STEPS_PER_DEGREE 1.425f            // Empirically measured
-#define UNIPOLAR_MIN_STEP_INTERVAL_MS  2  
-#define UNIPOLAR_MAX_STEP_INTERVAL_MS  10  
+#define UNIPOLAR_MIN_STEP_INTERVAL_US  2000 
+#define UNIPOLAR_MAX_STEP_INTERVAL_US  10000  
 #define UNIPOLAR_ACCEL 5
+#define UNIPOLAR_TRAVEL 64.0f
+
+
 
 // WS2812 Addressable LED array
 #define BLACK   0x00000000
