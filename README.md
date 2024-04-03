@@ -1,7 +1,18 @@
 # Bullet
 This is a device that monitors the  performance of sailboats in real time. Measuments of orienation, acceleration and magnetic heading are made from an inertial measurement unit (IMU). All data is stored for later upload to a web based tool. The main display consists of a strip of LEDS in a line spun aroun an axis at one end by a stepper motor to create a polar chart. The LEDs can display a full range of RGB color, at various intesities and display animation effects.
 ## Build 
-
+Libraries
+Fusion - build from source: https://github.com/xioTechnologies/Fusion
+```
+cd ~/swprojects
+git clone https://github.com/xioTechnologies/Fusion.git
+cd Fusion
+sudo apt install python-pip
+pip install numpy
+/usr/bin/cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -S/home/pi/swprojects/Fusion -B/home/pi/swprojects/Fusion/build -G "Unix Makefiles"
+sudo cp build/Fusion/libFusion.a /usr/local/lib
+sudo cp Fusion/*.h /usr/include
+```
 Debug
 
 ``
