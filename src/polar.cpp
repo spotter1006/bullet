@@ -22,7 +22,7 @@ void Polar::start(){
 
             // pPolar->setChaserInterval(100);
 
-            pPolar->setMotorTargetPosition(headingChange * STEPS_PER_DEGREE);
+            pPolar->setMotorTargetPosition(headingChange);
             this_thread::sleep_until(wakeTime);
 
         }
@@ -30,10 +30,9 @@ void Polar::start(){
 
    
     m_imu.start();
-    m_stepper.start();
+
     m_chaser.start();
 }
-
 void Polar::update(){
     FusionVector accel = getLinearAcceleration();
     FusionEuler orientation = quaternionToEuler(getQuaternion());
@@ -52,8 +51,7 @@ void Polar::update(){
 
 void Polar::stop(){
     m_chaser.stop();
-    
-    m_stepper.stop();
+
     m_imu.stop();
     m_fkeepRunning = false;
     for(auto& th : m_threads)

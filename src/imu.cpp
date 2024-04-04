@@ -18,7 +18,7 @@ void Imu::AutoScanSensor(char* dev)
 	int i, iRetry;
 	unsigned char cBuff[1];
 	
-	for(i = 5; i >= 0; i--)
+	for(i = 0; i < 5; i++)
 	{
 		close(fd);
 		serial_open(dev , bauds[i]);
@@ -35,7 +35,7 @@ void Imu::AutoScanSensor(char* dev)
 			}
 			if(s_cDataUpdate != 0)
 			{
-				//cout << "using IMU sensor at " << bauds[i] << " baud" << endl;
+				cout << "using IMU sensor at " << bauds[i] << " baud" << endl;
 				return ;
 			}
 			iRetry--;

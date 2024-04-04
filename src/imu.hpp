@@ -93,7 +93,7 @@ class Imu{
             };
             FusionAhrsSetSettings(&m_fusion, &settings);
             m_lastImuUpdate =  chrono::high_resolution_clock::now();
-            serial_open(IMU_SERIAL_PORT, 115200);
+            serial_open(IMU_SERIAL_PORT, 9600);
         }
         
         void start();

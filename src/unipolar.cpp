@@ -39,7 +39,7 @@ Unipolar::Unipolar():
 }
 Unipolar::~Unipolar(){
     m_fKeepRunning = false;
-    m_thread.join();
+    // m_thread.join();
 }
 // void Unipolar::step(){
 //     m_line1.set_value(m_stepTable[m_nStepIndex][0]);

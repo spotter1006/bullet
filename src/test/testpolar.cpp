@@ -12,6 +12,9 @@ int main(int argc, char* argv[] ){
     cout << "Running. <ctrl-c> to stop ..." << endl;
     while(1){
         sleep(1);
+        FusionVector accel=  pPolar->getLinearAcceleration(accel);
+        FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
+
         cout << "Heading change: " << setw(10) << pPolar->getHeadingChange() << " Average: " << setw(10) << pPolar->getAverageHeading() << endl;
         cout << "\x1b[A"; //Go back up 1 line
     }

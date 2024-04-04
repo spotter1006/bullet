@@ -1,7 +1,7 @@
 #ifndef _POLAR_H_
 #define _POLAR_H_
 
-#include "stepper.hpp"
+#include "unipolar.hpp"
 #include <ws2811/ws2811.h>
 #include <vector>
 #include<list>
@@ -15,7 +15,7 @@ using namespace std;
 
 class Polar{
     public:
-        Polar(): m_fkeepRunning(true), m_headings(HEADING_AVERAGE_SAMPLES,0), m_stepper(3){}
+        Polar(): m_fkeepRunning(true), m_headings(HEADING_AVERAGE_SAMPLES,0){}
         void start();
     
         void stop();
@@ -34,12 +34,12 @@ class Polar{
         inline void setChaserInterval(int interval){m_chaser.setInterval(interval);}
  
         // Stepper pass-throughs
-        inline int stepMotor(int dir){return m_stepper.step(dir);}
-        inline int getMotorDirection(){return m_stepper.getMotorDirection();}
-        inline int getMotorPosition(){return m_stepper.getPosition();}
-        inline void zeroMotorAngle(){m_stepper.zeroPosition();}
-        inline void enableMotor(bool enable){m_stepper.enable(enable);}
-        inline void setMotorTargetPosition(int position){m_stepper.setTargetPosition(position);}
+        // inline int stepMotor(int dir){return m_stepper.step(dir);}
+        // inline int getMotorDirection(){return m_stepper.getMotorDirection();}
+        // inline int getMotorPosition(){return m_stepper.getPosition();}
+        // inline void zeroMotorAngle(){m_stepper.zeroPosition();}
+        // inline void enableMotor(bool enable){m_stepper.enable(enable);}
+        inline void setMotorTargetPosition(float position){m_stepper.setTargetPosition(position);}
         
         // IMU pass-throughs
         inline int witStartAccCali(){return m_imu.witStartAccCali();}
@@ -59,9 +59,9 @@ class Polar{
         inline FusionVector getLinearAcceleration(){return m_imu.getLinearAcceleration();}
         inline FusionQuaternion getQuaternion (){return m_imu.getQuaternion();}
         inline FusionEuler quaternionToEuler(const FusionQuaternion quaternion){return m_imu.quaternionToEuler(quaternion);}
-  
+ 
     private:
-        Stepper m_stepper;
+        Unipolar m_stepper;
         Chaser m_chaser;
         Imu m_imu;       
         bool m_fkeepRunning;
