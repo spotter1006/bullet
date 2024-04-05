@@ -4,10 +4,15 @@
 #include <unistd.h>
 
 Unipolar::Unipolar(): 
-    m_stepTable{{0,1,1,0},         
-                {0,1,0,1}, 
-                {1,0,0,1},
-                {1,0,1,0}},
+    m_stepTable{
+        {0, 1, 1, 0},         
+        {0, 0, 1, 1},
+        {1, 0, 0, 1},
+        {1, 1, 0, 0}
+    },
+
+
+
 
     m_nStepIndex(0), 
     m_nPosition(0),
@@ -41,48 +46,54 @@ Unipolar::~Unipolar(){
     m_fKeepRunning = false;
     // m_thread.join();
 }
-// void Unipolar::step(){
-//     m_line1.set_value(m_stepTable[m_nStepIndex][0]);
-//     m_line2.set_value(m_stepTable[m_nStepIndex][1]);
-//     m_line3.set_value(m_stepTable[m_nStepIndex][2]);
-//     m_line4.set_value(m_stepTable[m_nStepIndex][3]);
-//     m_nStepIndex++;
-//     if (m_nStepIndex > 3) m_nStepIndex = 0;
-
-// }
 void Unipolar::step(){
-    int position;
-    getPosition(position);
-    int move = m_nTargetPosition - m_nPosition;
-    if(move > 0){
-        m_nStepIndex++;    
-        if(m_nStepIndex > 3) m_nStepIndex = 0;               
-        setOutputs();
-        position++; setPosition(position);
-    }else if(move < 0){
-        m_nStepIndex--;
-        if(m_nStepIndex < 0) m_nStepIndex = 3;
-        setOutputs();
-        position--; setPosition(position);
-    }else{                      // Target position reached
-        m_line1.set_value(0);
-        m_line2.set_value(0);
-        m_line3.set_value(0);
-        m_line4.set_value(0);
-        // // m_nStepInterval = UNIPOLAR_MAX_STEP_INTERVAL_MS;
-    }
-
-        // // Indexer loigic
-        // if(m_nStepInterval > UNIPOLAR_MIN_STEP_INTERVAL_MS && m_nStepInterval < UNIPOLAR_MAX_STEP_INTERVAL_MS){
-        //     float v = 1000.0f / m_nStepInterval;
-        //     float stoppingDistance = (v * v) / (2.0f * UNIPOLAR_ACCEL); // Stopping distance = v^2/2a
-        //     if(move > stoppingDistance )              
-        //         m_nStepInterval -= UNIPOLAR_ACCEL;      // Accelerate
-        //     else
-        //         m_nStepInterval += UNIPOLAR_ACCEL;      // Deccelerate
-        // }
+    m_line1.set_value(m_stepTable[m_nStepIndex][0]);
+    m_line2.set_value(m_stepTable[m_nStepIndex][1]);
+    m_line3.set_value(m_stepTable[m_nStepIndex][2]);
+    m_line4.set_value(m_stepTable[m_nStepIndex][3]);
+    m_nStepIndex++;
+    if (m_nStepIndex > 3) m_nStepIndex = 0;
 
 }
+// void Unipolar::step(){
+//     int position;
+//     getPosition(position);
+//     int move = m_nTargetPosition - m_nPosition;
+//     if(move > 0){
+//         m_nStepIndex++;    
+//         if(m_nStepIndex > 3) m_nStepIndex = 0;               
+//         setOutputs();
+//         position++; setPosition(position);
+//     }else if(move < 0){
+//         m_nStepIndex--;
+//         if(m_nStepIndex < 0) m_nStepIndex = 3;
+//         setOutputs();
+//         position--; setPosition(position);
+//     }else{                      // Target position reached
+//         m_line1.set_value(0);
+//         m_line2.set_value(0);
+//         m_line3.set_value(0);
+//         m_line4.set_value(0);
+//         // // m_nStepInterval = UNIPOLAR_MAX_STEP_INTERVAL_MS;
+//     }
+
+//         // // Indexer loigic
+//         // if(m_nStepInterval > UNIPOLAR_MIN_STEP_INTERVAL_MS && m_nStepInterval < UNIPOLAR_MAX_STEP_INTERVAL_MS){
+//         //     float v = 1000.0f / m_nStepInterval;
+//         //     float stoppingDistance = (v * v) / (2.0f * UNIPOLAR_ACCEL); // Stopping distance = v^2/2a
+//         //     if(move > stoppingDistance )              
+//         //         m_nStepInterval -= UNIPOLAR_ACCEL;      // Accelerate
+//         //     else
+//         //         m_nStepInterval += UNIPOLAR_ACCEL;      // Deccelerate
+//         // }
+
+        // }
+        // }
+
+// }
+// }
+
+// }
 void Unipolar::setOutputs(){
     m_line1.set_value(m_stepTable[m_nStepIndex][0]);
     m_line2.set_value(m_stepTable[m_nStepIndex][1]);
