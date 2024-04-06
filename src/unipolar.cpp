@@ -43,6 +43,10 @@ Unipolar::Unipolar():
         m_thread.detach();
 }
 Unipolar::~Unipolar(){
+    m_line1.set_value(0);
+    m_line2.set_value(0);
+    m_line3.set_value(0);
+    m_line4.set_value(0);
     m_fKeepRunning = false;
     // m_thread.join();
 }
@@ -69,13 +73,14 @@ void Unipolar::step(){
         if(m_nStepIndex < 0) m_nStepIndex = 3;
         setOutputs();
         position--; setPosition(position);
-    }else{                      // Target position reached
-        m_line1.set_value(0);
-        m_line2.set_value(0);
-        m_line3.set_value(0);
-        m_line4.set_value(0);
-        // // m_nStepInterval = UNIPOLAR_MAX_STEP_INTERVAL_MS;
     }
+    // else{                      // Target position reached
+    //     m_line1.set_value(0);
+    //     m_line2.set_value(0);
+    //     m_line3.set_value(0);
+    //     m_line4.set_value(0);
+    //     // // m_nStepInterval = UNIPOLAR_MAX_STEP_INTERVAL_MS;
+    // }
 
         // // Indexer loigic
         // if(m_nStepInterval > UNIPOLAR_MIN_STEP_INTERVAL_MS && m_nStepInterval < UNIPOLAR_MAX_STEP_INTERVAL_MS){

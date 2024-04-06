@@ -20,7 +20,8 @@ class Chaser{
         m_reversePattern(LED_STRING_PIXELS, BLACK),
         m_ledstring(),
         m_nInterval(100),
-        m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}),      // Gamma corrected ramp
+        // m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}), 
+        m_intensities({0, 0, 2, 2, 5, 13, 24, 39, 59, 85, 120, 169, 223}),     // Gamma corrected ramp
         m_colors(LED_STRING_PIXELS, BLUE)
         {
             setPattern(m_intensities, m_colors);

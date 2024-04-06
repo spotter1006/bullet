@@ -14,9 +14,10 @@ int main(int argc, char* argv[] ){
         sleep(1);
         FusionVector accel=  pPolar->getLinearAcceleration();
         FusionEuler orientation = pPolar->quaternionToEuler(pPolar->getQuaternion());
-
-        cout << "Heading change: " << setw(10) << pPolar->getHeadingChange() << " Average: " << setw(10) << pPolar->getAverageHeading() << endl;
-        cout << "\x1b[A"; //Go back up 1 line
+        cout << "heading:\t" << setw(10) << orientation.angle.yaw << "\n";
+        cout << "average:\t" <<setw(10) << pPolar->getAverageHeading() << "\n";
+        cout << "change: \t" << setw(10) << pPolar->getHeadingChange() << endl;
+        cout << "\x1b[A\x1b[A\x1b[A"; //Go back up 3
     }
 
 }

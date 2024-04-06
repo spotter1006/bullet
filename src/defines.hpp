@@ -1,7 +1,7 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
-#define MAIN_LOOP_INTERVAL_US   10000    // 10ms
+#define MAIN_LOOP_INTERVAL_US   12500    // 12.5ms
 
 // DRV8825 stepper motor driver
 #define DRV8825_EN_GPIO         17      // RASPI pin 11
@@ -26,7 +26,7 @@
 #define PHASE_3_GPIO 22     // pin 15
 #define PHASE_4_GPIO 23     // pin 16
       
-#define UNIPOLAR_STEPS_PER_DEGREE 1.425f            // Empirically measured
+#define UNIPOLAR_STEPS_PER_DEGREE 1.433f            //516 steps per revolution
 #define UNIPOLAR_MIN_STEP_INTERVAL_US  2000 
 #define UNIPOLAR_MAX_STEP_INTERVAL_US  10000  
 #define UNIPOLAR_ACCEL 5
@@ -46,7 +46,7 @@
 #define RED80   0x00800000
 #define BLUE80  0x00000080
 #define LED_STRING_FREQUENCY 800000
-#define LED_STRING_PIXELS 10
+#define LED_STRING_PIXELS 12
 #define WSS2812_DATA_GPIO 18    // RASPI pin 12 (PCM CLK)
 
 // IMU
@@ -72,7 +72,8 @@
 
 
 // Gamma table:
-// {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+// {
+// 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 // 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
 // 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
 // 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5,
@@ -87,6 +88,7 @@
 // 115,117,119,120,122,124,126,127,129,131,133,135,137,138,140,142,
 // 144,146,148,150,152,154,156,158,160,162,164,167,169,171,173,175,
 // 177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
-// 215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 }
+// 215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 
+//}
 
 #endif

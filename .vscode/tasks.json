@@ -93,7 +93,7 @@
 				"${workspaceFolder}/src/test/testpolar.cpp",
 				"${workspaceFolder}/src/wit_c_sdk.c", 
 				"${workspaceFolder}/src/polar.cpp*",
-				"${workspaceFolder}/src/stepper.cpp*",
+				"${workspaceFolder}/src/unipolar.cpp*",
 				"${workspaceFolder}/src/chaser.cpp*",
 				"${workspaceFolder}/src/imu.cpp*",
 				"-o",
