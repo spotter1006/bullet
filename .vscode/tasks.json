@@ -84,6 +84,34 @@
 		},
 		{
 			"type": "cppbuild",
+			"label": "Bargrapph test",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-pthread",
+				"-fdiagnostics-color=always",
+				"-g",
+				"${workspaceFolder}/src/test/testbargraph.cpp",
+				"${workspaceFolder}/src/bargraph.cpp",
+				"-o",
+				"${workspaceFolder}/build/debug/testbargraph",
+				"-L/usr/local/lib",
+				"-l:libws2811.a"
+
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: /usr/bin/g++-9"
+		},
+		{
+			"type": "cppbuild",
 			"label": "Polar test",
 			"command": "/usr/bin/g++",
 			"args": [
@@ -92,9 +120,10 @@
 				"-g",
 				"${workspaceFolder}/src/test/testpolar.cpp",
 				"${workspaceFolder}/src/wit_c_sdk.c", 
-				"${workspaceFolder}/src/polar.cpp*",
+				"${workspaceFolder}/src/polar.cpp",
 				"${workspaceFolder}/src/unipolar.cpp*",
-				"${workspaceFolder}/src/chaser.cpp*",
+				// "${workspaceFolder}/src/chaser.cpp*",
+				"${workspaceFolder}/src/bargraph.cpp*",
 				"${workspaceFolder}/src/imu.cpp*",
 				"-o",
 				"${workspaceFolder}/build/debug/testpolar",

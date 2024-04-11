@@ -32,6 +32,12 @@ extern int fd;
 extern SerialWrite p_WitSerialWriteFunc;
 extern DelaymsCb p_WitDelaymsFunc;
 
+typedef struct RAW_IMU{
+    int accel[3];
+    int gyro[3];
+    int mag[3];
+}rawImu;
+
 class Imu{
     public:
         Imu() : m_fKeepRunning(true), m_mutex(), m_biasTable(9,0), m_settings(5,0),
@@ -84,7 +90,8 @@ class Imu{
             FusionAhrsInitialise(&m_fusion);
                 // Set AHRS algorithm settings
             const FusionAhrsSettings settings = {
-                .convention = FusionConventionNed,
+                // .convention = FusionConventionNed,
+                .convention = FusionConventionEnu,
                 .gain = 0.5f,
                 .gyroscopeRange = 2000.0f, 
                 .accelerationRejection = 10.0f,
@@ -126,6 +133,8 @@ class Imu{
         void getSettings(vector<uint16_t> &settings);
         void setAxis6(int on);
         void setBandwidth(int bw);
+        rawImu getRawImu();
+
 
     private:
         void addMeasurements(uint flags);

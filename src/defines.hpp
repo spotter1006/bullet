@@ -1,7 +1,7 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
-#define MAIN_LOOP_INTERVAL_US   12500    // 12.5ms
+#define MAIN_LOOP_INTERVAL_US   10000    // 10 ms
 
 // DRV8825 stepper motor driver
 #define DRV8825_EN_GPIO         17      // RASPI pin 11
@@ -26,8 +26,8 @@
 #define PHASE_3_GPIO 22     // pin 15
 #define PHASE_4_GPIO 23     // pin 16
       
-#define UNIPOLAR_STEPS_PER_DEGREE 1.433f            //516 steps per revolution
-#define UNIPOLAR_MIN_STEP_INTERVAL_US  2000 
+#define UNIPOLAR_STEPS_PER_DEGREE 1.433f            // 516 steps per revolution
+#define UNIPOLAR_MIN_STEP_INTERVAL_US  4000         // 4 ms
 #define UNIPOLAR_MAX_STEP_INTERVAL_US  10000  
 #define UNIPOLAR_ACCEL 5
 #define UNIPOLAR_TRAVEL 64.0f
@@ -65,11 +65,13 @@
 #define HEADING_WINDOW_TENTHS 300       // 30 degrees
 #define HEADING_BUCKETS 360 * 10       
 
-#define ACCEL_SAMPLES 100
+// Polar graph
+#define ACCEL_AVERAGE_SAMPLES 10
 #define HEADING_AVERAGE_SAMPLES 1000
 #define TACKING_ANGLE 30.0f
 
-
+// Bar graph
+#define BARGRAPH_ZERO_PIXEL  ((LED_STRING_PIXELS - 2) / 2)
 
 // Gamma table:
 // {

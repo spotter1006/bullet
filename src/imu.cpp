@@ -47,28 +47,21 @@ void Imu::AutoScanSensor(char* dev)
 
 void Imu::start(){
 	m_thread = thread([](Imu* pImu){
-
-		unsigned char cBuff[1];	
-			
+		unsigned char cBuff[1];				
 		pImu->AutoScanSensor(IMU_SERIAL_PORT);
 		while(pImu->isKeepRunning())
 		{
 			while(read(fd, cBuff, 1))
 			{
 				WitSerialDataIn(cBuff[0]);
-			}
-
-			usleep(IMU_SAMPLE_INTERVAL_US);	
-			
+			}					
 			if(s_cDataUpdate){
 				pImu->addMeasurements(s_cDataUpdate);
 			}
-
-		}
-		
+			usleep(IMU_SAMPLE_INTERVAL_US);	
+		}		
 		close(fd);
 		return 0;
-
     }, this);
     m_thread.detach();
 }
@@ -79,10 +72,7 @@ void Imu::stop(){
 
 void Imu::addMeasurements(uint flags){
 
-// auto finish = std::chrono::high_resolution_clock::now();
-// std::chrono::duration<double, std::milli> elapsed = finish - start;
-
-	m_mutex.lock();
+	// m_mutex.lock();
 	if(flags & ACC_UPDATE && flags & GYRO_UPDATE && flags & MAG_UPDATE){		// Wait till all three are ready
 		// Wit library stores in double, fusion values take float 
 		m_accel.axis.x = sReg[AX] / ACCEL_PER_G; 
@@ -134,7 +124,7 @@ void Imu::addMeasurements(uint flags){
 		m_settings[4] = sReg[BANDWIDTH];
 		s_cDataUpdate &= ~SETTTINGS_UPDATE;
 	}
-	m_mutex.unlock();
+	// m_mutex.unlock();
 }
 
 void Imu::readBiases(){
@@ -148,9 +138,9 @@ void Imu::readBiases(){
 
 }
 void Imu::getBiasTable(vector<uint16_t> &offsets){
-	m_mutex.lock();
+	// m_mutex.lock();
 	offsets = m_biasTable;
-	m_mutex.unlock();
+	// m_mutex.unlock();
 }
 void Imu::readSettings(){
 	witWriteReg(KEY, KEY_UNLOCK);
@@ -168,9 +158,9 @@ void Imu::readSettings(){
 
 }
 void Imu::getSettings(vector<uint16_t> &settings){
-	m_mutex.lock();
+	// m_mutex.lock();
 	settings = m_settings;
-	m_mutex.unlock();
+	// m_mutex.unlock();
 }
 void Imu::setAxis6(int val){
 	WitWriteReg(KEY, KEY_UNLOCK);
@@ -245,3 +235,16 @@ int Imu::serial_open(const char *dev, int baud){
 	return 0;
 }
 
+rawImu Imu::getRawImu(){
+	rawImu imu;
+	imu.accel[0] = sReg[AX];
+	imu.accel[1] = sReg[AY];
+	imu.accel[2] = sReg[AZ];
+	imu.gyro[0] = sReg[GX];
+	imu.gyro[1] = sReg[GY];
+	imu.gyro[2] = sReg[GZ];
+	imu.mag[0] = sReg[HX];
+	imu.mag[1] = sReg[HY];
+	imu.mag[2] = sReg[HZ];
+	return imu;
+}

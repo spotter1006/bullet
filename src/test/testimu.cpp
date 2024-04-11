@@ -118,12 +118,18 @@ int main(int argc, char* argv[]){
             sleep(.75);
             FusionVector accel = pImu->getLinearAcceleration();
             FusionEuler euler = pImu->quaternionToEuler(pImu->getQuaternion());
+            // TODO: raw IMU data.......
+            rawImu raw = pImu->getRawImu();
+            cout << "----------------Raw------------------- \n";
+            cout << "Acel:\t" << setw(10) << raw.accel[0]<<  setw(10) << raw.accel[1] <<  setw(10) << raw.accel[2] << "\n";
+            cout << "Gyro:\t"<<  setw(10) << raw.gyro[0] <<  setw(10) << raw.gyro[1] << setw(10) << raw.gyro[2] << "\n";
+            cout << "Mag:\t" << setw(10) << raw.mag[0] << setw(10) << raw.mag[1] << setw(10) << raw.mag[2] << "\n";
+            cout << "---------------Fusion------------------\n";
             cout << setprecision(3);
-            cout <<  
-                "Linear Accel:\t " <<  setw(10) << accel.axis.x <<  setw(10) << accel.axis.y <<  setw(10) << accel.axis.z << "\n" << 
-                "Orientation:\t " << setw(10) << euler.angle.roll << setw(10) << euler.angle.pitch << setw(10) << euler.angle.yaw << endl;
+            cout <<  "Linear Accel:\t " <<  setw(10) << accel.axis.x <<  setw(10) << accel.axis.y <<  setw(10) << accel.axis.z << "\n"; 
+            cout <<  "Orientation:\t " << setw(10) << euler.angle.roll << setw(10) << euler.angle.pitch << setw(10) << euler.angle.yaw << endl;
 
-            cout << "\x1b[A\x1b[A"; //Go back up 2 lines
+            for(int i = 0; i < 7; i++) {cout << "\x1b[A"; }
         }
     }
 }
