@@ -134,7 +134,7 @@ int main(int argc, char* argv[]){
         }
     }else{
         while(1){
-            sleep(1);
+            usleep(500000);
             FusionVector accel = pImu->getLinearAcceleration();
             FusionEuler euler = pImu->quaternionToEuler(pImu->getQuaternion());
             // TODO: raw IMU data.......
