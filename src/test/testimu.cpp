@@ -37,6 +37,12 @@ void showSettings(Imu* pImu){
         
 }
 int main(int argc, char* argv[]){
+
+    set_terminate([]()
+    {
+        std::cout << "Unhandled exception\n" << std::flush;
+        std::abort();
+    });
     cout << "IMU test" <<endl;
     Imu *pImu = new Imu();
     pImu->start();
@@ -44,8 +50,15 @@ int main(int argc, char* argv[]){
 
     string cmd;
     if(argc > 1) cmd=string(argv[1]);
-
-    if(cmd.compare("rs") == 0){
+    if(cmd.compare("B115200") == 0){
+        WitSetUartBaud(WIT_BAUD_115200);
+        WitSaveParameter();
+        cout << "Baud rate set to 115200" << endl;
+    }else if(cmd.compare("B9600") == 0){
+        WitSetUartBaud(WIT_BAUD_9600);
+        WitSaveParameter();
+        cout << "Baud rate set to 9600" << endl;
+    }else if(cmd.compare("rs") == 0){
         char cBuff[1];
         s_cDataUpdate = 0;
         pImu->readSettings();  
@@ -115,7 +128,7 @@ int main(int argc, char* argv[]){
         }
     }else{
         while(1){
-            sleep(.75);
+            sleep(1);
             FusionVector accel = pImu->getLinearAcceleration();
             FusionEuler euler = pImu->quaternionToEuler(pImu->getQuaternion());
             // TODO: raw IMU data.......
@@ -133,4 +146,6 @@ int main(int argc, char* argv[]){
         }
     }
 }
+
+
 

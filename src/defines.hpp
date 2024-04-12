@@ -1,7 +1,7 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
-#define MAIN_LOOP_INTERVAL_US   10000    // 10 ms
+#define MAIN_LOOP_INTERVAL_US   5000    // 5 ms
 
 // DRV8825 stepper motor driver
 #define DRV8825_EN_GPIO         17      // RASPI pin 11

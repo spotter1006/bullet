@@ -98,7 +98,7 @@ void Imu::addMeasurements(uint flags){
 		auto deltaTime = chrono::duration_cast<std::chrono::duration<float>>(elapsed);
 
 		// Update gyroscope AHRS algorithm
-        FusionAhrsUpdate(&m_fusion, m_gyro, m_accel, m_mag, deltaTime.count());	
+       FusionAhrsUpdate(&m_fusion, m_gyro, m_accel, m_mag, deltaTime.count());	
 		m_lastImuUpdate = chrono::high_resolution_clock::now();
 
 		s_cDataUpdate &= (~ACC_UPDATE & ~GYRO_UPDATE & ~MAG_UPDATE) ;

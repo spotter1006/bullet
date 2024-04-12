@@ -2,6 +2,53 @@
     "version": "0.2.0",
     "configurations": [
       {
+        "name": "Set IMU badrate 115200",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["B115200"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "name": "Set IMU badrate 9600",
+        "type": "cppdbg",
+        "request": "launch",
+        "args": ["B9600"],
+        "stopAtEntry": false,
+        "externalConsole": false,
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Test IMU - codeLLDB",
+        "program": "${workspaceFolder}/build/debug/testimu",
+        "args": [],
+        "cwd": "${workspaceFolder}"
+      },
+      
+      {
         "name": "Bargraph Test",
         "type": "cppdbg",
         "request": "launch",
@@ -88,6 +135,7 @@
         "program": "${workspaceFolder}/build/debug/testimu",
         "MIMode": "gdb",
         "miDebuggerPath": "/usr/bin/gdb",
+        "targetArchitecture": "arm",
         "setupCommands": [
           {
             "description": "Enable pretty-printing for gdb",
