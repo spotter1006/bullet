@@ -1,6 +1,15 @@
 {
+
     "version": "0.2.0",
     "configurations": [
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Polar Test- codeLLDB",
+        "program": "${workspaceFolder}/build/debug/testpolar",
+        "args": [],
+        "cwd": "${workspaceFolder}"
+      },
       {
         "name": "Set IMU badrate 115200",
         "type": "cppdbg",
@@ -47,7 +56,6 @@
         "args": [],
         "cwd": "${workspaceFolder}"
       },
-      
       {
         "name": "Bargraph Test",
         "type": "cppdbg",

@@ -77,8 +77,8 @@ class Polar{
         vector<thread> m_threads;
         list<float>m_headings;
         list<float>m_accels;
-        float m_fHeadingAverage;
-        float m_fHeadingChange;
-        float m_fAccelAverage;
+        double m_fHeadingAverage;
+        double m_fHeadingChange;
+        double m_fAccelAverage;
 };
 #endif

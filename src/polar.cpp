@@ -19,7 +19,8 @@ void Polar::start(){
             auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(MAIN_LOOP_INTERVAL_US); 
             pPolar->update();
             float headingChange = pPolar->getHeadingChange();
-            pPolar->setBargraphValue(.001f / pPolar->getLinearAcceleration().axis.y);
+            pPolar->setBargraphValue((int)round(20.0 * pPolar->getLinearAcceleration().axis.y));
+            // pPolar->setBargraphValue((int)round(20.0 * pPolar->getAverageAccel()));
             // pPolar->setChaserInterval(100);
 
             pPolar->setMotorTargetPosition(headingChange);
@@ -39,18 +40,18 @@ void Polar::update(){
 
     m_headings.push_front(orientation.angle.yaw);
     if(m_headings.size() > HEADING_AVERAGE_SAMPLES) m_headings.resize(HEADING_AVERAGE_SAMPLES);
-    m_fHeadingAverage = accumulate(m_headings.begin(), m_headings.end(), 0) / (float)m_headings.size();
+    m_fHeadingAverage = (double)(accumulate(m_headings.begin(), m_headings.end(), 0.0)) / (double)m_headings.size();
 
     m_accels.push_front(accel.axis.y);
     if(m_accels.size() > ACCEL_AVERAGE_SAMPLES) m_accels.resize(ACCEL_AVERAGE_SAMPLES);
-    m_fAccelAverage = accumulate(m_accels.begin(), m_accels.end(), 0) / (float)m_accels.size();     //To disable the compler change warning for passing double, pass -Wno-psabi to the compiler.
+    m_fAccelAverage = (double)(accumulate(m_accels.begin(), m_accels.end(), 0.0)) / (double)m_accels.size();     //To disable the compler change warning for passing double, pass -Wno-psabi to the compiler.
 
     // Reset average on tacks or jibes
     if(fabs(orientation.angle.yaw - m_fHeadingAverage) > TACKING_ANGLE){
         m_fHeadingAverage = orientation.angle.yaw;
 
     }
-    m_fHeadingChange = orientation.angle.yaw - m_fHeadingAverage;
+    m_fHeadingChange = m_fHeadingAverage - orientation.angle.yaw;
 }
 
 void Polar::stop(){

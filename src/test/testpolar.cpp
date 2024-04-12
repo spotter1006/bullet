@@ -13,7 +13,7 @@ int main(int argc, char* argv[] ){
     while(1){
         sleep(1);
         cout << "average heading:\t" <<setw(10) << pPolar->getAverageHeading() << "\n";
-        cout << "accel.y:\t" << setw(10) << pPolar->getLinearAcceleration().axis.y << endl;
+        cout << "accel.y:\t" << setw(10) << pPolar->getLinearAcceleration().axis.y  << setw(10) << pPolar->getAverageAccel() << endl;
         cout << "\x1b[A\x1b[A"; //Go back up 2
     }
 
