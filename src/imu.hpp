@@ -134,11 +134,9 @@ class Imu{
         void setAxis6(int on);
         void setBandwidth(int bw);
         rawImu getRawImu();
-
-
+        void AutoScanSensor(char* dev);
     private:
         void addMeasurements(uint flags);
-        void AutoScanSensor(char* dev);
         static int serial_open(const char *dev, int baud);
         bool m_fKeepRunning;
         thread m_thread;

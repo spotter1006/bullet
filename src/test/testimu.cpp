@@ -51,12 +51,18 @@ int main(int argc, char* argv[]){
     string cmd;
     if(argc > 1) cmd=string(argv[1]);
     if(cmd.compare("B115200") == 0){
-        WitSetUartBaud(WIT_BAUD_115200);
-        WitSaveParameter();
+        pImu->witSetUartBaud(WIT_BAUD_115200);
+        usleep(200000);
+        pImu->AutoScanSensor(IMU_SERIAL_PORT);
+        pImu->witSaveParameter();
+        usleep(200000);
         cout << "Baud rate set to 115200" << endl;
     }else if(cmd.compare("B9600") == 0){
-        WitSetUartBaud(WIT_BAUD_9600);
-        WitSaveParameter();
+        pImu->witSetUartBaud(WIT_BAUD_9600);
+        usleep(200000);
+        pImu->AutoScanSensor(IMU_SERIAL_PORT);
+        pImu->witSaveParameter();
+        usleep(200000);
         cout << "Baud rate set to 9600" << endl;
     }else if(cmd.compare("rs") == 0){
         char cBuff[1];
