@@ -12,8 +12,9 @@ int main(int argc, char* argv[] ){
     cout << "Running. <ctrl-c> to stop ..." << endl;
     while(1){
         sleep(1);
-        cout << "average heading:\t" <<setw(10) << pPolar->getAverageHeading() << "\n";
-        cout << "accel.y:\t" << setw(10) << pPolar->getLinearAcceleration().axis.y  << setw(10) << pPolar->getAverageAccel() << endl;
+        cout << setprecision(3);
+        cout << "average heading:\t" << setw(10) << pPolar->getAverageHeading() << "\t";
+        cout << "average accel.y:\t" << setw(10) << pPolar->getAverageAccel() << endl;
         cout << "\x1b[A\x1b[A"; //Go back up 2
     }
 
