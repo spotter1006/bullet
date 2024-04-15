@@ -13,15 +13,20 @@ using namespace std;
 
 void Polar::start(){
     m_threads.emplace_back(thread([](Polar *pPolar){   
-        pPolar->setBargraphValue(0);
+        // pPolar->setBargraphValue(0);
         while(pPolar->iskeepRunning()){                       
            
             auto wakeTime = chrono::high_resolution_clock::now() + chrono::microseconds(MAIN_LOOP_INTERVAL_US); 
             pPolar->update();
             float headingChange = pPolar->getHeadingChange();
-            pPolar->setBargraphValue((int)round(20.0 * pPolar->getLinearAcceleration().axis.y));
-            // pPolar->setBargraphValue((int)round(20.0 * pPolar->getAverageAccel()));
-            // pPolar->setChaserInterval(100);
+            // pPolar->setBargraphValue((int)round(20.0 * pPolar->getLinearAcceleration().axis.y));
+
+            double accel = pPolar->getAverageAccel();
+            int interval = (abs(accel) > 0.02)? (int)round(1.0/accel) : 0;
+            if(interval > 1000) interval = 0;
+            if(interval < -1000) interval = 0;
+            pPolar->setChaserDirection(accel > 0.0);          
+            pPolar->setChaserInterval(interval);
 
             pPolar->setMotorTargetPosition(headingChange);
             this_thread::sleep_until(wakeTime);
@@ -32,7 +37,7 @@ void Polar::start(){
    
     m_imu.start();
 
-    // m_chaser.start();
+    m_chaser.start();
 }
 void Polar::update(){
     FusionVector accel = getLinearAcceleration();
@@ -49,8 +54,9 @@ void Polar::update(){
     // Reset average on tacks or jibes
     if(fabs(orientation.angle.yaw - m_fHeadingAverage) > TACKING_ANGLE){
         m_fHeadingAverage = orientation.angle.yaw;
-
+        fill(m_headings.begin(), m_headings.end(), orientation.angle.yaw);
     }
+    
     m_fHeadingChange = m_fHeadingAverage - orientation.angle.yaw;
 }
 

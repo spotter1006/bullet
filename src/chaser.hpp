@@ -20,7 +20,7 @@ class Chaser{
         m_reversePattern(LED_STRING_PIXELS, BLACK),
         m_ledstring(),
         m_nInterval(100),
-        // m_intensities({0, 0, 3, 7, 27, 35, 58, 89, 129, 180}), 
+        m_fForward(true),
         m_intensities({0, 0, 2, 2, 5, 13, 24, 39, 59, 85, 120, 169, 223}),     // Gamma corrected ramp
         m_colors(LED_STRING_PIXELS, BLUE)
         {
@@ -46,7 +46,7 @@ class Chaser{
         }
         void start();
         void stop();
-        void rotate(int direction);
+        void rotate();
         void setPattern(vector<uint32_t> intensities, vector<ws2811_led_t> colors);
         inline bool isKeepRunning(){return m_fKeepRunning;}
         inline void setInterval(int interval){m_nInterval = interval;}
@@ -54,13 +54,15 @@ class Chaser{
         void setIntensities(vector<ws2811_led_t> intensities);
         void setHue(int hue);
         inline ws2811_led_t redToGreen(int val){return colorGradient[(val + 128) / 16];}
+        inline void setDirection(bool forward){m_fForward = forward;}
     private:
         vector<ws2811_led_t> m_pattern;
         vector<ws2811_led_t> m_reversePattern;
         ws2811_t m_ledstring;
         thread m_thread;
         bool m_fKeepRunning;
-        int m_nInterval;            // Interval between pattern shifts of animation in units of calls to chaser.rotate(). Bipolar, aslo sets rotate direction
+        int m_nInterval;            // Interval between pattern shifts of animation in units of calls to chaser.rotate()
+        bool m_fForward;
         vector<ws2811_led_t> m_intensities;
         vector<ws2811_led_t> m_colors;
 

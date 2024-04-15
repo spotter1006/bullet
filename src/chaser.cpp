@@ -5,19 +5,12 @@
 
 using namespace std;
 
-void Chaser::rotate(int direction){
-    switch(direction){
-        case 1:
-            std::rotate(m_pattern.rbegin(), m_pattern.rbegin() + 1, m_pattern.rend());
-            memcpy(m_ledstring.channel[0].leds, m_pattern.data(), LED_STRING_PIXELS * sizeof(ws2811_led_t) );
-            break;
-        case -1: 
-            std::rotate(m_reversePattern.begin(), m_reversePattern.begin() + 1, m_reversePattern.end());
-            memcpy(m_ledstring.channel[0].leds, m_reversePattern.data(), LED_STRING_PIXELS * sizeof(ws2811_led_t) );
-            break;
-        default:
-            break;
-    };  
+void Chaser::rotate(){
+    if(m_nInterval == 0) return;
+    std::rotate(m_pattern.rbegin(), m_pattern.rbegin() + 1, m_pattern.rend());
+    std::rotate(m_reversePattern.begin(), m_reversePattern.begin() + 1, m_reversePattern.end());
+    ws2811_led_t *src = m_fForward? m_pattern.data(): m_reversePattern.data();
+    memcpy(m_ledstring.channel[0].leds, src, LED_STRING_PIXELS * sizeof(ws2811_led_t) );
     ws2811_render(&m_ledstring);
 }
 
@@ -50,9 +43,7 @@ void Chaser::start(){
     m_thread = thread([](Chaser* pChaser){
         while(pChaser->isKeepRunning()){
             auto wakeTime = chrono::high_resolution_clock::now() + chrono::milliseconds(abs(pChaser->getInterval())); 
-            if(pChaser->getInterval() != 0 ){         
-                pChaser->rotate(pChaser->getInterval() < 0 ? -1 : 1);    
-            } 
+            pChaser->rotate();    
             this_thread::sleep_until(wakeTime);
         }
     }, this);
