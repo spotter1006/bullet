@@ -7,8 +7,13 @@
         "request": "launch",
         "name": "Polar Test- codeLLDB",
         "program": "${workspaceFolder}/build/debug/testpolar",
-        "args": [],
-        "cwd": "${workspaceFolder}"
+        "initCommands": [
+          "platform select 'remote-linux'", // For example: 'remote-linux', 'remote-macosx', 'remote-android', etc.
+          "platform connect connect://10.0.0.15:2001",
+          "settings set target.inherit-env false", // See note below.
+        ],
+        "cwd": "${workspaceFolder}",
+
       },
       {
         "name": "Set IMU badrate 115200",
@@ -130,7 +135,8 @@
             "text": "-enable-pretty-printing",
             "ignoreFailures": true
           }
-        ]
+        ],
+        "targetArchitecture": "arm64"
       },
       {
         "name": "Read IMU settings",

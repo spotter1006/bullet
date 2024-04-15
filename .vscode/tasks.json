@@ -122,7 +122,7 @@
 				"${workspaceFolder}/src/wit_c_sdk.c", 
 				"${workspaceFolder}/src/polar.cpp",
 				"${workspaceFolder}/src/unipolar.cpp*",
-				// "${workspaceFolder}/src/chaser.cpp*",
+				"${workspaceFolder}/src/chaser.cpp*",
 				"${workspaceFolder}/src/bargraph.cpp*",
 				"${workspaceFolder}/src/imu.cpp*",
 				"-o",

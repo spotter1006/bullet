@@ -40,7 +40,12 @@ sudo ~/swprojects/bullet/build/release/bullet
 ``
 
 
+## Debugging with codelldb:
+The debugger has to run as root because the led library asccesses protected memory. The strategy is to use lldb in platfrorm mode with the following command on the target:
 
+`sudo ~/.vscode-server/extensions/vadimcn.vscode-lldb-1.10.0/lldb/bin/lldb-server platform --server --listen *:2001`
+
+This server stays running after the first launch so you have to launch it only once until a reboot.
 
 
 ## Inertial Measurement Unit
